@@ -32,21 +32,35 @@ func main() {
 		if b.Type() != "resource" {
 			continue
 		}
+
 		labels := b.Labels()
-		if labels[0] != "aws_s3_bucket" {
+		if len(labels) == 2 && labels[0] != "aws_s3_bucket" {
 			continue
 		}
+		bName := labels[1]
+
 		if b.Body().GetAttribute("acl") != nil {
-			name := labels[1]
 			f.Body().AppendNewline()
-			newblock := f.Body().AppendNewBlock("resource", []string{"aws_s3_bucket_acl", name})
+			newblock := f.Body().AppendNewBlock("resource", []string{"aws_s3_bucket_acl", bName})
 			newblock.Body().SetAttributeTraversal("bucket", hcl.Traversal{
 				hcl.TraverseRoot{Name: "aws_s3_bucket"},
-				hcl.TraverseAttr{Name: name},
+				hcl.TraverseAttr{Name: bName},
 				hcl.TraverseAttr{Name: "id"},
 			})
 			newblock.Body().SetAttributeValue("acl", cty.StringVal("private"))
 			b.Body().RemoveAttribute("acl")
+		}
+
+		if nested := b.Body().FirstMatchingBlock("logging", []string{}); nested != nil {
+			f.Body().AppendNewline()
+			newblock := f.Body().AppendNewBlock("resource", []string{"aws_s3_bucket_logging", bName})
+			newblock.Body().SetAttributeTraversal("bucket", hcl.Traversal{
+				hcl.TraverseRoot{Name: "aws_s3_bucket"},
+				hcl.TraverseAttr{Name: bName},
+				hcl.TraverseAttr{Name: "id"},
+			})
+			newblock.Body().AppendUnstructuredTokens(nested.Body().BuildTokens(nil))
+			b.Body().RemoveBlock(nested)
 		}
 	}
 
