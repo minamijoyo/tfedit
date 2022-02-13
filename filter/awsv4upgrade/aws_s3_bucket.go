@@ -49,6 +49,12 @@ func findResourceByType(body *hclwrite.Body, resourceType string) []*hclwrite.Bl
 	return matched
 }
 
+// getResourceName is a helper method for getting a resource name of the given block.
+func getResourceName(block *hclwrite.Block) string {
+	labels := block.Labels()
+	return labels[1]
+}
+
 // appendNewResourceBlock is a helper method for appending a new resource block
 // to the given body and returns a new block.
 func appendNewResourceBlock(body *hclwrite.Body, resourceType string, resourceName string) *hclwrite.Block {
