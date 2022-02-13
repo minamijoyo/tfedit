@@ -1,6 +1,7 @@
 package awsv4upgrade
 
 import (
+	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/minamijoyo/hcledit/editor"
 )
@@ -60,4 +61,13 @@ func getResourceName(block *hclwrite.Block) string {
 func appendNewResourceBlock(body *hclwrite.Body, resourceType string, resourceName string) *hclwrite.Block {
 	body.AppendNewline()
 	return body.AppendNewBlock("resource", []string{resourceType, resourceName})
+}
+
+// setBucketArgument is a helper method for setting a bucket argument to the given block.
+func setBucketArgument(block *hclwrite.Block, resourceName string) *hclwrite.Attribute {
+	return block.Body().SetAttributeTraversal("bucket", hcl.Traversal{
+		hcl.TraverseRoot{Name: "aws_s3_bucket"},
+		hcl.TraverseAttr{Name: resourceName},
+		hcl.TraverseAttr{Name: "id"},
+	})
 }

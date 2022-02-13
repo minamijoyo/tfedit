@@ -1,7 +1,6 @@
 package awsv4upgrade
 
 import (
-	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/minamijoyo/hcledit/editor"
 	"github.com/zclconf/go-cty/cty"
@@ -30,11 +29,7 @@ func (f *AWSS3BucketACLFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, er
 
 		resourceName := getResourceName(block)
 		newblock := appendNewResourceBlock(inFile.Body(), "aws_s3_bucket_acl", resourceName)
-		newblock.Body().SetAttributeTraversal("bucket", hcl.Traversal{
-			hcl.TraverseRoot{Name: "aws_s3_bucket"},
-			hcl.TraverseAttr{Name: resourceName},
-			hcl.TraverseAttr{Name: "id"},
-		})
+		setBucketArgument(newblock, resourceName)
 		newblock.Body().SetAttributeValue("acl", cty.StringVal("private"))
 		block.Body().RemoveAttribute("acl")
 	}
