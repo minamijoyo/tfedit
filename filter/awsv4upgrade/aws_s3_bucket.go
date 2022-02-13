@@ -26,3 +26,25 @@ func (f *AWSS3BucketFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error
 	})
 	return m.Filter(inFile)
 }
+
+// findResourceByType returns all matching blocks from the body that have the
+// given resourceType or returns an empty list if there is no matching block.
+// This method is useful when you want to ignore the resource name.
+func findResourceByType(body *hclwrite.Body, resourceType string) []*hclwrite.Block {
+	var matched []*hclwrite.Block
+
+	for _, block := range body.Blocks() {
+		if block.Type() != "resource" {
+			continue
+		}
+
+		labels := block.Labels()
+		if len(labels) == 2 && labels[0] != resourceType {
+			continue
+		}
+
+		matched = append(matched, block)
+	}
+
+	return matched
+}
