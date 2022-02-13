@@ -48,3 +48,10 @@ func findResourceByType(body *hclwrite.Body, resourceType string) []*hclwrite.Bl
 
 	return matched
 }
+
+// appendNewResourceBlock is a helper method for appending a new resource block
+// to the given body and returns a new block.
+func appendNewResourceBlock(body *hclwrite.Body, resourceType string, resourceName string) *hclwrite.Block {
+	body.AppendNewline()
+	return body.AppendNewBlock("resource", []string{resourceType, resourceName})
+}

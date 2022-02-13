@@ -31,8 +31,7 @@ func (f *AWSS3BucketLoggingFilter) Filter(inFile *hclwrite.File) (*hclwrite.File
 		labels := block.Labels()
 		resourceName := labels[1]
 
-		inFile.Body().AppendNewline()
-		newblock := inFile.Body().AppendNewBlock("resource", []string{"aws_s3_bucket_logging", resourceName})
+		newblock := appendNewResourceBlock(inFile.Body(), "aws_s3_bucket_logging", resourceName)
 		newblock.Body().SetAttributeTraversal("bucket", hcl.Traversal{
 			hcl.TraverseRoot{Name: "aws_s3_bucket"},
 			hcl.TraverseAttr{Name: resourceName},
