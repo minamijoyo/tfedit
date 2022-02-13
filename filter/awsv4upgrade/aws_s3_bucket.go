@@ -22,8 +22,8 @@ func NewAWSS3BucketFilter() editor.Filter {
 // Filter upgrades arguments of aws_s3_bucket to AWS provider v4.
 func (f *AWSS3BucketFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
 	m := editor.NewMultiFilter([]editor.Filter{
-		NewAWSS3BucketACLFilter(),
-		NewAWSS3BucketLoggingFilter(),
+		&AWSS3BucketACLFilter{},
+		&AWSS3BucketLoggingFilter{},
 	})
 	return m.Filter(inFile)
 }

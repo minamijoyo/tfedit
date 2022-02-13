@@ -8,8 +8,7 @@ import (
 // AWSS3BucketLoggingFilter is a filter implementation for upgrading the
 // logging argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#logging-argument
-type AWSS3BucketLoggingFilter struct {
-}
+type AWSS3BucketLoggingFilter struct{}
 
 var _ editor.Filter = (*AWSS3BucketLoggingFilter)(nil)
 
