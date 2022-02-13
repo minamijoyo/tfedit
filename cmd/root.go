@@ -11,7 +11,7 @@ import (
 // RootCmd is a top level command instance
 var RootCmd = &cobra.Command{
 	Use:           "tfedit",
-	Short:         "A command line editor for Terraform",
+	Short:         "A refactoring tool for Terraform",
 	SilenceErrors: true,
 	SilenceUsage:  true,
 }
