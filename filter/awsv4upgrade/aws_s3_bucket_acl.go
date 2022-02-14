@@ -3,7 +3,6 @@ package awsv4upgrade
 import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/minamijoyo/hcledit/editor"
-	"github.com/zclconf/go-cty/cty"
 )
 
 // AWSS3BucketACLFilter is a filter implementation for upgrading the acl
@@ -17,14 +16,15 @@ var _ editor.Filter = (*AWSS3BucketACLFilter)(nil)
 func (f *AWSS3BucketACLFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
 	blocks := findResourceByType(inFile.Body(), "aws_s3_bucket")
 	for _, block := range blocks {
-		if block.Body().GetAttribute("acl") == nil {
+		attr := block.Body().GetAttribute("acl")
+		if attr == nil {
 			continue
 		}
 
 		resourceName := getResourceName(block)
 		newblock := appendNewResourceBlock(inFile.Body(), "aws_s3_bucket_acl", resourceName)
 		setBucketArgument(newblock, resourceName)
-		newblock.Body().SetAttributeValue("acl", cty.StringVal("private"))
+		newblock.Body().AppendUnstructuredTokens(attr.BuildTokens(nil))
 		block.Body().RemoveAttribute("acl")
 	}
 
