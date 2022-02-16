@@ -40,41 +40,6 @@ func (f *AWSS3BucketFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error
 	return m.Filter(inFile)
 }
 
-// findResourceByType returns all matching blocks from the body that have the
-// given resourceType or returns an empty list if there is no matching block.
-// This method is useful when you want to ignore the resource name.
-func findResourceByType(body *hclwrite.Body, resourceType string) []*hclwrite.Block {
-	var matched []*hclwrite.Block
-
-	for _, block := range body.Blocks() {
-		if block.Type() != "resource" {
-			continue
-		}
-
-		labels := block.Labels()
-		if len(labels) == 2 && labels[0] != resourceType {
-			continue
-		}
-
-		matched = append(matched, block)
-	}
-
-	return matched
-}
-
-// getResourceName is a helper method for getting a resource name of the given block.
-func getResourceName(block *hclwrite.Block) string {
-	labels := block.Labels()
-	return labels[1]
-}
-
-// appendNewResourceBlock is a helper method for appending a new resource block
-// to the given body and returns a new block.
-func appendNewResourceBlock(body *hclwrite.Body, resourceType string, resourceName string) *hclwrite.Block {
-	body.AppendNewline()
-	return body.AppendNewBlock("resource", []string{resourceType, resourceName})
-}
-
 // setBucketArgument is a helper method for setting a bucket argument to the given block.
 func setBucketArgument(block *hclwrite.Block, resourceName string) *hclwrite.Attribute {
 	return block.Body().SetAttributeTraversal("bucket", hcl.Traversal{

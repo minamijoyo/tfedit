@@ -3,6 +3,7 @@ package awsv4upgrade
 import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/minamijoyo/hcledit/editor"
+	"github.com/minamijoyo/tfedit/tfwrite"
 )
 
 // AWSS3BucketLoggingFilter is a filter implementation for upgrading the
@@ -19,15 +20,15 @@ func NewAWSS3BucketLoggingFilter() editor.Filter {
 
 // Filter upgrades the logging argument of aws_s3_bucket.
 func (f *AWSS3BucketLoggingFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
-	blocks := findResourceByType(inFile.Body(), "aws_s3_bucket")
+	blocks := tfwrite.FindResourcesByType(inFile.Body(), "aws_s3_bucket")
 	for _, block := range blocks {
 		nested := block.Body().FirstMatchingBlock("logging", []string{})
 		if nested == nil {
 			continue
 		}
 
-		resourceName := getResourceName(block)
-		newblock := appendNewResourceBlock(inFile.Body(), "aws_s3_bucket_logging", resourceName)
+		resourceName := tfwrite.GetResourceName(block)
+		newblock := tfwrite.AppendNewResource(inFile.Body(), "aws_s3_bucket_logging", resourceName)
 		setBucketArgument(newblock, resourceName)
 		newblock.Body().AppendUnstructuredTokens(nested.Body().BuildTokens(nil))
 		block.Body().RemoveBlock(nested)
