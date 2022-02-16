@@ -15,18 +15,18 @@ var _ editor.Filter = (*AWSS3BucketACLFilter)(nil)
 
 // Filter upgrades the acl argument of aws_s3_bucket.
 func (f *AWSS3BucketACLFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
-	blocks := tfwrite.FindResourcesByType(inFile.Body(), "aws_s3_bucket")
-	for _, block := range blocks {
-		attr := block.Body().GetAttribute("acl")
+	targets := tfwrite.FindResourcesByType(inFile.Body(), "aws_s3_bucket")
+	for _, oldResource := range targets {
+		attr := oldResource.Body().GetAttribute("acl")
 		if attr == nil {
 			continue
 		}
 
-		resourceName := tfwrite.GetResourceName(block)
-		newblock := tfwrite.AppendNewResource(inFile.Body(), "aws_s3_bucket_acl", resourceName)
-		setBucketArgument(newblock, resourceName)
-		newblock.Body().AppendUnstructuredTokens(attr.BuildTokens(nil))
-		block.Body().RemoveAttribute("acl")
+		resourceName := tfwrite.GetResourceName(oldResource)
+		newResource := tfwrite.AppendNewResource(inFile.Body(), "aws_s3_bucket_acl", resourceName)
+		setBucketArgument(newResource, resourceName)
+		newResource.Body().AppendUnstructuredTokens(attr.BuildTokens(nil))
+		oldResource.Body().RemoveAttribute("acl")
 	}
 
 	return inFile, nil

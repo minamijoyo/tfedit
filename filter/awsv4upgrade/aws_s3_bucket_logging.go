@@ -20,18 +20,18 @@ func NewAWSS3BucketLoggingFilter() editor.Filter {
 
 // Filter upgrades the logging argument of aws_s3_bucket.
 func (f *AWSS3BucketLoggingFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
-	blocks := tfwrite.FindResourcesByType(inFile.Body(), "aws_s3_bucket")
-	for _, block := range blocks {
-		nested := block.Body().FirstMatchingBlock("logging", []string{})
-		if nested == nil {
+	targets := tfwrite.FindResourcesByType(inFile.Body(), "aws_s3_bucket")
+	for _, oldResource := range targets {
+		nestedBlock := oldResource.Body().FirstMatchingBlock("logging", []string{})
+		if nestedBlock == nil {
 			continue
 		}
 
-		resourceName := tfwrite.GetResourceName(block)
-		newblock := tfwrite.AppendNewResource(inFile.Body(), "aws_s3_bucket_logging", resourceName)
-		setBucketArgument(newblock, resourceName)
-		newblock.Body().AppendUnstructuredTokens(nested.Body().BuildTokens(nil))
-		block.Body().RemoveBlock(nested)
+		resourceName := tfwrite.GetResourceName(oldResource)
+		newResource := tfwrite.AppendNewResource(inFile.Body(), "aws_s3_bucket_logging", resourceName)
+		setBucketArgument(newResource, resourceName)
+		newResource.Body().AppendUnstructuredTokens(nestedBlock.Body().BuildTokens(nil))
+		oldResource.Body().RemoveBlock(nestedBlock)
 	}
 
 	return inFile, nil
