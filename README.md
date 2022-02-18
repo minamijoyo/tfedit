@@ -5,11 +5,12 @@
 
 ## Features
 
-- Easy refactoring Terraform configurations in a scalable way with built-in filters.
-- CLI-friendly: Read HCL from stdin, apply filters and write results to stdout, easily pipe and combine other commands. You can also update a given file in-place.
-- Keep comments: You can update lots of existing Terraform configurations without losing any valuable comments.
+Easy refactoring Terraform configurations in a scalable way.
+
+- CLI-friendly: Read HCL from stdin, apply filters and write results to stdout, easily pipe and combine other commands.
+- Keep comments: You can update lots of existing Terraform configurations without losing comments.
 - Available operations:
-  - filter awsv4upgrade
+  - filter awsv4upgrade: Upgrade configurations to AWS provider v4. Only `aws_s3_bucket` refactor is supported.
 
 For upgrading AWS provider v4, some rules have not been implemented yet. The current implementation status is as follows:
 
@@ -29,9 +30,9 @@ For upgrading AWS provider v4, some rules have not been implemented yet. The cur
 - [ ] versioning Argument
 - [ ] website, website_domain, and website_endpoint Arguments
 
-The tfedit focuses on refactoring Terraform configurations in a scalable way. The initial goal of this project is a sharing migration tool for bulk refactoring `aws_s3_bucket` resource caused by breaking changes in AWS provider v4, but the project scope is not limited to specific use-cases. The scope of this project is sharing reusable operations often used in Terraform refactoring and well-known refactoring use-case as a built-in filter.
+Although the initial goal of this project is providing a way for bulk refactoring of the `aws_s3_bucket` resource required by breaking changes in AWS provider v4, but the project scope is not limited to specific use-cases. It's by no means intended to be an upgrade tool for all your providers. Instead of covering all you need, it provides reusable building blocks for Terraform refactoring and shows examples for how to compose them in real world use-cases.
 
-As you know, Terraform refactoring often requires not only configuration changes, but also terraform state migrations. However, it's error-prone and not suitable for a GitOps workflow. To migrate Terraform state in a declarative way, use [tfmigrate](https://github.com/minamijoyo/tfmigrate).
+As you know, Terraform refactoring often requires not only configuration changes, but also Terraform state migrations. However, it's error-prone and not suitable for CI/CD. For declarative Terraform state migration, use [tfmigrate](https://github.com/minamijoyo/tfmigrate).
 
 If you are not ready for the upgrade, you can pin version constraints in your Terraform configurations with [tfupdate](https://github.com/minamijoyo/tfupdate).
 
@@ -99,6 +100,7 @@ You can also read a file with `-f` flag, and update the file in-place with `-u` 
 Given the following file:
 
 ```aws_s3_bucket.tf
+$ cat ./test-fixtures/awsv4upgrade/aws_s3_bucket.tf
 terraform {
   required_providers {
     aws = {
