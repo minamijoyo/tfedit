@@ -20,18 +20,26 @@ func NewAWSS3BucketLoggingFilter() editor.Filter {
 
 // Filter upgrades the logging argument of aws_s3_bucket.
 func (f *AWSS3BucketLoggingFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
-	targets := tfwrite.FindResourcesByType(inFile.Body(), "aws_s3_bucket")
+	file := tfwrite.NewFile(inFile)
+	oldResourceType := "aws_s3_bucket"
+	oldNestedBlock := "logging"
+	oldResourceRefAttribute := "id"
+	newResourceType := "aws_s3_bucket_logging"
+	newResourceRefAttribute := "bucket"
+
+	targets := file.FindResourcesByType(oldResourceType)
 	for _, oldResource := range targets {
-		nestedBlock := oldResource.Body().FirstMatchingBlock("logging", []string{})
+		nestedBlock := oldResource.GetFirstNestedBlock(oldNestedBlock)
 		if nestedBlock == nil {
 			continue
 		}
 
-		resourceName := tfwrite.GetResourceName(oldResource)
-		newResource := tfwrite.AppendNewResource(inFile.Body(), "aws_s3_bucket_logging", resourceName)
-		setBucketArgument(newResource, resourceName)
-		newResource.Body().AppendUnstructuredTokens(nestedBlock.Body().BuildTokens(nil))
-		oldResource.Body().RemoveBlock(nestedBlock)
+		resourceName := oldResource.Name()
+		newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
+		file.AppendResource(newResource)
+		newResource.SetAttributeByReference(newResourceRefAttribute, oldResource, oldResourceRefAttribute)
+		newResource.AppendUnwrappedNestedBlockBody(nestedBlock)
+		oldResource.RemoveNestedBlock(nestedBlock)
 	}
 
 	return inFile, nil
