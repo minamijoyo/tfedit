@@ -29,8 +29,8 @@ func (f *AWSS3BucketLoggingFilter) Filter(inFile *hclwrite.File) (*hclwrite.File
 
 	targets := file.FindResourcesByType(oldResourceType)
 	for _, oldResource := range targets {
-		nestedBlock := oldResource.GetFirstNestedBlock(oldNestedBlock)
-		if nestedBlock == nil {
+		nestedBlocks := oldResource.FindNestedBlocksByType(oldNestedBlock)
+		if len(nestedBlocks) == 0 {
 			continue
 		}
 
@@ -38,8 +38,8 @@ func (f *AWSS3BucketLoggingFilter) Filter(inFile *hclwrite.File) (*hclwrite.File
 		newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
 		file.AppendResource(newResource)
 		newResource.SetAttributeByReference(newResourceRefAttribute, oldResource, oldResourceRefAttribute)
-		newResource.AppendUnwrappedNestedBlockBody(nestedBlock)
-		oldResource.RemoveNestedBlock(nestedBlock)
+		newResource.AppendUnwrappedNestedBlockBody(nestedBlocks[0])
+		oldResource.RemoveNestedBlock(nestedBlocks[0])
 	}
 
 	return inFile, nil

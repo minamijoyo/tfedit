@@ -84,14 +84,26 @@ func (r *Resource) RemoveAttribute(name string) {
 	r.raw.Body().RemoveAttribute(name)
 }
 
-// GetFirstNestedBlock returns a first matching block from the body that has the
-// given name or returns nil if not found.
-func (r *Resource) GetFirstNestedBlock(name string) *NestedBlock {
-	nestedBlock := r.raw.Body().FirstMatchingBlock(name, []string{})
-	if nestedBlock == nil {
-		return nil
+// FindNestedBlocksByType returns all matching nested blocks from the body that have the
+// given nested block type or returns an empty list if not found.
+func (r *Resource) FindNestedBlocksByType(blockType string) []*NestedBlock {
+	var matched []*NestedBlock
+
+	for _, block := range r.raw.Body().Blocks() {
+		if block.Type() != blockType {
+			continue
+		}
+
+		labels := block.Labels()
+		if len(labels) == 2 && labels[0] != blockType {
+			continue
+		}
+
+		resource := NewNestedBlock(block)
+		matched = append(matched, resource)
 	}
-	return NewNestedBlock(nestedBlock)
+
+	return matched
 }
 
 // AppendUnwrappedNestedBlockBody appends a body of a given nested block to the
