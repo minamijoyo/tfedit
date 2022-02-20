@@ -287,8 +287,8 @@ github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/miekg/dns v1.1.26/go.mod h1:bPDLeHnStXmXAq1m/Ch/hvfNHr14JKNPMBo3VZKjuso=
 github.com/miekg/dns v1.1.41/go.mod h1:p6aan82bvRIyn+zDIv9xYNUpwa73JcSh9BKwknJysuI=
-github.com/minamijoyo/hcledit v0.2.3 h1:8GzeYAVX6xFbVx4At6pQA8QffV2kwHHl5j4bK45DXCo=
-github.com/minamijoyo/hcledit v0.2.3/go.mod h1:sBSYsbQSymyWKD0O1swWfvdq3/zWhwa/n5TdUFQqLTI=
+github.com/minamijoyo/hcledit v0.2.4-0.20220220142146-8dee619e0332 h1:jDP1iVgCDwW7RS7NhE3fTd1zOel0Fwd643xQQn0IWe4=
+github.com/minamijoyo/hcledit v0.2.4-0.20220220142146-8dee619e0332/go.mod h1:sBSYsbQSymyWKD0O1swWfvdq3/zWhwa/n5TdUFQqLTI=
 github.com/mitchellh/cli v1.1.0/go.mod h1:xcISNoH86gajksDmfB23e/pu+B+GeFRMYmoHXxx3xhI=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/go-testing-interface v1.0.0/go.mod h1:kRemZodwjscx+RGhAo8eIhFbs2+BFgRtFPeD/KE+zxI=

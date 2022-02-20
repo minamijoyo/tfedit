@@ -27,7 +27,7 @@ func (f *AWSS3BucketFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error
 		&AWSS3BucketACLFilter{},
 		// &AWSS3BucketCorsRuleFilter{},
 		// &AWSS3BucketGrantFilter{},
-		// &AWSS3BucketLifecycleRuleFilter{},
+		&AWSS3BucketLifecycleRuleFilter{},
 		&AWSS3BucketLoggingFilter{},
 		// &AWSS3BucketObjectLockConfigurationFilter{},
 		// &AWSS3BucketPolicyFilter{},

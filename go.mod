@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/hashicorp/hcl/v2 v2.11.1
 	github.com/hashicorp/logutils v1.0.0
-	github.com/minamijoyo/hcledit v0.2.3
+	github.com/minamijoyo/hcledit v0.2.4-0.20220220142146-8dee619e0332
 	github.com/spf13/cobra v1.3.0
 	github.com/spf13/viper v1.10.1
 	github.com/zclconf/go-cty v1.8.0

@@ -20,7 +20,7 @@ For upgrading AWS provider v4, some rules have not been implemented yet. The cur
 - [x] acl Argument
 - [ ] cors_rule Argument
 - [ ] grant Argument
-- [ ] lifecycle_rule Argument
+- [x] lifecycle_rule Argument
 - [x] logging Argument
 - [ ] object_lock_configuration rule Argument
 - [ ] policy Argument

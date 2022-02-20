@@ -34,8 +34,7 @@ func (f *File) FindResourcesByType(resourceType string) []*Resource {
 	return matched
 }
 
-// AppendResource is a helper method for appending a given resource block to
-// the file.
+// AppendResource appends a given resource to the file.
 func (f *File) AppendResource(resource *Resource) {
 	body := f.raw.Body()
 	body.AppendNewline()
