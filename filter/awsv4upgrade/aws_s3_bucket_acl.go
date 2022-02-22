@@ -3,6 +3,7 @@ package awsv4upgrade
 import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/minamijoyo/hcledit/editor"
+	"github.com/minamijoyo/tfedit/tfeditor"
 	"github.com/minamijoyo/tfedit/tfwrite"
 )
 
@@ -12,30 +13,37 @@ import (
 type AWSS3BucketACLFilter struct{}
 
 var _ editor.Filter = (*AWSS3BucketACLFilter)(nil)
+var _ tfeditor.ResourceFilter = (*AWSS3BucketACLFilter)(nil)
+
+// NewAWSS3BucketACLFilter creates a new instance of AWSS3BucketACLFilter.
+func NewAWSS3BucketACLFilter() editor.Filter {
+	return &AWSS3BucketACLFilter{}
+}
 
 // Filter upgrades the acl argument of aws_s3_bucket.
 func (f *AWSS3BucketACLFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
-	file := tfwrite.NewFile(inFile)
-	oldResourceType := "aws_s3_bucket"
+	m := tfeditor.NewResourcesByTypeFilter("aws_s3_bucket", f)
+	return m.Filter(inFile)
+}
+
+// ResourceFilter upgrades the acl argument of aws_s3_bucket.
+func (f *AWSS3BucketACLFilter) ResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
 	oldAttribute := "acl"
 	oldResourceRefAttribute := "id"
 	newResourceType := "aws_s3_bucket_acl"
 	newResourceRefAttribute := "bucket"
 
-	targets := file.FindResourcesByType(oldResourceType)
-	for _, oldResource := range targets {
-		attr := oldResource.GetAttribute(oldAttribute)
-		if attr == nil {
-			continue
-		}
-
-		resourceName := oldResource.Name()
-		newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
-		file.AppendResource(newResource)
-		newResource.SetAttributeByReference(newResourceRefAttribute, oldResource, oldResourceRefAttribute)
-		newResource.AppendAttribute(attr)
-		oldResource.RemoveAttribute(oldAttribute)
+	attr := resource.GetAttribute(oldAttribute)
+	if attr == nil {
+		return inFile, nil
 	}
+
+	resourceName := resource.Name()
+	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
+	inFile.AppendResource(newResource)
+	newResource.SetAttributeByReference(newResourceRefAttribute, resource, oldResourceRefAttribute)
+	newResource.AppendAttribute(attr)
+	resource.RemoveAttribute(oldAttribute)
 
 	return inFile, nil
 }

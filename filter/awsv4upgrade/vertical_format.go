@@ -3,6 +3,7 @@ package awsv4upgrade
 import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/minamijoyo/hcledit/editor"
+	"github.com/minamijoyo/tfedit/tfeditor"
 	"github.com/minamijoyo/tfedit/tfwrite"
 )
 
@@ -14,16 +15,17 @@ import (
 type verticalFormatterFilter struct{}
 
 var _ editor.Filter = (*verticalFormatterFilter)(nil)
+var _ tfeditor.ResourceFilter = (*verticalFormatterFilter)(nil)
 
 // Filter reads HCL and writes formatted contents in vertical.
 func (f *verticalFormatterFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
-	file := tfwrite.NewFile(inFile)
-	oldResourceType := "aws_s3_bucket"
+	m := tfeditor.NewResourcesByTypeFilter("aws_s3_bucket", f)
+	return m.Filter(inFile)
+}
 
-	targets := file.FindResourcesByType(oldResourceType)
-	for _, oldResource := range targets {
-		oldResource.VerticalFormat()
-	}
+// ResourceFilter reads HCL and writes formatted contents in vertical.
+func (f *verticalFormatterFilter) ResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+	resource.VerticalFormat()
 
 	return inFile, nil
 }

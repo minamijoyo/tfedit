@@ -12,6 +12,11 @@ func NewFile(file *hclwrite.File) *File {
 	return &File{raw: file}
 }
 
+// Raw returns a raw object for hclwrite.
+func (f *File) Raw() *hclwrite.File {
+	return f.raw
+}
+
 // FindResourcesByType returns all matching resources from the body that have the
 // given resourceType or returns an empty list if not found.
 func (f *File) FindResourcesByType(resourceType string) []*Resource {

@@ -3,6 +3,7 @@ package awsv4upgrade
 import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/minamijoyo/hcledit/editor"
+	"github.com/minamijoyo/tfedit/tfeditor"
 	"github.com/minamijoyo/tfedit/tfwrite"
 )
 
@@ -12,6 +13,7 @@ import (
 type AWSS3BucketLoggingFilter struct{}
 
 var _ editor.Filter = (*AWSS3BucketLoggingFilter)(nil)
+var _ tfeditor.ResourceFilter = (*AWSS3BucketLoggingFilter)(nil)
 
 // NewAWSS3BucketLoggingFilter creates a new instance of AWSS3BucketLoggingFilter.
 func NewAWSS3BucketLoggingFilter() editor.Filter {
@@ -20,27 +22,28 @@ func NewAWSS3BucketLoggingFilter() editor.Filter {
 
 // Filter upgrades the logging argument of aws_s3_bucket.
 func (f *AWSS3BucketLoggingFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
-	file := tfwrite.NewFile(inFile)
-	oldResourceType := "aws_s3_bucket"
+	m := tfeditor.NewResourcesByTypeFilter("aws_s3_bucket", f)
+	return m.Filter(inFile)
+}
+
+// ResourceFilter upgrades the logging argument of aws_s3_bucket.
+func (f *AWSS3BucketLoggingFilter) ResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
 	oldNestedBlock := "logging"
 	oldResourceRefAttribute := "id"
 	newResourceType := "aws_s3_bucket_logging"
 	newResourceRefAttribute := "bucket"
 
-	targets := file.FindResourcesByType(oldResourceType)
-	for _, oldResource := range targets {
-		nestedBlocks := oldResource.FindNestedBlocksByType(oldNestedBlock)
-		if len(nestedBlocks) == 0 {
-			continue
-		}
-
-		resourceName := oldResource.Name()
-		newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
-		file.AppendResource(newResource)
-		newResource.SetAttributeByReference(newResourceRefAttribute, oldResource, oldResourceRefAttribute)
-		newResource.AppendUnwrappedNestedBlockBody(nestedBlocks[0])
-		oldResource.RemoveNestedBlock(nestedBlocks[0])
+	nestedBlocks := resource.FindNestedBlocksByType(oldNestedBlock)
+	if len(nestedBlocks) == 0 {
+		return inFile, nil
 	}
+
+	resourceName := resource.Name()
+	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
+	inFile.AppendResource(newResource)
+	newResource.SetAttributeByReference(newResourceRefAttribute, resource, oldResourceRefAttribute)
+	newResource.AppendUnwrappedNestedBlockBody(nestedBlocks[0])
+	resource.RemoveNestedBlock(nestedBlocks[0])
 
 	return inFile, nil
 }
