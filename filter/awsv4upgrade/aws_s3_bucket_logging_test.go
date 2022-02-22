@@ -18,6 +18,7 @@ func TestAWSS3BucketLoggingFilter(t *testing.T) {
 			src: `
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
+
   logging {
     target_bucket = "tfedit-test-log"
     target_prefix = "log/"
@@ -28,6 +29,7 @@ resource "aws_s3_bucket" "example" {
 			want: `
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
+
 }
 
 resource "aws_s3_bucket_logging" "example" {
@@ -43,6 +45,7 @@ resource "aws_s3_bucket_logging" "example" {
 			src: `
 resource "aws_s3_bucket" "example1" {
   bucket = "tfedit-test1"
+
   logging {
     target_bucket = "tfedit-test-log"
     target_prefix = "log/"
@@ -51,6 +54,7 @@ resource "aws_s3_bucket" "example1" {
 
 resource "aws_s3_bucket" "example2" {
   bucket = "tfedit-test2"
+
   logging {
     target_bucket = "tfedit-test-log"
     target_prefix = "log/"
@@ -61,10 +65,12 @@ resource "aws_s3_bucket" "example2" {
 			want: `
 resource "aws_s3_bucket" "example1" {
   bucket = "tfedit-test1"
+
 }
 
 resource "aws_s3_bucket" "example2" {
   bucket = "tfedit-test2"
+
 }
 
 resource "aws_s3_bucket_logging" "example1" {
@@ -103,6 +109,7 @@ resource "aws_s3_bucket" "example" {
 			src: `
 resource "aws_s3_bucket_foo" "example" {
   bucket = "tfedit-test"
+
   logging {
     target_bucket = "tfedit-test-log"
     target_prefix = "log/"
@@ -113,6 +120,7 @@ resource "aws_s3_bucket_foo" "example" {
 			want: `
 resource "aws_s3_bucket_foo" "example" {
   bucket = "tfedit-test"
+
   logging {
     target_bucket = "tfedit-test-log"
     target_prefix = "log/"

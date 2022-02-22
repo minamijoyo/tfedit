@@ -3,6 +3,7 @@ package tfwrite
 import (
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclwrite"
+	"github.com/minamijoyo/hcledit/editor"
 )
 
 // Resource represents a resource block.
@@ -103,4 +104,17 @@ func (r *Resource) AppendUnwrappedNestedBlockBody(nestedBlock *NestedBlock) {
 // RemoveNestedBlock removes a given nested block from the resource.
 func (r *Resource) RemoveNestedBlock(nestedBlock *NestedBlock) {
 	r.raw.Body().RemoveBlock(nestedBlock.raw)
+}
+
+// VerticalFormat formats a body of the resource in vertical.
+// Since VerticalFormat clears tokens internally, If you call VerticalFormat
+// each time RemoveNestedBlock is called, the subsequent RemoveNestedBlock will
+// not work properly, so call VerticalFormat only once for each resource.
+func (r *Resource) VerticalFormat() {
+	body := r.raw.Body()
+	unformatted := body.BuildTokens(nil)
+	formatted := editor.VerticalFormat(unformatted)
+	body.Clear()
+	body.AppendNewline()
+	body.AppendUnstructuredTokens(formatted)
 }

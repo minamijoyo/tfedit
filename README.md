@@ -143,7 +143,6 @@ provider "aws" {
 
 resource "aws_s3_bucket" "example" {
   bucket = "minamijoyo-tf-aws-v4-test1"
-
 }
 
 resource "aws_s3_bucket_acl" "example" {

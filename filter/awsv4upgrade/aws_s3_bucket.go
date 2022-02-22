@@ -36,6 +36,10 @@ func (f *AWSS3BucketFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error
 		// &AWSS3BucketServerSideEncryptionConfigurationFilter{},
 		// &AWSS3BucketVersioningFilter{},
 		// &AWSS3BucketWebsiteFilter{},
+
+		// Remove redundant TokenNewLine tokens in the resource block after removing nested blocks.
+		// Since VerticalFormat clears tokens internally, we should call it at the end.
+		&verticalFormatterFilter{},
 	})
 	return m.Filter(inFile)
 }

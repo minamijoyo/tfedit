@@ -126,6 +126,5 @@ func (f *AWSS3BucketLifecycleRuleFilter) Filter(inFile *hclwrite.File) (*hclwrit
 		}
 	}
 
-	// TODO: vertical format
 	return inFile, nil
 }

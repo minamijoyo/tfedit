@@ -47,13 +47,9 @@ resource "aws_s3_bucket" "example" {
 }
 `,
 			ok: true,
-			// TODO: vertical format
 			want: `
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
-
-
-
 }
 
 resource "aws_s3_bucket_acl" "example" {
