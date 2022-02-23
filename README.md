@@ -8,7 +8,7 @@
 Easy refactoring Terraform configurations in a scalable way.
 
 - CLI-friendly: Read HCL from stdin, apply filters and write results to stdout, easily pipe and combine other commands.
-- Keep comments: You can update lots of existing Terraform configurations without losing comments.
+- Keep comments: You can update lots of existing Terraform configurations without losing comments as much as possible.
 - Available operations:
   - filter awsv4upgrade: Upgrade configurations to AWS provider v4. Only `aws_s3_bucket` refactor is supported.
 
@@ -123,7 +123,6 @@ resource "aws_s3_bucket" "example" {
     target_prefix = "log/"
   }
 }
-
 ```
 
 ```aws_s3_bucket.tf
