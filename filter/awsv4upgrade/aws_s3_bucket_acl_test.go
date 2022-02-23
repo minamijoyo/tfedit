@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/minamijoyo/hcledit/editor"
+	"github.com/minamijoyo/tfedit/tfeditor"
 )
 
 func TestAWSS3BucketACLFilter(t *testing.T) {
@@ -103,7 +104,7 @@ resource "aws_s3_bucket_foo" "example" {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			filter := &AWSS3BucketACLFilter{}
+			filter := &AWSS3BucketFilter{filters: []tfeditor.ResourceFilter{&AWSS3BucketACLFilter{}}}
 			o := editor.NewEditOperator(filter)
 			output, err := o.Apply([]byte(tc.src), "test")
 			if tc.ok && err != nil {

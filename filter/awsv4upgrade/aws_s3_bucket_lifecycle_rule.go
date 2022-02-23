@@ -1,8 +1,6 @@
 package awsv4upgrade
 
 import (
-	"github.com/hashicorp/hcl/v2/hclwrite"
-	"github.com/minamijoyo/hcledit/editor"
 	"github.com/minamijoyo/tfedit/tfeditor"
 	"github.com/minamijoyo/tfedit/tfwrite"
 	"github.com/zclconf/go-cty/cty"
@@ -13,18 +11,11 @@ import (
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#lifecycle_rule-argument
 type AWSS3BucketLifecycleRuleFilter struct{}
 
-var _ editor.Filter = (*AWSS3BucketLifecycleRuleFilter)(nil)
 var _ tfeditor.ResourceFilter = (*AWSS3BucketLifecycleRuleFilter)(nil)
 
 // NewAWSS3BucketLifecycleRuleFilter creates a new instance of AWSS3Bucketlifecycle_ruleFilter.
-func NewAWSS3BucketLifecycleRuleFilter() editor.Filter {
+func NewAWSS3BucketLifecycleRuleFilter() tfeditor.ResourceFilter {
 	return &AWSS3BucketLifecycleRuleFilter{}
-}
-
-// Filter upgrades the lifecycle_rule argument of aws_s3_bucket.
-func (f *AWSS3BucketLifecycleRuleFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
-	m := tfeditor.NewResourcesByTypeFilter("aws_s3_bucket", f)
-	return m.Filter(inFile)
 }
 
 // ResourceFilter upgrades the lifecycle_rule argument of aws_s3_bucket.

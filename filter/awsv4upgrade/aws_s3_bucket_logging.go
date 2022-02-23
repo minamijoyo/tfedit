@@ -1,8 +1,6 @@
 package awsv4upgrade
 
 import (
-	"github.com/hashicorp/hcl/v2/hclwrite"
-	"github.com/minamijoyo/hcledit/editor"
 	"github.com/minamijoyo/tfedit/tfeditor"
 	"github.com/minamijoyo/tfedit/tfwrite"
 )
@@ -12,18 +10,11 @@ import (
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#logging-argument
 type AWSS3BucketLoggingFilter struct{}
 
-var _ editor.Filter = (*AWSS3BucketLoggingFilter)(nil)
 var _ tfeditor.ResourceFilter = (*AWSS3BucketLoggingFilter)(nil)
 
 // NewAWSS3BucketLoggingFilter creates a new instance of AWSS3BucketLoggingFilter.
-func NewAWSS3BucketLoggingFilter() editor.Filter {
+func NewAWSS3BucketLoggingFilter() tfeditor.ResourceFilter {
 	return &AWSS3BucketLoggingFilter{}
-}
-
-// Filter upgrades the logging argument of aws_s3_bucket.
-func (f *AWSS3BucketLoggingFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
-	m := tfeditor.NewResourcesByTypeFilter("aws_s3_bucket", f)
-	return m.Filter(inFile)
 }
 
 // ResourceFilter upgrades the logging argument of aws_s3_bucket.
