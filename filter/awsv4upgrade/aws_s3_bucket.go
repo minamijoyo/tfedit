@@ -36,7 +36,7 @@ func NewAWSS3BucketFilter() editor.Filter {
 
 		// Remove redundant TokenNewLine tokens in the resource block after removing nested blocks.
 		// Since VerticalFormat clears tokens internally, we should call it at the end.
-		&verticalFormatterFilter{},
+		tfeditor.NewVerticalFormatterResourceFilter(),
 	}
 	return &AWSS3BucketFilter{filters: filters}
 }
