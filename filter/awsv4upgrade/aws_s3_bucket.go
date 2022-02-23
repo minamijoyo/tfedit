@@ -1,7 +1,6 @@
 package awsv4upgrade
 
 import (
-	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/minamijoyo/hcledit/editor"
 	"github.com/minamijoyo/tfedit/tfeditor"
@@ -55,11 +54,7 @@ func (f *AWSS3BucketFilter) ResourceFilter(inFile *tfwrite.File, resource *tfwri
 	return m.ResourceFilter(inFile, resource)
 }
 
-// setBucketArgument is a helper method for setting a bucket argument to the given block.
-func setBucketArgument(block *hclwrite.Block, resourceName string) *hclwrite.Attribute {
-	return block.Body().SetAttributeTraversal("bucket", hcl.Traversal{
-		hcl.TraverseRoot{Name: "aws_s3_bucket"},
-		hcl.TraverseAttr{Name: resourceName},
-		hcl.TraverseAttr{Name: "id"},
-	})
+// setBucketArgument is a helper method for setting a bucket argument of a new `aws_s3_bucket_*` resource to the original `aws_s3_bucket` resource.
+func setBucketArgument(newResource *tfwrite.Resource, oldResource *tfwrite.Resource) {
+	newResource.SetAttributeByReference("bucket", oldResource, "id")
 }

@@ -20,9 +20,7 @@ func NewAWSS3BucketLoggingFilter() tfeditor.ResourceFilter {
 // ResourceFilter upgrades the logging argument of aws_s3_bucket.
 func (f *AWSS3BucketLoggingFilter) ResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
 	oldNestedBlock := "logging"
-	oldResourceRefAttribute := "id"
 	newResourceType := "aws_s3_bucket_logging"
-	newResourceRefAttribute := "bucket"
 
 	nestedBlocks := resource.FindNestedBlocksByType(oldNestedBlock)
 	if len(nestedBlocks) == 0 {
@@ -32,7 +30,7 @@ func (f *AWSS3BucketLoggingFilter) ResourceFilter(inFile *tfwrite.File, resource
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
 	inFile.AppendResource(newResource)
-	newResource.SetAttributeByReference(newResourceRefAttribute, resource, oldResourceRefAttribute)
+	setBucketArgument(newResource, resource)
 	newResource.AppendUnwrappedNestedBlockBody(nestedBlocks[0])
 	resource.RemoveNestedBlock(nestedBlocks[0])
 

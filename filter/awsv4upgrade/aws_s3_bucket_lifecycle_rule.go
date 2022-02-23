@@ -21,10 +21,8 @@ func NewAWSS3BucketLifecycleRuleFilter() tfeditor.ResourceFilter {
 // ResourceFilter upgrades the lifecycle_rule argument of aws_s3_bucket.
 func (f *AWSS3BucketLifecycleRuleFilter) ResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
 	oldNestedBlock := "lifecycle_rule"
-	oldResourceRefAttribute := "id"
 	newResourceType := "aws_s3_bucket_lifecycle_configuration"
 	newNestedBlock := "rule"
-	newResourceRefAttribute := "bucket"
 
 	nestedBlocks := resource.FindNestedBlocksByType(oldNestedBlock)
 	if len(nestedBlocks) == 0 {
@@ -34,7 +32,7 @@ func (f *AWSS3BucketLifecycleRuleFilter) ResourceFilter(inFile *tfwrite.File, re
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
 	inFile.AppendResource(newResource)
-	newResource.SetAttributeByReference(newResourceRefAttribute, resource, oldResourceRefAttribute)
+	setBucketArgument(newResource, resource)
 
 	for _, nestedBlock := range nestedBlocks {
 		// Rename a `lifecycle_rule` block to a `rule` block

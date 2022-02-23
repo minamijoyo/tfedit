@@ -20,9 +20,7 @@ func NewAWSS3BucketACLFilter() tfeditor.ResourceFilter {
 // ResourceFilter upgrades the acl argument of aws_s3_bucket.
 func (f *AWSS3BucketACLFilter) ResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
 	oldAttribute := "acl"
-	oldResourceRefAttribute := "id"
 	newResourceType := "aws_s3_bucket_acl"
-	newResourceRefAttribute := "bucket"
 
 	attr := resource.GetAttribute(oldAttribute)
 	if attr == nil {
@@ -32,7 +30,7 @@ func (f *AWSS3BucketACLFilter) ResourceFilter(inFile *tfwrite.File, resource *tf
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
 	inFile.AppendResource(newResource)
-	newResource.SetAttributeByReference(newResourceRefAttribute, resource, oldResourceRefAttribute)
+	setBucketArgument(newResource, resource)
 	newResource.AppendAttribute(attr)
 	resource.RemoveAttribute(oldAttribute)
 
