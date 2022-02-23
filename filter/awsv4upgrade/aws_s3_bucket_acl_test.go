@@ -15,7 +15,7 @@ func TestAWSS3BucketACLFilter(t *testing.T) {
 		want string
 	}{
 		{
-			name: "single block",
+			name: "simple",
 			src: `
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
@@ -35,40 +35,6 @@ resource "aws_s3_bucket_acl" "example" {
 `,
 		},
 		{
-			name: "multiple blocks",
-			src: `
-resource "aws_s3_bucket" "example1" {
-  bucket = "tfedit-test1"
-  acl    = "private"
-}
-
-resource "aws_s3_bucket" "example2" {
-  bucket = "tfedit-test2"
-  acl    = "private"
-}
-`,
-			ok: true,
-			want: `
-resource "aws_s3_bucket" "example1" {
-  bucket = "tfedit-test1"
-}
-
-resource "aws_s3_bucket" "example2" {
-  bucket = "tfedit-test2"
-}
-
-resource "aws_s3_bucket_acl" "example1" {
-  bucket = aws_s3_bucket.example1.id
-  acl    = "private"
-}
-
-resource "aws_s3_bucket_acl" "example2" {
-  bucket = aws_s3_bucket.example2.id
-  acl    = "private"
-}
-`,
-		},
-		{
 			name: "argument not found",
 			src: `
 resource "aws_s3_bucket" "example" {
@@ -81,22 +47,6 @@ resource "aws_s3_bucket" "example" {
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
   foo    = "bar"
-}
-`,
-		},
-		{
-			name: "resource type not found",
-			src: `
-resource "aws_s3_bucket_foo" "example" {
-  bucket = "tfedit-test"
-  acl    = "private"
-}
-`,
-			ok: true,
-			want: `
-resource "aws_s3_bucket_foo" "example" {
-  bucket = "tfedit-test"
-  acl    = "private"
 }
 `,
 		},

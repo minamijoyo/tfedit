@@ -20,6 +20,126 @@ resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
   acl    = "private"
 
+  logging {
+    target_bucket = "tfedit-test-log"
+    target_prefix = "log/"
+  }
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+}
+
+resource "aws_s3_bucket_acl" "example" {
+  bucket = aws_s3_bucket.example.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_logging" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  target_bucket = "tfedit-test-log"
+  target_prefix = "log/"
+}
+`,
+		},
+		{
+			name: "multiple resources",
+			src: `
+resource "aws_s3_bucket" "example1" {
+  bucket = "tfedit-test1"
+  acl    = "private"
+
+  logging {
+    target_bucket = "tfedit-test-log"
+    target_prefix = "log/"
+  }
+}
+
+resource "aws_s3_bucket" "example2" {
+  bucket = "tfedit-test2"
+  acl    = "private"
+
+  logging {
+    target_bucket = "tfedit-test-log"
+    target_prefix = "log/"
+  }
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket" "example1" {
+  bucket = "tfedit-test1"
+}
+
+resource "aws_s3_bucket" "example2" {
+  bucket = "tfedit-test2"
+}
+
+resource "aws_s3_bucket_acl" "example1" {
+  bucket = aws_s3_bucket.example1.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_logging" "example1" {
+  bucket = aws_s3_bucket.example1.id
+
+  target_bucket = "tfedit-test-log"
+  target_prefix = "log/"
+}
+
+resource "aws_s3_bucket_acl" "example2" {
+  bucket = aws_s3_bucket.example2.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_logging" "example2" {
+  bucket = aws_s3_bucket.example2.id
+
+  target_bucket = "tfedit-test-log"
+  target_prefix = "log/"
+}
+`,
+		},
+		{
+			name: "argument not found",
+			src: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+  foo    = "bar"
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+  foo    = "bar"
+}
+`,
+		},
+		{
+			name: "resource type not found",
+			src: `
+resource "aws_s3_bucket_foo" "example" {
+  bucket = "tfedit-test"
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket_foo" "example" {
+  bucket = "tfedit-test"
+}
+`,
+		},
+		{
+			name: "all arguments",
+			src: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+  acl    = "private"
+
   lifecycle_rule {
     id      = "Keep previous version 30 days, then in Glacier another 60"
     enabled = true
@@ -97,20 +217,6 @@ resource "aws_s3_bucket_logging" "example" {
 
   target_bucket = "tfedit-test-log"
   target_prefix = "log/"
-}
-`,
-		},
-		{
-			name: "resource type not found",
-			src: `
-resource "aws_s3_bucket_foo" "example" {
-  bucket = "tfedit-test"
-}
-`,
-			ok: true,
-			want: `
-resource "aws_s3_bucket_foo" "example" {
-  bucket = "tfedit-test"
 }
 `,
 		},

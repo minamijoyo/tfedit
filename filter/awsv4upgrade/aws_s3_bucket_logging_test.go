@@ -15,7 +15,7 @@ func TestAWSS3BucketLoggingFilter(t *testing.T) {
 		want string
 	}{
 		{
-			name: "single block",
+			name: "simple",
 			src: `
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
@@ -42,54 +42,6 @@ resource "aws_s3_bucket_logging" "example" {
 `,
 		},
 		{
-			name: "multiple blocks",
-			src: `
-resource "aws_s3_bucket" "example1" {
-  bucket = "tfedit-test1"
-
-  logging {
-    target_bucket = "tfedit-test-log"
-    target_prefix = "log/"
-  }
-}
-
-resource "aws_s3_bucket" "example2" {
-  bucket = "tfedit-test2"
-
-  logging {
-    target_bucket = "tfedit-test-log"
-    target_prefix = "log/"
-  }
-}
-`,
-			ok: true,
-			want: `
-resource "aws_s3_bucket" "example1" {
-  bucket = "tfedit-test1"
-
-}
-
-resource "aws_s3_bucket" "example2" {
-  bucket = "tfedit-test2"
-
-}
-
-resource "aws_s3_bucket_logging" "example1" {
-  bucket = aws_s3_bucket.example1.id
-
-  target_bucket = "tfedit-test-log"
-  target_prefix = "log/"
-}
-
-resource "aws_s3_bucket_logging" "example2" {
-  bucket = aws_s3_bucket.example2.id
-
-  target_bucket = "tfedit-test-log"
-  target_prefix = "log/"
-}
-`,
-		},
-		{
 			name: "argument not found",
 			src: `
 resource "aws_s3_bucket" "example" {
@@ -102,30 +54,6 @@ resource "aws_s3_bucket" "example" {
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
   foo {}
-}
-`,
-		},
-		{
-			name: "resource type not found",
-			src: `
-resource "aws_s3_bucket_foo" "example" {
-  bucket = "tfedit-test"
-
-  logging {
-    target_bucket = "tfedit-test-log"
-    target_prefix = "log/"
-  }
-}
-`,
-			ok: true,
-			want: `
-resource "aws_s3_bucket_foo" "example" {
-  bucket = "tfedit-test"
-
-  logging {
-    target_bucket = "tfedit-test-log"
-    target_prefix = "log/"
-  }
 }
 `,
 		},
