@@ -27,7 +27,7 @@ For upgrading AWS provider v4, some rules have not been implemented yet. The cur
 - [ ] replication_configuration Argument
 - [ ] request_payer Argument
 - [x] server_side_encryption_configuration Argument
-- [ ] versioning Argument
+- [x] versioning Argument
 - [ ] website, website_domain, and website_endpoint Arguments
 
 Although the initial goal of this project is providing a way for bulk refactoring of the `aws_s3_bucket` resource required by breaking changes in AWS provider v4, but the project scope is not limited to specific use-cases. It's by no means intended to be an upgrade tool for all your providers. Instead of covering all you need, it provides reusable building blocks for Terraform refactoring and shows examples for how to compose them in real world use-cases.

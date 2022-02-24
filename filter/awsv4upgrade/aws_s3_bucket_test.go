@@ -173,6 +173,10 @@ resource "aws_s3_bucket" "example" {
       }
     }
   }
+
+  versioning {
+    enabled = true
+  }
 }
 `,
 			ok: true,
@@ -236,6 +240,14 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
       kms_master_key_id = aws_kms_key.mykey.arn
       sse_algorithm     = "aws:kms"
     }
+  }
+}
+
+resource "aws_s3_bucket_versioning" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  versioning_configuration {
+    status = "Enabled"
   }
 }
 `,

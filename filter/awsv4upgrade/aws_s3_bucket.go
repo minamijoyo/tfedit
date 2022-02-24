@@ -30,7 +30,7 @@ func NewAWSS3BucketFilter() editor.Filter {
 		// &AWSS3BucketReplicationConfigurationFilter{},
 		// &AWSS3BucketRequestPayerFilter{},
 		&AWSS3BucketServerSideEncryptionConfigurationFilter{},
-		// &AWSS3BucketVersioningFilter{},
+		&AWSS3BucketVersioningFilter{},
 		// &AWSS3BucketWebsiteFilter{},
 
 		// Remove redundant TokenNewLine tokens in the resource block after removing nested blocks.
