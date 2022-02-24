@@ -26,7 +26,7 @@ For upgrading AWS provider v4, some rules have not been implemented yet. The cur
 - [ ] policy Argument
 - [ ] replication_configuration Argument
 - [ ] request_payer Argument
-- [ ] server_side_encryption_configuration Argument
+- [x] server_side_encryption_configuration Argument
 - [ ] versioning Argument
 - [ ] website, website_domain, and website_endpoint Arguments
 
