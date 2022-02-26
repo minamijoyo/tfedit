@@ -8,27 +8,34 @@
 Easy refactoring Terraform configurations in a scalable way.
 
 - CLI-friendly: Read HCL from stdin, apply filters and write results to stdout, easily pipe and combine other commands.
-- Keep comments: You can update lots of existing Terraform configurations without losing comments as much as possible.
-- Available operations:
+- Keep comments: Update lots of existing Terraform configurations without losing comments as much as possible.
+- Built-in operations:
   - filter awsv4upgrade: Upgrade configurations to AWS provider v4. Only `aws_s3_bucket` refactor is supported.
 
 For upgrading AWS provider v4, some rules have not been implemented yet. The current implementation status is as follows:
 
 [S3 Bucket Refactor](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#s3-bucket-refactor)
 
-- [ ] acceleration_status Argument
-- [x] acl Argument
-- [ ] cors_rule Argument
-- [ ] grant Argument
-- [x] lifecycle_rule Argument
-- [x] logging Argument
-- [ ] object_lock_configuration rule Argument
-- [x] policy Argument
-- [ ] replication_configuration Argument
-- [ ] request_payer Argument
-- [x] server_side_encryption_configuration Argument
-- [x] versioning Argument
-- [ ] website, website_domain, and website_endpoint Arguments
+- Arguments of aws_s3_bucket resource
+  - [ ] acceleration_status
+  - [x] acl
+  - [ ] cors_rule
+  - [ ] grant Argument
+  - [x] lifecycle_rule
+  - [x] logging
+  - [ ] object_lock_configuration rule
+  - [x] policy
+  - [ ] replication_configuration
+  - [ ] request_payer
+  - [x] server_side_encryption_configuration
+  - [x] versioning
+  - [ ] website, website_domain, and website_endpoint
+- Meta arguments of resource
+  - [ ] count
+  - [ ] for_each
+  - [ ] dynamic
+
+Note that generating import commands for new split resources has not been implemented yet.
 
 Although the initial goal of this project is providing a way for bulk refactoring of the `aws_s3_bucket` resource required by breaking changes in AWS provider v4, but the project scope is not limited to specific use-cases. It's by no means intended to be an upgrade tool for all your providers. Instead of covering all you need, it provides reusable building blocks for Terraform refactoring and shows examples for how to compose them in real world use-cases.
 
@@ -124,6 +131,8 @@ resource "aws_s3_bucket" "example" {
   }
 }
 ```
+
+Apply a filter for `awsv4upgrade`:
 
 ```aws_s3_bucket.tf
 $ tfedit filter awsv4upgrade -f ./test-fixtures/awsv4upgrade/aws_s3_bucket.tf
