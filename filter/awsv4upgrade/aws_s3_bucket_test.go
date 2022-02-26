@@ -165,6 +165,24 @@ resource "aws_s3_bucket" "example" {
     target_prefix = "log/"
   }
 
+  policy = <<EOF
+{
+  "Id": "Policy1446577137248",
+  "Statement": [
+    {
+      "Action": "s3:PutObject",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "${data.aws_elb_service_account.current.arn}"
+      },
+      "Resource": "arn:${data.aws_partition.current.partition}:s3:::example/*",
+      "Sid": "Stmt1446575236270"
+    }
+  ],
+  "Version": "2012-10-17"
+}
+EOF
+
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
@@ -230,6 +248,27 @@ resource "aws_s3_bucket_logging" "example" {
 
   target_bucket = "tfedit-test-log"
   target_prefix = "log/"
+}
+
+resource "aws_s3_bucket_policy" "example" {
+  bucket = aws_s3_bucket.example.id
+  policy = <<EOF
+{
+  "Id": "Policy1446577137248",
+  "Statement": [
+    {
+      "Action": "s3:PutObject",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "${data.aws_elb_service_account.current.arn}"
+      },
+      "Resource": "arn:${data.aws_partition.current.partition}:s3:::example/*",
+      "Sid": "Stmt1446575236270"
+    }
+  ],
+  "Version": "2012-10-17"
+}
+EOF
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
