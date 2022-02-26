@@ -23,7 +23,7 @@ For upgrading AWS provider v4, some rules have not been implemented yet. The cur
 - [x] lifecycle_rule Argument
 - [x] logging Argument
 - [ ] object_lock_configuration rule Argument
-- [ ] policy Argument
+- [x] policy Argument
 - [ ] replication_configuration Argument
 - [ ] request_payer Argument
 - [x] server_side_encryption_configuration Argument
