@@ -12,15 +12,23 @@ Easy refactoring Terraform configurations in a scalable way.
 - Built-in operations:
   - filter awsv4upgrade: Upgrade configurations to AWS provider v4. Only `aws_s3_bucket` refactor is supported.
 
+Although the initial goal of this project is providing a way for bulk refactoring of the `aws_s3_bucket` resource required by breaking changes in AWS provider v4, but the project scope is not limited to specific use-cases. It's by no means intended to be an upgrade tool for all your providers. Instead of covering all you need, it provides reusable building blocks for Terraform refactoring and shows examples for how to compose them in real world use-cases.
+
+As you know, Terraform refactoring often requires not only configuration changes, but also Terraform state migrations. However, it's error-prone and not suitable for CI/CD. For declarative Terraform state migration, use [tfmigrate](https://github.com/minamijoyo/tfmigrate).
+
+If you are not ready for the upgrade, you can pin version constraints in your Terraform configurations with [tfupdate](https://github.com/minamijoyo/tfupdate).
+
+## awsv4upgrade
+
 For upgrading AWS provider v4, some rules have not been implemented yet. The current implementation status is as follows:
 
 [S3 Bucket Refactor](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#s3-bucket-refactor)
 
-- Arguments of aws_s3_bucket resource
+- [ ] Arguments of aws_s3_bucket resource
   - [ ] acceleration_status
   - [x] acl
   - [x] cors_rule
-  - [ ] grant Argument
+  - [ ] grant
   - [x] lifecycle_rule
   - [x] logging
   - [ ] object_lock_configuration rule
@@ -29,19 +37,22 @@ For upgrading AWS provider v4, some rules have not been implemented yet. The cur
   - [ ] request_payer
   - [x] server_side_encryption_configuration
   - [x] versioning
-  - [ ] website, website_domain, and website_endpoint
-- Meta arguments of resource
+  - [ ] website
+- [ ] Meta arguments of resource
   - [ ] count
   - [ ] for_each
   - [ ] dynamic
+- [ ] Rename references in an expression to new resource type
+- [ ] Generate import commands for new split resources
 
-Note that generating import commands for new split resources has not been implemented yet.
-
-Although the initial goal of this project is providing a way for bulk refactoring of the `aws_s3_bucket` resource required by breaking changes in AWS provider v4, but the project scope is not limited to specific use-cases. It's by no means intended to be an upgrade tool for all your providers. Instead of covering all you need, it provides reusable building blocks for Terraform refactoring and shows examples for how to compose them in real world use-cases.
-
-As you know, Terraform refactoring often requires not only configuration changes, but also Terraform state migrations. However, it's error-prone and not suitable for CI/CD. For declarative Terraform state migration, use [tfmigrate](https://github.com/minamijoyo/tfmigrate).
-
-If you are not ready for the upgrade, you can pin version constraints in your Terraform configurations with [tfupdate](https://github.com/minamijoyo/tfupdate).
+Known limitations:
+- Some arguments were changed not only their names but also valid values. In this case, if a value of the argument is a variable, not literal, it's impossible to automatically rewrite the value of the variable. It potentially could be passed from outside of module or even overwritten at runtime. If it's not literal, you need to change the value of the variable by yourself. The following arguments have this limitation:
+  - lifecycle_rule:
+    - enabled = true => status = "Enabled"
+    - enabled = false => status = "Disabled"
+  - versioning:
+    - enabled = true => status = "Enabled"
+    - enabled = false => status = "Suspended"
 
 ## Install
 
