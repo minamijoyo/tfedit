@@ -19,7 +19,7 @@ For upgrading AWS provider v4, some rules have not been implemented yet. The cur
 - Arguments of aws_s3_bucket resource
   - [ ] acceleration_status
   - [x] acl
-  - [ ] cors_rule
+  - [x] cors_rule
   - [ ] grant Argument
   - [x] lifecycle_rule
   - [x] logging
