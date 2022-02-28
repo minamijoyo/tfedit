@@ -140,6 +140,14 @@ resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
   acl    = "private"
 
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["PUT", "POST"]
+    allowed_origins = ["https://s3-website-test.hashicorp.com"]
+    expose_headers  = ["ETag"]
+    max_age_seconds = 3000
+  }
+
   lifecycle_rule {
     id      = "Keep previous version 30 days, then in Glacier another 60"
     enabled = true
@@ -206,6 +214,18 @@ resource "aws_s3_bucket" "example" {
 resource "aws_s3_bucket_acl" "example" {
   bucket = aws_s3_bucket.example.id
   acl    = "private"
+}
+
+resource "aws_s3_bucket_cors_configuration" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["PUT", "POST"]
+    allowed_origins = ["https://s3-website-test.hashicorp.com"]
+    expose_headers  = ["ETag"]
+    max_age_seconds = 3000
+  }
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "example" {
