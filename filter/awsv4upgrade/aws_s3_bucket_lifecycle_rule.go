@@ -59,26 +59,57 @@ func (f *AWSS3BucketLifecycleRuleFilter) ResourceFilter(inFile *tfwrite.File, re
 			nestedBlock.RemoveAttribute("enabled")
 		}
 
-		// Map a prefix attribute to a filter block
+		// Map a prefix attribute to a filter block without tags
 		// prefix  = "tmp/"
 		// =>
 		// filter {
 		//   prefix  = "tmp/"
 		// }
-		prefixAttr := nestedBlock.GetAttribute("prefix")
+		// Map a prefix attribute to a filter block with tags
+		// prefix  = "tmp/"
+		// tags = {
+		//   rule      = "log"
+		//   autoclean = "true"
+		// }
+		// =>
+		// filter {
+		//   and {
+		//     prefix  = "tmp/"
+		//     tags = {
+		//       rule      = "log"
+		//       autoclean = "true"
+		//     }
+		//   }
+		// }
+		// Create a filter block
 		filterBlock := tfwrite.NewEmptyNestedBlock("filter")
+		// A child block points a `filter` or an `and` block.
+		var childBlock *tfwrite.NestedBlock
 		nestedBlock.AppendNestedBlock(filterBlock)
+		prefixAttr := nestedBlock.GetAttribute("prefix")
+		tagsAttr := nestedBlock.GetAttribute("tags")
+		if tagsAttr != nil && prefixAttr != nil {
+			andBlock := tfwrite.NewEmptyNestedBlock("and")
+			filterBlock.AppendNestedBlock(andBlock)
+			childBlock = andBlock
+		} else {
+			childBlock = filterBlock
+		}
 		if prefixAttr != nil {
-			filterBlock.SetAttributeRaw("prefix", prefixAttr.ValueAsTokens())
+			childBlock.SetAttributeRaw("prefix", prefixAttr.ValueAsTokens())
+			nestedBlock.RemoveAttribute("prefix")
 		} else {
 			// If a prefix attribute is not found, set an empty string by default.
 			// According to the upgrade guide,
 			// when aws s3api get-bucket-lifecycle-configuration returns `"Filter" : {}`,
 			// we should not set prefix, however we cannot know it without an API call,
 			// so we just assume it contains `"Filter" : { "Prefix": "" }` here.
-			filterBlock.SetAttributeValue("prefix", cty.StringVal(""))
+			childBlock.SetAttributeValue("prefix", cty.StringVal(""))
 		}
-		nestedBlock.RemoveAttribute("prefix")
+		if tagsAttr != nil {
+			childBlock.SetAttributeRaw("tags", tagsAttr.ValueAsTokens())
+			nestedBlock.RemoveAttribute("tags")
+		}
 
 		// Rename a days attribute in noncurrent_version_transition to noncurrent_days.
 		transitionBlocks := nestedBlock.FindNestedBlocksByType("noncurrent_version_transition")

@@ -53,6 +53,9 @@ Known limitations:
   - versioning:
     - enabled = true => status = "Enabled"
     - enabled = false => status = "Suspended"
+- Some arguments cannot be converted correctly without knowing the current state of AWS resources. The tfedit never calls the AWS API on your behalf. You have to check it by yourself. The following arguments have this limitation:
+  - lifecycle_rule:
+    - filter: When aws s3api get-bucket-lifecycle-configuration returns `"Filter" : {}` without a prefix, you need to set rule.filter as `filter {}`.
 
 ## Install
 

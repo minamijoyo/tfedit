@@ -86,6 +86,213 @@ resource "aws_s3_bucket_lifecycle_configuration" "example" {
 `,
 		},
 		{
+			name: "with empty prefix",
+			src: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+  lifecycle_rule {
+    id      = "log-expiration"
+    enabled = true
+    prefix  = ""
+
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 180
+      storage_class = "GLACIER"
+    }
+  }
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  rule {
+    id = "log-expiration"
+
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 180
+      storage_class = "GLACIER"
+    }
+    status = "Enabled"
+
+    filter {
+      prefix = ""
+    }
+  }
+}
+`,
+		},
+		{
+			name: "with non-empty prefix",
+			src: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+  lifecycle_rule {
+    id      = "log-expiration"
+    enabled = true
+    prefix  = "log/"
+
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 180
+      storage_class = "GLACIER"
+    }
+  }
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  rule {
+    id = "log-expiration"
+
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 180
+      storage_class = "GLACIER"
+    }
+    status = "Enabled"
+
+    filter {
+      prefix = "log/"
+    }
+  }
+}
+`,
+		},
+		{
+			name: "with tags",
+			src: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+  lifecycle_rule {
+    id      = "log"
+    enabled = true
+    prefix = "log/"
+
+    tags = {
+      rule      = "log"
+      autoclean = "true"
+    }
+
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 60
+      storage_class = "GLACIER"
+    }
+
+    expiration {
+      days = 90
+    }
+  }
+
+  lifecycle_rule {
+    id      = "tmp"
+    prefix  = "tmp/"
+    enabled = true
+
+    expiration {
+      date = "2022-12-31"
+    }
+  }
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  rule {
+    id = "log"
+
+
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 60
+      storage_class = "GLACIER"
+    }
+
+    expiration {
+      days = 90
+    }
+    status = "Enabled"
+
+    filter {
+
+      and {
+        prefix = "log/"
+        tags = {
+          rule      = "log"
+          autoclean = "true"
+        }
+      }
+    }
+  }
+
+  rule {
+    id = "tmp"
+
+    expiration {
+      date = "2022-12-31"
+    }
+    status = "Enabled"
+
+    filter {
+      prefix = "tmp/"
+    }
+  }
+}
+`,
+		},
+		{
 			name: "argument not found",
 			src: `
 resource "aws_s3_bucket" "example" {
