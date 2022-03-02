@@ -1,6 +1,10 @@
 package awsv4upgrade
 
 import (
+	"fmt"
+	"strings"
+	"time"
+
 	"github.com/minamijoyo/tfedit/tfeditor"
 	"github.com/minamijoyo/tfedit/tfwrite"
 	"github.com/zclconf/go-cty/cty"
@@ -111,23 +115,71 @@ func (f *AWSS3BucketLifecycleRuleFilter) ResourceFilter(inFile *tfwrite.File, re
 			nestedBlock.RemoveAttribute("tags")
 		}
 
-		// Rename a days attribute in noncurrent_version_transition to noncurrent_days.
-		transitionBlocks := nestedBlock.FindNestedBlocksByType("noncurrent_version_transition")
+		// Convert a timestamp format for a date attribute in transition.
+		// date = "2022-12-31" => date = "2022-12-31T00:00:00Z"
+		transitionBlocks := nestedBlock.FindNestedBlocksByType("transition")
 		for _, transitionBlock := range transitionBlocks {
-			daysAttr := transitionBlock.GetAttribute("days")
+			dateAttr := transitionBlock.GetAttribute("date")
+			if dateAttr != nil {
+				date, err := dateAttr.ValueAsString()
+				if err == nil {
+					unquotedDate := strings.Trim(date, "\"")
+					// Try to parse date as an old format in v3.
+					_, err := time.Parse(time.RFC3339, fmt.Sprintf("%sT00:00:00Z", unquotedDate))
+					if err != nil {
+						// If failed to parse, we assume that the value is a variable, not literal,
+						// we cannot rewrite it automatically, so keep original raw tokens as it is.
+						continue
+					}
+					// If the value has a string literal with valid format in v3,
+					// covert it to a new formart in v4.
+					newDate := fmt.Sprintf("%sT00:00:00Z", unquotedDate)
+					transitionBlock.SetAttributeValue("date", cty.StringVal(newDate))
+				}
+			}
+		}
+
+		// Convert a timestamp format for a date attribute in expiration.
+		// date = "2022-12-31" => date = "2022-12-31T00:00:00Z"
+		expirationBlocks := nestedBlock.FindNestedBlocksByType("expiration")
+		for _, expirationBlock := range expirationBlocks {
+			dateAttr := expirationBlock.GetAttribute("date")
+			if dateAttr != nil {
+				date, err := dateAttr.ValueAsString()
+				if err == nil {
+					unquotedDate := strings.Trim(date, "\"")
+					// Try to parse date as an old format in v3.
+					_, err := time.Parse(time.RFC3339, fmt.Sprintf("%sT00:00:00Z", unquotedDate))
+					if err != nil {
+						// If failed to parse, we assume that the value is a variable, not literal,
+						// we cannot rewrite it automatically, so keep original raw tokens as it is.
+						continue
+					}
+					// If the value has a string literal with valid format in v3,
+					// covert it to a new formart in v4.
+					newDate := fmt.Sprintf("%sT00:00:00Z", unquotedDate)
+					expirationBlock.SetAttributeValue("date", cty.StringVal(newDate))
+				}
+			}
+		}
+
+		// Rename a days attribute in noncurrent_version_transition to noncurrent_days.
+		noncurrentVersionTransitionBlocks := nestedBlock.FindNestedBlocksByType("noncurrent_version_transition")
+		for _, noncurrentVersionTransitionBlock := range noncurrentVersionTransitionBlocks {
+			daysAttr := noncurrentVersionTransitionBlock.GetAttribute("days")
 			if daysAttr != nil {
-				transitionBlock.SetAttributeRaw("noncurrent_days", daysAttr.ValueAsTokens())
-				transitionBlock.RemoveAttribute("days")
+				noncurrentVersionTransitionBlock.SetAttributeRaw("noncurrent_days", daysAttr.ValueAsTokens())
+				noncurrentVersionTransitionBlock.RemoveAttribute("days")
 			}
 		}
 
 		// Rename a days attribute in noncurrent_version_expiration to noncurrent_days.
-		expirationBlocks := nestedBlock.FindNestedBlocksByType("noncurrent_version_expiration")
-		for _, expirationBlock := range expirationBlocks {
-			daysAttr := expirationBlock.GetAttribute("days")
+		noncurrentVersionExpirationBlocks := nestedBlock.FindNestedBlocksByType("noncurrent_version_expiration")
+		for _, noncurrentVersionExpirationBlock := range noncurrentVersionExpirationBlocks {
+			daysAttr := noncurrentVersionExpirationBlock.GetAttribute("days")
 			if daysAttr != nil {
-				expirationBlock.SetAttributeRaw("noncurrent_days", daysAttr.ValueAsTokens())
-				expirationBlock.RemoveAttribute("days")
+				noncurrentVersionExpirationBlock.SetAttributeRaw("noncurrent_days", daysAttr.ValueAsTokens())
+				noncurrentVersionExpirationBlock.RemoveAttribute("days")
 			}
 		}
 
