@@ -3,6 +3,7 @@ module github.com/minamijoyo/tfedit
 go 1.17
 
 require (
+	github.com/google/go-cmp v0.5.7
 	github.com/hashicorp/hcl/v2 v2.11.1
 	github.com/hashicorp/logutils v1.0.0
 	github.com/minamijoyo/hcledit v0.2.4-0.20220223085546-e31138854650
@@ -15,7 +16,6 @@ require (
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
-	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
