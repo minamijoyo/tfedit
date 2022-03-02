@@ -50,6 +50,10 @@ Known limitations:
   - lifecycle_rule:
     - enabled = true => status = "Enabled"
     - enabled = false => status = "Disabled"
+    - transition:
+      - date = "2022-12-31" => date = "2022-12-31T00:00:00Z"
+    - expiration:
+      - date = "2022-12-31" => date = "2022-12-31T00:00:00Z"
   - versioning:
     - enabled = true => status = "Enabled"
     - enabled = false => status = "Suspended"

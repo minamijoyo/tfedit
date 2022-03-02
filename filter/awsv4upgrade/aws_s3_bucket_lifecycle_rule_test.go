@@ -231,7 +231,7 @@ resource "aws_s3_bucket" "example" {
     enabled = true
 
     expiration {
-      date = "2022-12-31"
+      days = 90
     }
   }
 }
@@ -282,12 +282,64 @@ resource "aws_s3_bucket_lifecycle_configuration" "example" {
     id = "tmp"
 
     expiration {
-      date = "2022-12-31"
+      days = 90
     }
     status = "Enabled"
 
     filter {
       prefix = "tmp/"
+    }
+  }
+}
+`,
+		},
+		{
+			name: "with date in transition and expiration",
+			src: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+  lifecycle_rule {
+    id      = "log-expiration"
+    enabled = true
+    prefix  = "log/"
+
+    transition {
+      date          = "2022-03-01"
+      storage_class = "STANDARD_IA"
+    }
+
+    expiration {
+      date = "2022-12-31"
+    }
+  }
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  rule {
+    id = "log-expiration"
+
+    transition {
+      date          = "2022-03-01T00:00:00Z"
+      storage_class = "STANDARD_IA"
+    }
+
+    expiration {
+      date = "2022-12-31T00:00:00Z"
+    }
+    status = "Enabled"
+
+    filter {
+      prefix = "log/"
     }
   }
 }
