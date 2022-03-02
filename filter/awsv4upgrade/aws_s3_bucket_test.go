@@ -3,6 +3,7 @@ package awsv4upgrade
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/minamijoyo/hcledit/editor"
 )
 
@@ -327,8 +328,8 @@ resource "aws_s3_bucket_versioning" "example" {
 				t.Fatalf("expected to return an error, but no error, outStream: \n%s", got)
 			}
 
-			if got != tc.want {
-				t.Fatalf("got:\n%s\nwant:\n%s", got, tc.want)
+			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Fatalf("got:\n%s\nwant:\n%s\ndiff:\n%s", got, tc.want, diff)
 			}
 		})
 	}
