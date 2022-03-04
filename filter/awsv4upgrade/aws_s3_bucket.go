@@ -31,7 +31,7 @@ func NewAWSS3BucketFilter() editor.Filter {
 		// &AWSS3BucketRequestPayerFilter{},
 		&AWSS3BucketServerSideEncryptionConfigurationFilter{},
 		&AWSS3BucketVersioningFilter{},
-		// &AWSS3BucketWebsiteFilter{},
+		&AWSS3BucketWebsiteFilter{},
 
 		// Remove redundant TokenNewLine tokens in the resource block after removing nested blocks.
 		// Since VerticalFormat clears tokens internally, we should call it at the end.

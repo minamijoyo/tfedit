@@ -37,7 +37,7 @@ For upgrading AWS provider v4, some rules have not been implemented yet. The cur
   - [ ] request_payer
   - [x] server_side_encryption_configuration
   - [x] versioning
-  - [ ] website
+  - [x] website
 - [ ] Meta arguments of resource
   - [ ] count
   - [ ] for_each

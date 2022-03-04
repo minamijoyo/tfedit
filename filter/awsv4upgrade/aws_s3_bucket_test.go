@@ -204,6 +204,11 @@ EOF
   versioning {
     enabled = true
   }
+
+  website {
+    index_document = "index.html"
+    error_document = "error.html"
+  }
 }
 `,
 			ok: true,
@@ -309,6 +314,19 @@ resource "aws_s3_bucket_versioning" "example" {
   versioning_configuration {
     status = "Enabled"
   }
+}
+
+resource "aws_s3_bucket_website_configuration" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  index_document {
+    suffix = "index.html"
+  }
+
+  error_document {
+    key = "error.html"
+  }
+
 }
 `,
 		},
