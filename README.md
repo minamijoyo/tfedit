@@ -56,10 +56,12 @@ Known limitations:
       - date = "2022-12-31" => date = "2022-12-31T00:00:00Z"
   - versioning:
     - enabled = true => status = "Enabled"
-    - enabled = false => status = "Suspended"
+    - enabled = false => It also depends on the current status of your bucket. Set `status = "Suspended"` or use `for_each` to avoid creating `aws_s3_bucket_versioning` resource.
 - Some arguments cannot be converted correctly without knowing the current state of AWS resources. The tfedit never calls the AWS API on your behalf. You have to check it by yourself. The following arguments have this limitation:
   - lifecycle_rule:
-    - filter: When aws s3api get-bucket-lifecycle-configuration returns `"Filter" : {}` without a prefix, you need to set rule.filter as `filter {}`.
+    - filter: When [`aws s3api get-bucket-lifecycle-configuration --bucket <bucketname>`](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/s3api/get-bucket-lifecycle-configuration.html) returns `"Filter" : {}` without a prefix, you need to set rule.filter as `filter {}`.
+  - versioning:
+    - enabled: Starting from v3.70.0, `enabled = false` for a new bucket doesn't set "Suspended" explicitly. When [`aws s3api get-bucket-versioning --bucket <bucketname>`](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/s3api/get-bucket-versioning.html) returns no `"Status"`, which means `"Disabled"`. In this case, you need to remove the `aws_s3_bucket_versioning` resource.
 
 ## Install
 
