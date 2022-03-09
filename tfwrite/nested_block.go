@@ -78,3 +78,10 @@ func (b *NestedBlock) AppendNestedBlock(nestedBlock *NestedBlock) {
 	body.AppendNewline()
 	body.AppendBlock(nestedBlock.raw)
 }
+
+// AppendUnwrappedNestedBlockBody appends a body of a given nested block to
+// another nestedBlock.
+func (b *NestedBlock) AppendUnwrappedNestedBlockBody(nestedBlock *NestedBlock) {
+	unwrapped := nestedBlock.raw.Body().BuildTokens(nil)
+	b.raw.Body().AppendUnstructuredTokens(unwrapped)
+}
