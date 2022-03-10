@@ -330,6 +330,73 @@ resource "aws_s3_bucket_website_configuration" "example" {
 }
 `,
 		},
+		{
+			name: "grant (conflict with acl)",
+			src: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+  grant {
+    id          = data.aws_canonical_user_id.current_user.id
+    type        = "CanonicalUser"
+    permissions = ["FULL_CONTROL"]
+  }
+
+  grant {
+    type        = "Group"
+    permissions = ["READ_ACP", "WRITE"]
+    uri         = "http://acs.amazonaws.com/groups/s3/LogDelivery"
+  }
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+}
+
+resource "aws_s3_bucket_acl" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  access_control_policy {
+
+    grant {
+
+      grantee {
+
+        id   = data.aws_canonical_user_id.current_user.id
+        type = "CanonicalUser"
+      }
+      permission = "FULL_CONTROL"
+    }
+
+    grant {
+
+      grantee {
+
+        type = "Group"
+        uri  = "http://acs.amazonaws.com/groups/s3/LogDelivery"
+      }
+      permission = "READ_ACP"
+    }
+
+    grant {
+
+      grantee {
+
+        type = "Group"
+        uri  = "http://acs.amazonaws.com/groups/s3/LogDelivery"
+      }
+      permission = "WRITE"
+    }
+
+    owner {
+      id = "set_aws_canonical_user_id"
+    }
+  }
+}
+`,
+		},
 	}
 
 	for _, tc := range cases {

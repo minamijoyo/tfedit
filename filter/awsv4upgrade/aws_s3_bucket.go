@@ -22,7 +22,7 @@ func NewAWSS3BucketFilter() editor.Filter {
 		// &AWSS3BucketAccelerationStatusFilter{},
 		&AWSS3BucketACLFilter{},
 		&AWSS3BucketCorsRuleFilter{},
-		// &AWSS3BucketGrantFilter{},
+		&AWSS3BucketGrantFilter{},
 		&AWSS3BucketLifecycleRuleFilter{},
 		&AWSS3BucketLoggingFilter{},
 		// &AWSS3BucketObjectLockConfigurationFilter{},
