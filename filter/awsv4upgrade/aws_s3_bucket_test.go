@@ -193,6 +193,8 @@ resource "aws_s3_bucket" "example" {
 }
 EOF
 
+  request_payer = "Requester"
+
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
@@ -301,6 +303,11 @@ resource "aws_s3_bucket_policy" "example" {
   "Version": "2012-10-17"
 }
 EOF
+}
+
+resource "aws_s3_bucket_request_payment_configuration" "example" {
+  bucket = aws_s3_bucket.example.id
+  payer  = "Requester"
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "example" {

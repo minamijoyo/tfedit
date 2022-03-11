@@ -28,7 +28,7 @@ func NewAWSS3BucketFilter() editor.Filter {
 		// &AWSS3BucketObjectLockConfigurationFilter{},
 		&AWSS3BucketPolicyFilter{},
 		// &AWSS3BucketReplicationConfigurationFilter{},
-		// &AWSS3BucketRequestPayerFilter{},
+		&AWSS3BucketRequestPayerFilter{},
 		&AWSS3BucketServerSideEncryptionConfigurationFilter{},
 		&AWSS3BucketVersioningFilter{},
 		&AWSS3BucketWebsiteFilter{},
