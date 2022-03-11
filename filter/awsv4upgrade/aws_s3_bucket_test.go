@@ -175,6 +175,17 @@ resource "aws_s3_bucket" "example" {
     target_prefix = "log/"
   }
 
+  object_lock_configuration {
+    object_lock_enabled = "Enabled"
+
+    rule {
+      default_retention {
+        mode = "COMPLIANCE"
+        days = 3
+      }
+    }
+  }
+
   policy = <<EOF
 {
   "Id": "Policy1446577137248",
@@ -218,6 +229,11 @@ EOF
 			want: `
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
+
+  object_lock_configuration {
+    object_lock_enabled = "Enabled"
+
+  }
 }
 
 resource "aws_s3_bucket_accelerate_configuration" "example" {
@@ -282,6 +298,17 @@ resource "aws_s3_bucket_logging" "example" {
 
   target_bucket = "tfedit-test-log"
   target_prefix = "log/"
+}
+
+resource "aws_s3_bucket_object_lock_configuration" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  rule {
+    default_retention {
+      mode = "COMPLIANCE"
+      days = 3
+    }
+  }
 }
 
 resource "aws_s3_bucket_policy" "example" {

@@ -31,7 +31,7 @@ For upgrading AWS provider v4, some rules have not been implemented yet. The cur
   - [x] grant
   - [x] lifecycle_rule
   - [x] logging
-  - [ ] object_lock_configuration rule
+  - [x] object_lock_configuration rule
   - [x] policy
   - [ ] replication_configuration
   - [x] request_payer
