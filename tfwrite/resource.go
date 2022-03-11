@@ -54,6 +54,11 @@ func (r *Resource) SetAttributeByReference(name string, refResource *Resource, r
 	r.raw.Body().SetAttributeTraversal(name, traversal)
 }
 
+// SetAttributeRaw sets an attribute for a given name with raw tokens.
+func (r *Resource) SetAttributeRaw(name string, tokens hclwrite.Tokens) {
+	r.raw.Body().SetAttributeRaw(name, tokens)
+}
+
 // AppendAttribute appends a given attribute to the resource.
 func (r *Resource) AppendAttribute(attr *Attribute) {
 	expr := attr.raw.BuildTokens(nil)

@@ -19,7 +19,7 @@ var _ editor.Filter = (*AWSS3BucketFilter)(nil)
 // NewAWSS3BucketFilter creates a new instance of AWSS3BucketFilter.
 func NewAWSS3BucketFilter() editor.Filter {
 	filters := []tfeditor.ResourceFilter{
-		// &AWSS3BucketAccelerationStatusFilter{},
+		&AWSS3BucketAccelerationStatusFilter{},
 		&AWSS3BucketACLFilter{},
 		&AWSS3BucketCorsRuleFilter{},
 		&AWSS3BucketGrantFilter{},

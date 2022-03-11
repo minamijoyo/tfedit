@@ -139,6 +139,7 @@ resource "aws_s3_bucket_foo" "example" {
 			src: `
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
+  acceleration_status = "Enabled"
   acl    = "private"
 
   cors_rule {
@@ -215,6 +216,11 @@ EOF
 			want: `
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
+}
+
+resource "aws_s3_bucket_accelerate_configuration" "example" {
+  bucket = aws_s3_bucket.example.id
+  status = "Enabled"
 }
 
 resource "aws_s3_bucket_acl" "example" {
