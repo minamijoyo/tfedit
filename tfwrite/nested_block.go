@@ -85,3 +85,8 @@ func (b *NestedBlock) AppendUnwrappedNestedBlockBody(nestedBlock *NestedBlock) {
 	unwrapped := nestedBlock.raw.Body().BuildTokens(nil)
 	b.raw.Body().AppendUnstructuredTokens(unwrapped)
 }
+
+// RemoveNestedBlock removes a given nested block from the resource.
+func (b *NestedBlock) RemoveNestedBlock(nestedBlock *NestedBlock) {
+	b.raw.Body().RemoveBlock(nestedBlock.raw)
+}
