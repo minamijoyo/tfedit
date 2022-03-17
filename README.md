@@ -24,7 +24,7 @@ For upgrading AWS provider v4, some rules have not been implemented yet. The cur
 
 [S3 Bucket Refactor](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#s3-bucket-refactor)
 
-- [ ] Arguments of aws_s3_bucket resource
+- [x] Arguments of aws_s3_bucket resource
   - [x] acceleration_status
   - [x] acl
   - [x] cors_rule
