@@ -204,6 +204,32 @@ resource "aws_s3_bucket" "example" {
 }
 EOF
 
+  replication_configuration {
+    role = aws_iam_role.replication.arn
+    rules {
+      id     = "foobar"
+      status = "Enabled"
+
+      filter {}
+      delete_marker_replication_status = "Enabled"
+
+      destination {
+        bucket        = aws_s3_bucket.destination.arn
+        storage_class = "STANDARD"
+
+        replication_time {
+          status  = "Enabled"
+          minutes = 15
+        }
+
+        metrics {
+          status  = "Enabled"
+          minutes = 15
+        }
+      }
+    }
+  }
+
   request_payer = "Requester"
 
   server_side_encryption_configuration {
@@ -330,6 +356,43 @@ resource "aws_s3_bucket_policy" "example" {
   "Version": "2012-10-17"
 }
 EOF
+}
+
+resource "aws_s3_bucket_replication_configuration" "example" {
+  bucket = aws_s3_bucket.example.id
+  role   = aws_iam_role.replication.arn
+
+  rule {
+    id     = "foobar"
+    status = "Enabled"
+
+    filter {}
+
+    destination {
+      bucket        = aws_s3_bucket.destination.arn
+      storage_class = "STANDARD"
+
+      replication_time {
+        status = "Enabled"
+
+        time {
+          minutes = 15
+        }
+      }
+
+      metrics {
+        status = "Enabled"
+
+        event_threshold {
+          minutes = 15
+        }
+      }
+    }
+
+    delete_marker_replication {
+      status = "Enabled"
+    }
+  }
 }
 
 resource "aws_s3_bucket_request_payment_configuration" "example" {
