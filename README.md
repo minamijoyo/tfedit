@@ -33,7 +33,7 @@ For upgrading AWS provider v4, some rules have not been implemented yet. The cur
   - [x] logging
   - [x] object_lock_configuration rule
   - [x] policy
-  - [ ] replication_configuration
+  - [x] replication_configuration
   - [x] request_payer
   - [x] server_side_encryption_configuration
   - [x] versioning
