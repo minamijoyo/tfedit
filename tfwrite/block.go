@@ -1,7 +1,6 @@
 package tfwrite
 
 import (
-	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/minamijoyo/hcledit/editor"
 	"github.com/zclconf/go-cty/cty"
@@ -14,14 +13,8 @@ type Block interface {
 	// operations.
 	Raw() *hclwrite.Block
 
-	// Type returns a type of block.
-	Type() string
-
 	// SetType updates the type name of the block to a given name.
 	SetType(typeName string)
-
-	// Name returns a name of block.
-	Name() string
 
 	// GetAttribute returns an attribute for a given name.
 	GetAttribute(name string) *Attribute
@@ -31,10 +24,6 @@ type Block interface {
 
 	// SetAttributeRaw sets an attribute for a given name with raw tokens.
 	SetAttributeRaw(name string, tokens hclwrite.Tokens)
-
-	// SetAttributeByReference sets an attribute for a given name to a reference of
-	// another block.
-	SetAttributeByReference(name string, refBlock Block, refAttribute string)
 
 	// AppendAttribute appends a given attribute to the block.
 	AppendAttribute(attr *Attribute)
@@ -92,21 +81,9 @@ func (b *block) Raw() *hclwrite.Block {
 	return b.raw
 }
 
-// Type returns a type of block.
-func (b *block) Type() string {
-	labels := b.raw.Labels()
-	return labels[0]
-}
-
 // SetType updates the type name of the block to a given name.
 func (b *block) SetType(typeName string) {
 	b.raw.SetType(typeName)
-}
-
-// Name returns a name of block.
-func (b *block) Name() string {
-	labels := b.raw.Labels()
-	return labels[1]
 }
 
 // GetAttribute returns an attribute for a given name.
@@ -126,17 +103,6 @@ func (b *block) SetAttributeValue(name string, value cty.Value) {
 // SetAttributeRaw sets an attribute for a given name with raw tokens.
 func (b *block) SetAttributeRaw(name string, tokens hclwrite.Tokens) {
 	b.raw.Body().SetAttributeRaw(name, tokens)
-}
-
-// SetAttributeByReference sets an attribute for a given name to a reference of
-// another block.
-func (b *block) SetAttributeByReference(name string, refBlock Block, refAttribute string) {
-	traversal := hcl.Traversal{
-		hcl.TraverseRoot{Name: refBlock.Type()},
-		hcl.TraverseAttr{Name: refBlock.Name()},
-		hcl.TraverseAttr{Name: refAttribute},
-	}
-	b.raw.Body().SetAttributeTraversal(name, traversal)
 }
 
 // AppendAttribute appends a given attribute to the block.
