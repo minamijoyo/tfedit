@@ -6,7 +6,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestResourceType(t *testing.T) {
+func TestResourceSchemaType(t *testing.T) {
 	cases := []struct {
 		desc string
 		src  string
@@ -26,7 +26,7 @@ resource "aws_s3_bucket" "example" {}
 	for _, tc := range cases {
 		t.Run(tc.desc, func(t *testing.T) {
 			r := parseTestResource(t, tc.src)
-			got := r.Type()
+			got := r.SchemaType()
 			if got != tc.want {
 				t.Errorf("got = %s, but want = %s", got, tc.want)
 			}

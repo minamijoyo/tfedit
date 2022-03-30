@@ -25,10 +25,10 @@ func NewEmptyResource(resourceType string, resourceName string) *Resource {
 	return NewResource(block)
 }
 
-// Type returns a type of resource.
+// SchemaType returns a type of resource.
 // It returns the first label of block.
 // Note that it's not the same as the *hclwrite.Block.Type().
-func (r *Resource) Type() string {
+func (r *Resource) SchemaType() string {
 	labels := r.block.raw.Labels()
 	return labels[0]
 }
@@ -43,7 +43,7 @@ func (r *Resource) Name() string {
 // another resource.
 func (r *Resource) SetAttributeByReference(name string, refResource *Resource, refAttribute string) {
 	traversal := hcl.Traversal{
-		hcl.TraverseRoot{Name: refResource.Type()},
+		hcl.TraverseRoot{Name: refResource.SchemaType()},
 		hcl.TraverseAttr{Name: refResource.Name()},
 		hcl.TraverseAttr{Name: refAttribute},
 	}
