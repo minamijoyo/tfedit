@@ -35,6 +35,16 @@ func findFirstTestBlock(t *testing.T, f *File) *block {
 	return newBlock(blocks[0])
 }
 
+// findTestBlocks is a test helper for find blocks.
+func findTestBlocks(t *testing.T, f *File) []*block {
+	t.Helper()
+	var blocks []*block
+	for _, b := range f.Raw().Body().Blocks() {
+		blocks = append(blocks, newBlock(b))
+	}
+	return blocks
+}
+
 // findFirstTestResource is a test helper for find the first resource.
 func findFirstTestResource(t *testing.T, f *File) *Resource {
 	t.Helper()

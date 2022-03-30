@@ -303,3 +303,213 @@ foo {
 		})
 	}
 }
+
+func TestBlockAppendNestedBlock(t *testing.T) {
+	cases := []struct {
+		desc string
+		src  string
+		name string
+		attr *Attribute
+		want string
+		ok   bool
+	}{
+		{
+			desc: "simple",
+			src: `
+foo {
+  bar = "baz"
+}
+`,
+			name: "nested",
+			want: `
+foo {
+  bar = "baz"
+
+  nested {
+  }
+}
+`,
+			ok: true,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.desc, func(t *testing.T) {
+			f := parseTestFile(t, tc.src)
+			b := findFirstTestBlock(t, f)
+			nested := NewEmptyNestedBlock(tc.name)
+			b.AppendNestedBlock(nested)
+
+			got := printTestFile(t, f)
+			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Fatalf("got:\n%s\nwant:\n%s\ndiff:\n%s", got, tc.want, diff)
+			}
+		})
+	}
+}
+
+func TestBlockAppendUnwrappedNestedBlockBody(t *testing.T) {
+	cases := []struct {
+		desc string
+		src  string
+		name string
+		attr *Attribute
+		want string
+		ok   bool
+	}{
+		{
+			desc: "simple",
+			src: `
+foo1 {
+  nested {
+    bar = "baz"
+  }
+}
+
+foo2 {
+}
+`,
+			name: "nested",
+			want: `
+foo1 {
+  nested {
+    bar = "baz"
+  }
+}
+
+foo2 {
+
+  bar = "baz"
+}
+`,
+			ok: true,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.desc, func(t *testing.T) {
+			f := parseTestFile(t, tc.src)
+			blocks := findTestBlocks(t, f)
+			nested := blocks[0].FindNestedBlocksByType("nested")[0]
+			blocks[1].AppendUnwrappedNestedBlockBody(nested)
+
+			got := printTestFile(t, f)
+			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Fatalf("got:\n%s\nwant:\n%s\ndiff:\n%s", got, tc.want, diff)
+			}
+		})
+	}
+}
+
+func TestBlockRemoveNestedBlock(t *testing.T) {
+	cases := []struct {
+		desc string
+		src  string
+		name string
+		want string
+		ok   bool
+	}{
+		{
+			desc: "simple",
+			src: `
+foo {
+  bar = "baz"
+  nested {
+    qux = "quux"
+  }
+}
+`,
+			name: "nested",
+			want: `
+foo {
+  bar = "baz"
+}
+`,
+			ok: true,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.desc, func(t *testing.T) {
+			f := parseTestFile(t, tc.src)
+			b := findFirstTestBlock(t, f)
+			nested := b.FindNestedBlocksByType(tc.name)[0]
+			b.RemoveNestedBlock(nested)
+
+			got := printTestFile(t, f)
+			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Fatalf("got:\n%s\nwant:\n%s\ndiff:\n%s", got, tc.want, diff)
+			}
+		})
+	}
+}
+
+func TestBlockFindNestedBlocksByType(t *testing.T) {
+	cases := []struct {
+		desc string
+		src  string
+		name string
+		want string
+		ok   bool
+	}{
+		{
+			desc: "simple",
+			src: `
+foo1 {
+  bar = "baz"
+  nested {
+    qux = "quux1"
+  }
+
+  nested {
+    qux = "quux2"
+  }
+}
+
+foo2 {
+}
+`,
+			name: "nested",
+			want: `
+foo1 {
+  bar = "baz"
+  nested {
+    qux = "quux1"
+  }
+
+  nested {
+    qux = "quux2"
+  }
+}
+
+foo2 {
+
+  nested {
+    qux = "quux1"
+  }
+
+  nested {
+    qux = "quux2"
+  }
+}
+`,
+			ok: true,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.desc, func(t *testing.T) {
+			f := parseTestFile(t, tc.src)
+			blocks := findTestBlocks(t, f)
+			nestedBlocks := blocks[0].FindNestedBlocksByType(tc.name)
+			for _, nested := range nestedBlocks {
+				blocks[1].AppendNestedBlock(nested)
+			}
+
+			got := printTestFile(t, f)
+			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Fatalf("got:\n%s\nwant:\n%s\ndiff:\n%s", got, tc.want, diff)
+			}
+		})
+	}
+}
