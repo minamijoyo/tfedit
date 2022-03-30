@@ -25,7 +25,8 @@ resource "aws_s3_bucket" "example" {}
 
 	for _, tc := range cases {
 		t.Run(tc.desc, func(t *testing.T) {
-			r := parseTestResource(t, tc.src)
+			f := parseTestFile(t, tc.src)
+			r := findFirstTestResource(t, f)
 			got := r.SchemaType()
 			if got != tc.want {
 				t.Errorf("got = %s, but want = %s", got, tc.want)
@@ -53,7 +54,8 @@ resource "aws_s3_bucket" "example" {}
 
 	for _, tc := range cases {
 		t.Run(tc.desc, func(t *testing.T) {
-			r := parseTestResource(t, tc.src)
+			f := parseTestFile(t, tc.src)
+			r := findFirstTestResource(t, f)
 			got := r.Name()
 			if got != tc.want {
 				t.Errorf("got = %s, but want = %s", got, tc.want)

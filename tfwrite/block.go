@@ -13,6 +13,9 @@ type Block interface {
 	// operations.
 	Raw() *hclwrite.Block
 
+	// Type returns a type of block.
+	Type() string
+
 	// SetType updates the type name of the block to a given name.
 	SetType(typeName string)
 
@@ -79,6 +82,11 @@ func newEmptyBlock(blockType string) *block {
 // operations.
 func (b *block) Raw() *hclwrite.Block {
 	return b.raw
+}
+
+// Type returns a type of block
+func (b *block) Type() string {
+	return b.raw.Type()
 }
 
 // SetType updates the type name of the block to a given name.

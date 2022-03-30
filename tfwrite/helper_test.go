@@ -28,10 +28,16 @@ func printTestFile(t *testing.T, f *File) string {
 	return string(hclwrite.Format(bytes))
 }
 
-// parseTestResource is a helper for parsing a test resource
-func parseTestResource(t *testing.T, src string) *Resource {
+// findFirstTestBlock is a test helper for find the first block.
+func findFirstTestBlock(t *testing.T, f *File) *block {
 	t.Helper()
-	f := parseTestFile(t, src)
+	blocks := f.Raw().Body().Blocks()
+	return newBlock(blocks[0])
+}
+
+// findFirstTestResource is a test helper for find the first resource.
+func findFirstTestResource(t *testing.T, f *File) *Resource {
+	t.Helper()
 	blocks := f.Raw().Body().Blocks()
 	return NewResource(blocks[0])
 }
