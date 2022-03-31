@@ -6,6 +6,40 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+func TestResourceType(t *testing.T) {
+	cases := []struct {
+		desc string
+		src  string
+		want string
+		ok   bool
+	}{
+		{
+			desc: "simple",
+			src: `
+resource "foo_test" "example" {
+  nested {
+	  bar = "baz"
+  }
+}
+`,
+			want: "resource",
+			ok:   true,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.desc, func(t *testing.T) {
+			f := parseTestFile(t, tc.src)
+			r := findFirstTestResource(t, f)
+
+			got := r.Type()
+			if got != tc.want {
+				t.Errorf("got = %s, but want = %s", got, tc.want)
+			}
+		})
+	}
+}
+
 func TestResourceSchemaType(t *testing.T) {
 	cases := []struct {
 		desc string
