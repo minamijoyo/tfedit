@@ -513,3 +513,65 @@ foo2 {
 		})
 	}
 }
+
+func TestBlockVerticalFormat(t *testing.T) {
+	cases := []struct {
+		desc string
+		src  string
+		want string
+		ok   bool
+	}{
+		{
+			desc: "simple",
+			src: `
+foo {
+
+  bar = "baz"
+
+  nested {
+
+    qux = "quux1"
+
+  }
+
+
+  nested {
+
+
+    qux = "quux2"
+  }
+}
+`,
+			want: `
+foo {
+  bar = "baz"
+
+  nested {
+
+    qux = "quux1"
+
+  }
+
+  nested {
+
+    qux = "quux2"
+  }
+}
+`,
+			ok: true,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.desc, func(t *testing.T) {
+			f := parseTestFile(t, tc.src)
+			b := findFirstTestBlock(t, f)
+			b.VerticalFormat()
+
+			got := printTestFile(t, f)
+			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Fatalf("got:\n%s\nwant:\n%s\ndiff:\n%s", got, tc.want, diff)
+			}
+		})
+	}
+}
