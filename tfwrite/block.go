@@ -84,7 +84,7 @@ func (b *block) Raw() *hclwrite.Block {
 	return b.raw
 }
 
-// Type returns a type of block
+// Type returns a type of block.
 func (b *block) Type() string {
 	return b.raw.Type()
 }
