@@ -32,7 +32,10 @@ func SplitTokensAsList(tokens hclwrite.Tokens) []hclwrite.Tokens {
 	for ; end < len(tokens); end++ {
 		// Find a `]` token
 		if tokens[end].Type == hclsyntax.TokenCBrack {
-			ret = append(ret, tokens[begin:end])
+			elm := tokens[begin:end]
+			if len(elm) > 0 {
+				ret = append(ret, elm)
+			}
 			foundCBrack = true
 			break
 		}

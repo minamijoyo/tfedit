@@ -32,6 +32,26 @@ foo {
 			ok: true,
 		},
 		{
+			desc: "empty string (invalid list)",
+			src: `
+foo {
+  attr = ""
+}
+`,
+			want: nil,
+			ok:   true,
+		},
+		{
+			desc: "empty list",
+			src: `
+foo {
+  attr = []
+}
+`,
+			want: []hclwrite.Tokens{},
+			ok:   true,
+		},
+		{
 			desc: "variable",
 			src: `
 foo {
