@@ -12,6 +12,12 @@ func NewFile(file *hclwrite.File) *File {
 	return &File{raw: file}
 }
 
+// NewEmptyFile creates a new file with an empty body.
+func NewEmptyFile() *File {
+	file := hclwrite.NewEmptyFile()
+	return NewFile(file)
+}
+
 // Raw returns a raw object for hclwrite.
 func (f *File) Raw() *hclwrite.File {
 	return f.raw

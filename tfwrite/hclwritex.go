@@ -11,7 +11,7 @@ import (
 func SplitTokensAsList(tokens hclwrite.Tokens) []hclwrite.Tokens {
 	// At time of this writing, there is no way for this in hclwrite,
 	// so this is a naive implementation.
-	ret := []hclwrite.Tokens{}
+	tmp := []hclwrite.Tokens{}
 	begin := 0
 	foundOBrack := false
 	for ; begin < len(tokens); begin++ {
@@ -32,20 +32,38 @@ func SplitTokensAsList(tokens hclwrite.Tokens) []hclwrite.Tokens {
 	for ; end < len(tokens); end++ {
 		// Find a `]` token
 		if tokens[end].Type == hclsyntax.TokenCBrack {
-			ret = append(ret, tokens[begin:end])
+			elm := tokens[begin:end]
+			if len(elm) > 0 {
+				tmp = append(tmp, elm)
+			}
 			foundCBrack = true
 			break
 		}
 
 		// Find a `,` token
 		if tokens[end].Type == hclsyntax.TokenComma {
-			ret = append(ret, tokens[begin:end])
+			tmp = append(tmp, tokens[begin:end])
 			begin = end + 1 // Move the begin cursor after the `,`
 		}
 	}
 
 	if !foundCBrack {
 		return nil // `]` not found
+	}
+
+	ret := []hclwrite.Tokens{}
+	for _, t := range tmp {
+		r := hclwrite.Tokens{}
+		for _, elm := range t {
+			// Remove a `\n` (new line) token
+			if elm.Type == hclsyntax.TokenNewline {
+				continue
+			}
+			r = append(r, elm)
+		}
+		if len(r) > 0 {
+			ret = append(ret, r)
+		}
 	}
 
 	return ret
