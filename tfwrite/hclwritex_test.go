@@ -70,6 +70,38 @@ foo {
 			},
 			ok: true,
 		},
+		{
+			desc: "multi lines",
+			src: `
+foo {
+  attr = [
+    "foo",
+    "bar"
+  ]
+}
+`,
+			want: []hclwrite.Tokens{
+				hclwrite.TokensForValue(cty.StringVal("foo")),
+				hclwrite.TokensForValue(cty.StringVal("bar")),
+			},
+			ok: true,
+		},
+		{
+			desc: "multi lines with comma",
+			src: `
+foo {
+  attr = [
+    "foo",
+    "bar",
+  ]
+}
+`,
+			want: []hclwrite.Tokens{
+				hclwrite.TokensForValue(cty.StringVal("foo")),
+				hclwrite.TokensForValue(cty.StringVal("bar")),
+			},
+			ok: true,
+		},
 	}
 
 	for _, tc := range cases {
