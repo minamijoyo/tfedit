@@ -3,6 +3,7 @@ module github.com/minamijoyo/tfedit
 go 1.17
 
 require (
+	github.com/davecgh/go-spew v1.1.1
 	github.com/google/go-cmp v0.5.7
 	github.com/hashicorp/hcl/v2 v2.11.1
 	github.com/hashicorp/logutils v1.0.0
@@ -29,6 +30,7 @@ require (
 	github.com/subosito/gotenv v1.2.0 // indirect
 	golang.org/x/sys v0.0.0-20211210111614-af8b64212486 // indirect
 	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
