@@ -12,6 +12,30 @@ Easy refactoring Terraform configurations in a scalable way.
 - Built-in operations:
   - filter awsv4upgrade: Upgrade configurations to AWS provider v4. Only `aws_s3_bucket` refactor is supported.
 
+In short, given the following Terraform configuration file:
+
+```main.tf
+$ cat ./test-fixtures/awsv4upgrade/aws_s3_bucket/simple/main.tf
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+  acl    = "private"
+}
+```
+
+Apply a filter for `awsv4upgrade`:
+
+```main.tf
+$ tfedit filter awsv4upgrade -f ./test-fixtures/awsv4upgrade/aws_s3_bucket/simple/main.tf
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+}
+
+resource "aws_s3_bucket_acl" "example" {
+  bucket = aws_s3_bucket.example.id
+  acl    = "private"
+}
+```
+
 Although the initial goal of this project is providing a way for bulk refactoring of the `aws_s3_bucket` resource required by breaking changes in AWS provider v4, but the project scope is not limited to specific use-cases. It's by no means intended to be an upgrade tool for all your providers. Instead of covering all you need, it provides reusable building blocks for Terraform refactoring and shows examples for how to compose them in real world use-cases.
 
 As you know, Terraform refactoring often requires not only configuration changes, but also Terraform state migrations. However, it's error-prone and not suitable for CI/CD. For declarative Terraform state migration, use [tfmigrate](https://github.com/minamijoyo/tfmigrate).
@@ -67,6 +91,136 @@ Known limitations:
     - filter: When [`aws s3api get-bucket-lifecycle-configuration --bucket <bucketname>`](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/s3api/get-bucket-lifecycle-configuration.html) returns `"Filter" : {}` without a prefix, you need to set rule.filter as `filter {}`.
   - versioning:
     - enabled: Starting from v3.70.0, `enabled = false` for a new bucket doesn't set "Suspended" explicitly. When [`aws s3api get-bucket-versioning --bucket <bucketname>`](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/s3api/get-bucket-versioning.html) returns no `"Status"`, which means `"Disabled"`. In this case, you need to remove the `aws_s3_bucket_versioning` resource.
+
+## Getting Started
+
+We recommend you to play an example in a sandbox environment first, which is safe to run `terraform` and `tfmigrate` command without any credentials. The sandbox environment mocks the AWS API with `localstack` and doesn't actually create any resources. So you can safely and easily understand how it works.
+
+Build a sandbox environment with docker-compose and run bash:
+
+```
+$ git clone https://github.com/minamijoyo/tfedit
+$ cd tfedit/
+$ docker-compose build
+$ docker-compose run --rm tfedit /bin/bash
+```
+
+In the sandbox environment, create and initialize a working directory from test fixtures:
+
+```
+# mkdir -p tmp/dir1 && cd tmp/dir1
+# terraform init -from-module=../../test-fixtures/awsv4upgrade/aws_s3_bucket/simple/
+# cat main.tf
+```
+
+This example contains a simple `aws_s3_bucket` resource:
+
+```main.tf
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+  acl    = "private"
+}
+```
+
+Apply it and create the `aws_s3_bucket` resource with the AWS provider v3.74.3, which is the last version without deprecated warnings:
+
+```
+# terraform -v
+Terraform v1.1.7
+on linux_amd64
++ provider registry.terraform.io/hashicorp/aws v3.74.3
+
+# terraform apply -auto-approve
+# terraform state list
+```
+
+Then, let's upgrade the AWS provider to the latest v3.x, which allows you to refactor the `aws_s3_bucket` resource before upgrading v4:
+
+```
+# tfupdate provider aws -v "~> 3.75" .
+
+# terraform init -upgrade
+
+# terraform -v
+Terraform v1.1.7
+on linux_amd64
++ provider registry.terraform.io/hashicorp/aws v3.75.1
+```
+
+Now it's time to upgrade Terraform configuration to the AWS provider v4 compatible with `tfedit`:
+
+```
+# tfedit filter awsv4upgrade -u -f main.tf
+# cat main.tf
+```
+
+You can see the `acl` argument has been split into a `aws_s3_bucket_acl` resource:
+
+```
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+}
+
+resource "aws_s3_bucket_acl" "example" {
+  bucket = aws_s3_bucket.example.id
+  acl    = "private"
+}
+```
+
+At this point, if you run the `terraform plan` command, you can see that a new `aws_s3_bucket_acl` resource will be created:
+
+```
+# terraform plan
+(snip.)
+Plan: 1 to add, 0 to change, 0 to destroy.
+```
+
+Now it's time for tfmigrate, which allows you to run the `terraform import` command in a declarative way. Currently, generating a migration file feature has not been implemented yet, so create a migration file manually.
+
+```
+# cat << EOF > tfmigrate_test.hcl
+migration "state" "test" {
+  actions = [
+    "import aws_s3_bucket_acl.example tfedit-test,private",
+  ]
+}
+EOF
+```
+
+Run `tfmigrate plan` to check to see if `terraform plan` has no changes after the migration without updating remote tfstate:
+
+```
+# tfmigrate plan tfmigrate_test.hcl
+(snip.)
+YYYY/MM/DD hh:mm:ss [INFO] [migrator] state migrator plan success!
+# echo $?
+0
+```
+
+If looks good, apply it:
+
+```
+# tfmigrate apply tfmigrate_test.hcl
+(snip.)
+YYYY/MM/DD hh:mm:ss [INFO] [migrator] state migrator apply success!
+# echo $?
+0
+```
+
+The apply command computes a new state and pushes it to remote state.
+It will fail if terraform plan detects any diffs with the new state.
+
+You can confirm the latest remote state has no changes with terraform plan:
+
+```
+# terraform plan
+(snip.)
+No changes. Infrastructure is up-to-date.
+
+# terraform state list
+aws_s3_bucket.example
+aws_s3_bucket_acl.example
+```
 
 ## Install
 
@@ -126,70 +280,6 @@ Global Flags:
 
 By default, the input is read from stdin, and the output is written to stdout.
 You can also read a file with `-f` flag, and update the file in-place with `-u` flag.
-
-## Example
-
-Given the following file:
-
-```aws_s3_bucket.tf
-$ cat ./test-fixtures/awsv4upgrade/aws_s3_bucket.tf
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "4.0.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = "ap-northeast-1"
-}
-
-resource "aws_s3_bucket" "example" {
-  bucket = "minamijoyo-tf-aws-v4-test1"
-  acl    = "private"
-
-  logging {
-    target_bucket = "minamijoyo-tf-aws-v4-test1-log"
-    target_prefix = "log/"
-  }
-}
-```
-
-Apply a filter for `awsv4upgrade`:
-
-```aws_s3_bucket.tf
-$ tfedit filter awsv4upgrade -f ./test-fixtures/awsv4upgrade/aws_s3_bucket.tf
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "4.0.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = "ap-northeast-1"
-}
-
-resource "aws_s3_bucket" "example" {
-  bucket = "minamijoyo-tf-aws-v4-test1"
-}
-
-resource "aws_s3_bucket_acl" "example" {
-  bucket = aws_s3_bucket.example.id
-  acl    = "private"
-}
-
-resource "aws_s3_bucket_logging" "example" {
-  bucket = aws_s3_bucket.example.id
-
-  target_bucket = "minamijoyo-tf-aws-v4-test1-log"
-  target_prefix = "log/"
-}
-```
 
 ## License
 
