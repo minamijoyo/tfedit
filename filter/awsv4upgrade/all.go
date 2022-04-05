@@ -13,7 +13,7 @@ type AllFilter struct {
 
 var _ editor.Filter = (*AllFilter)(nil)
 
-// AllFilter creates a new instance of AllFilter.
+// NewAllFilter creates a new instance of AllFilter.
 func NewAllFilter() editor.Filter {
 	return &AllFilter{}
 }
@@ -22,7 +22,7 @@ func NewAllFilter() editor.Filter {
 // Only aws_s3_bucket refactor is supported.
 func (f *AllFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
 	m := editor.NewMultiFilter([]editor.Filter{
-		&AWSS3BucketFilter{},
+		NewAWSS3BucketFilter(),
 	})
 	return m.Filter(inFile)
 }
