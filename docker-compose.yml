@@ -1,0 +1,36 @@
+version: '3'
+services:
+  tfedit:
+    build:
+      context: .
+      args:
+        TERRAFORM_VERSION: ${TERRAFORM_VERSION:-latest}
+    volumes:
+      - ".:/work"
+    environment:
+      CGO_ENABLED: 0 # disable cgo for go test
+      LOCALSTACK_ENDPOINT: "http://localstack:4566"
+      # Use the same filesystem to avoid a checksum mismatch error
+      # or a file busy error caused by asynchronous IO.
+      TF_PLUGIN_CACHE_DIR: "/tmp/plugin-cache"
+    depends_on:
+      - localstack
+
+  localstack:
+    image: localstack/localstack:0.14.2
+    ports:
+      - "4566:4566"
+    environment:
+      DEBUG: "true"
+      SERVICES: "s3"
+      DEFAULT_REGION: "ap-northeast-1"
+      # This s3 bucket is used for only remote state storage for testing
+      # and is not a target for upgrade.
+      S3_BUCKET: "tfstate-test"
+    volumes:
+      - "./scripts/localstack:/docker-entrypoint-initaws.d"  # initialize scripts on startup
+
+  dockerize:
+    image: jwilder/dockerize
+    depends_on:
+      - localstack
