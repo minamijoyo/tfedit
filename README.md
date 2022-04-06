@@ -12,7 +12,7 @@ Easy refactoring Terraform configurations in a scalable way.
 - Built-in operations:
   - filter awsv4upgrade: Upgrade configurations to AWS provider v4. Only `aws_s3_bucket` refactor is supported.
 
-In short, given the following Terraform configuration file:
+In short, given the following Terraform configuration file for the AWS provider v3:
 
 ```main.tf
 $ cat ./test-fixtures/awsv4upgrade/aws_s3_bucket/simple/main.tf
@@ -35,6 +35,8 @@ resource "aws_s3_bucket_acl" "example" {
   acl    = "private"
 }
 ```
+
+You can see the `acl` argument has been split into an `aws_s3_bucket_acl` resource for the AWS provider v4 compatible.
 
 Although the initial goal of this project is providing a way for bulk refactoring of the `aws_s3_bucket` resource required by breaking changes in AWS provider v4, but the project scope is not limited to specific use-cases. It's by no means intended to be an upgrade tool for all your providers. Instead of covering all you need, it provides reusable building blocks for Terraform refactoring and shows examples for how to compose them in real world use-cases.
 
@@ -94,7 +96,7 @@ Known limitations:
 
 ## Getting Started
 
-We recommend you to play an example in a sandbox environment first, which is safe to run `terraform` and `tfmigrate` command without any credentials. The sandbox environment mocks the AWS API with `localstack` and doesn't actually create any resources. So you can safely and easily understand how it works.
+We recommend you to play an example in a sandbox environment first, which is safe to run `terraform` and `tfmigrate` command without any credentials. The sandbox environment mocks the AWS API with [localstack](https://github.com/localstack/localstack) and doesn't actually create any resources. So you can safely and easily understand how it works.
 
 Build a sandbox environment with docker-compose and run bash:
 
@@ -171,7 +173,7 @@ Now, it's time to upgrade Terraform configuration to the AWS provider v4 compati
 # cat main.tf
 ```
 
-You can see the `acl` argument has been split into a `aws_s3_bucket_acl` resource:
+You can see the `acl` argument has been split into an `aws_s3_bucket_acl` resource:
 
 ```
 resource "aws_s3_bucket" "example" {
