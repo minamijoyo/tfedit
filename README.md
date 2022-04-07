@@ -82,6 +82,8 @@ Known limitations:
       - date = "2022-12-31" => date = "2022-12-31T00:00:00Z"
     - expiration:
       - date = "2022-12-31" => date = "2022-12-31T00:00:00Z"
+  - object_lock_configuration:
+    - object_lock_configuration.object_lock_enabled = "Enabled" => object_lock_enabled = true
   - versioning:
     - enabled = true => status = "Enabled"
     - enabled = false => It also depends on the current status of your bucket. Set `status = "Suspended"` or use `for_each` to avoid creating `aws_s3_bucket_versioning` resource.
