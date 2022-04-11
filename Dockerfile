@@ -12,6 +12,11 @@ ENV TFUPDATE_VERSION 0.6.5
 RUN curl -fsSL https://github.com/minamijoyo/tfupdate/releases/download/v${TFUPDATE_VERSION}/tfupdate_${TFUPDATE_VERSION}_linux_amd64.tar.gz \
   | tar -xzC /usr/local/bin && chmod +x /usr/local/bin/tfupdate
 
+# Install hcledit
+ENV HCLEDIT_VERSION 0.2.3
+RUN curl -fsSL https://github.com/minamijoyo/hcledit/releases/download/v${HCLEDIT_VERSION}/hcledit_${HCLEDIT_VERSION}_linux_amd64.tar.gz \
+  | tar -xzC /usr/local/bin && chmod +x /usr/local/bin/hcledit
+
 # Install tfmigrate
 ENV TFMIGRATE_VERSION 0.3.2
 RUN curl -fsSL https://github.com/minamijoyo/tfmigrate/releases/download/v${TFMIGRATE_VERSION}/tfmigrate_${TFMIGRATE_VERSION}_linux_amd64.tar.gz \
