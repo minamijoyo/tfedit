@@ -139,17 +139,22 @@ on linux_amd64
 aws_s3_bucket.example
 ```
 
-Then, let's upgrade the AWS provider to the latest v3.x, which allows you to refactor the `aws_s3_bucket` resource before upgrading v4. To update the provider version constraint, of course you can edit the `required_providers` block in the `config.tf` with your text editor, but it's easy to do with [tfupdate](https://github.com/minamijoyo/tfupdate):
+Then, let's upgrade the AWS provider to the latest v4.x. We recommend upgrading to v4.9.0 or later because before 4.9.0 includes some breaking changes. To update the provider version constraint, of course you can edit the `required_providers` block in the `config.tf` with your text editor, but it's easy to do with [tfupdate](https://github.com/minamijoyo/tfupdate):
 
 ```
-# tfupdate provider aws -v "~> 3.75" .
-
+# tfupdate provider aws -v "~> 4.9" .
 # terraform init -upgrade
-
 # terraform -v
 Terraform v1.1.7
 on linux_amd64
-+ provider registry.terraform.io/hashicorp/aws v3.75.1
++ provider registry.terraform.io/hashicorp/aws v4.9.0
+```
+
+One thing to note is that the `s3_force_path_style` attribute in the `provider "aws"` block has been renamed to a new `s3_use_path_style` attribute in v4, so rename it with [hcledit](https://github.com/minamijoyo/hcledit). This is an issue in the sandbox environment and this step is not needed in a real AWS environment:
+
+```
+# hcledit attribute rm -u -f config.tf provider.aws.s3_force_path_style
+# hcledit attribute append -u -f config.tf provider.aws.s3_use_path_style true
 ```
 
 You can see a deprecation warning as follows:
@@ -238,7 +243,7 @@ YYYY/MM/DD hh:mm:ss [INFO] [migrator] state migrator apply success!
 The apply command computes a new state and pushes it to remote state.
 It will fail if the `terraform plan` command detects any diffs with the new state.
 
-You can confirm the latest remote state has no changes with the `terraform plan` command:
+Finally, You can confirm the latest remote state has no changes with the `terraform plan` command in v4:
 
 ```
 # terraform plan
@@ -248,37 +253,6 @@ No changes. Infrastructure is up-to-date.
 # terraform state list
 aws_s3_bucket.example
 aws_s3_bucket_acl.example
-```
-
-Finally, let's upgrade the AWS provider to the latest v4.x:
-
-```
-# tfupdate provider aws -v "~> 4.0" .
-# terraform init -upgrade
-# terraform -v
-Terraform v1.1.7
-on linux_amd64
-+ provider registry.terraform.io/hashicorp/aws v4.8.0
-
-# terraform validate
-╷
-│ Warning: Argument is deprecated
-│
-│   with provider["registry.terraform.io/hashicorp/aws"],
-│   on config.tf line 36, in provider "aws":
-│   36:   s3_force_path_style         = true
-│
-│ Use s3_use_path_style instead.
-```
-
-You will get the `s3_force_path_style` warning, but this is an issue caused by the sandbox environment using `localstack`, so it's ok to ignore it. (To resolve the warning, use `s3_use_path_style` instead, but note that this option is not available in v3.)
-
-You can confirm that the result of the `terraform plan` command is no changes in v4:
-
-```
-# terraform plan
-(snip.)
-No changes. Infrastructure is up-to-date.
 ```
 
 To clean up the sandbox environment:
