@@ -22,5 +22,13 @@ lint:
 test: build
 	go test ./...
 
+.PHONY: testacc-awsv4upgrade
+testacc-awsv4upgrade: install
+	scripts/testacc/awsv4upgrade.sh $(ARG)
+
+.PHONY: testacc-all
+testacc-all: install
+	scripts/testacc/all.sh
+
 .PHONY: check
 check: lint test

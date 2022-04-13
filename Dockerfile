@@ -2,7 +2,7 @@ ARG TERRAFORM_VERSION=latest
 FROM hashicorp/terraform:$TERRAFORM_VERSION AS terraform
 
 FROM golang:1.17.8-alpine3.15
-RUN apk --no-cache add make git bash curl
+RUN apk --no-cache add make git bash curl jq
 
 # Install terraform
 COPY --from=terraform /bin/terraform /usr/local/bin/

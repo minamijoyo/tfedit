@@ -130,7 +130,7 @@ Apply it and create the `aws_s3_bucket` resource with the AWS provider v3.74.3, 
 
 ```
 # terraform -v
-Terraform v1.1.7
+Terraform v1.1.8
 on linux_amd64
 + provider registry.terraform.io/hashicorp/aws v3.74.3
 
@@ -145,7 +145,7 @@ Then, let's upgrade the AWS provider to the latest v4.x. We recommend upgrading 
 # tfupdate provider aws -v "~> 4.9" .
 # terraform init -upgrade
 # terraform -v
-Terraform v1.1.7
+Terraform v1.1.8
 on linux_amd64
 + provider registry.terraform.io/hashicorp/aws v4.9.0
 ```
@@ -263,6 +263,12 @@ To clean up the sandbox environment:
 # rm -rf tmp/dir1
 # exit
 $ docker-compose down
+```
+
+Tips: If you see something was wrong, you can run the `awslocal` command, which is configured to call AWS APIs to the localstack endpoint:
+
+```
+$ docker exec -it tfedit_localstack_1 awslocal s3api list-buckets
 ```
 
 ## Install
