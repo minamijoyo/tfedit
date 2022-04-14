@@ -20,6 +20,26 @@ func TestAWSS3BucketFilter(t *testing.T) {
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
   acl    = "private"
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+}
+
+resource "aws_s3_bucket_acl" "example" {
+  bucket = aws_s3_bucket.example.id
+  acl    = "private"
+}
+`,
+		},
+		{
+			name: "multiple arguments",
+			src: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+  acl    = "private"
 
   logging {
     target_bucket = "tfedit-test-log"
@@ -135,8 +155,19 @@ resource "aws_s3_bucket_foo" "example" {
 `,
 		},
 		{
-			name: "all arguments",
+			name: "full arguments except for grant",
 			src: `
+resource "aws_s3_bucket" "log" {
+  bucket = "tfedit-log"
+
+  # You must give the log-delivery group WRITE and READ_ACP permissions to the target bucket
+  acl = "log-delivery-write"
+}
+
+resource "aws_s3_bucket" "destination" {
+  bucket = "tfedit-destination"
+}
+
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
   acceleration_status = "Enabled"
@@ -171,7 +202,7 @@ resource "aws_s3_bucket" "example" {
   }
 
   logging {
-    target_bucket = "tfedit-test-log"
+    target_bucket = aws_s3_bucket.log.id
     target_prefix = "log/"
   }
 
@@ -194,9 +225,9 @@ resource "aws_s3_bucket" "example" {
       "Action": "s3:PutObject",
       "Effect": "Allow",
       "Principal": {
-        "AWS": "${data.aws_elb_service_account.current.arn}"
+        "AWS": "arn:aws:iam::123456789012:root"
       },
-      "Resource": "arn:${data.aws_partition.current.partition}:s3:::example/*",
+      "Resource": "arn:aws:s3:::example/*",
       "Sid": "Stmt1446575236270"
     }
   ],
@@ -205,7 +236,7 @@ resource "aws_s3_bucket" "example" {
 EOF
 
   replication_configuration {
-    role = aws_iam_role.replication.arn
+    role = "arn:aws:iam::123456789012:role/tfedit-role"
     rules {
       id     = "foobar"
       status = "Enabled"
@@ -235,7 +266,7 @@ EOF
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
-        kms_master_key_id = aws_kms_key.mykey.arn
+        kms_master_key_id = "aws/s3"
         sse_algorithm     = "aws:kms"
       }
     }
@@ -253,10 +284,24 @@ EOF
 `,
 			ok: true,
 			want: `
+resource "aws_s3_bucket" "log" {
+  bucket = "tfedit-log"
+}
+
+resource "aws_s3_bucket" "destination" {
+  bucket = "tfedit-destination"
+}
+
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
 
   object_lock_enabled = true
+}
+
+resource "aws_s3_bucket_acl" "log" {
+  bucket = aws_s3_bucket.log.id
+  # You must give the log-delivery group WRITE and READ_ACP permissions to the target bucket
+  acl = "log-delivery-write"
 }
 
 resource "aws_s3_bucket_accelerate_configuration" "example" {
@@ -319,7 +364,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "example" {
 resource "aws_s3_bucket_logging" "example" {
   bucket = aws_s3_bucket.example.id
 
-  target_bucket = "tfedit-test-log"
+  target_bucket = aws_s3_bucket.log.id
   target_prefix = "log/"
 }
 
@@ -344,9 +389,9 @@ resource "aws_s3_bucket_policy" "example" {
       "Action": "s3:PutObject",
       "Effect": "Allow",
       "Principal": {
-        "AWS": "${data.aws_elb_service_account.current.arn}"
+        "AWS": "arn:aws:iam::123456789012:root"
       },
-      "Resource": "arn:${data.aws_partition.current.partition}:s3:::example/*",
+      "Resource": "arn:aws:s3:::example/*",
       "Sid": "Stmt1446575236270"
     }
   ],
@@ -357,7 +402,7 @@ EOF
 
 resource "aws_s3_bucket_replication_configuration" "example" {
   bucket = aws_s3_bucket.example.id
-  role   = aws_iam_role.replication.arn
+  role   = "arn:aws:iam::123456789012:role/tfedit-role"
 
   rule {
     id     = "foobar"
@@ -402,7 +447,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
 
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.mykey.arn
+      kms_master_key_id = "aws/s3"
       sse_algorithm     = "aws:kms"
     }
   }
@@ -433,6 +478,8 @@ resource "aws_s3_bucket_website_configuration" "example" {
 		{
 			name: "grant (conflict with acl)",
 			src: `
+data "aws_canonical_user_id" "current_user" {}
+
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
 
@@ -451,6 +498,8 @@ resource "aws_s3_bucket" "example" {
 `,
 			ok: true,
 			want: `
+data "aws_canonical_user_id" "current_user" {}
+
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
 }

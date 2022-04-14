@@ -18,17 +18,31 @@ func TestAWSS3BucketLoggingFilter(t *testing.T) {
 		{
 			name: "simple",
 			src: `
+resource "aws_s3_bucket" "log" {
+  bucket = "tfedit-log"
+
+  # You must give the log-delivery group WRITE and READ_ACP permissions to the target bucket
+  acl = "log-delivery-write"
+}
+
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
 
   logging {
-    target_bucket = "tfedit-test-log"
+    target_bucket = aws_s3_bucket.log.id
     target_prefix = "log/"
   }
 }
 `,
 			ok: true,
 			want: `
+resource "aws_s3_bucket" "log" {
+  bucket = "tfedit-log"
+
+  # You must give the log-delivery group WRITE and READ_ACP permissions to the target bucket
+  acl = "log-delivery-write"
+}
+
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
 
@@ -37,7 +51,7 @@ resource "aws_s3_bucket" "example" {
 resource "aws_s3_bucket_logging" "example" {
   bucket = aws_s3_bucket.example.id
 
-  target_bucket = "tfedit-test-log"
+  target_bucket = aws_s3_bucket.log.id
   target_prefix = "log/"
 }
 `,

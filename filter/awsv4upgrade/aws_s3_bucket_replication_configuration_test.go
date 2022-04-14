@@ -18,11 +18,15 @@ func TestAWSS3BucketReplicationConfigurationFilter(t *testing.T) {
 		{
 			name: "simple",
 			src: `
+resource "aws_s3_bucket" "destination" {
+  bucket = "tfedit-destination"
+}
+
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
 
   replication_configuration {
-    role = aws_iam_role.replication.arn
+    role = "arn:aws:iam::123456789012:role/tfedit-role"
     rules {
       id     = "foobar"
       status = "Enabled"
@@ -46,18 +50,32 @@ resource "aws_s3_bucket" "example" {
       }
     }
   }
+
+  # versioning must be enabled to allow S3 bucket replication
+	versioning {
+    enabled = true
+  }
 }
 `,
 			ok: true,
 			want: `
+resource "aws_s3_bucket" "destination" {
+  bucket = "tfedit-destination"
+}
+
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
 
+
+  # versioning must be enabled to allow S3 bucket replication
+  versioning {
+    enabled = true
+  }
 }
 
 resource "aws_s3_bucket_replication_configuration" "example" {
   bucket = aws_s3_bucket.example.id
-  role   = aws_iam_role.replication.arn
+  role   = "arn:aws:iam::123456789012:role/tfedit-role"
 
   rule {
     id     = "foobar"
