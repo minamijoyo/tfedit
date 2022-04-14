@@ -28,9 +28,9 @@ resource "aws_s3_bucket" "example" {
       "Action": "s3:PutObject",
       "Effect": "Allow",
       "Principal": {
-        "AWS": "${data.aws_elb_service_account.current.arn}"
+        "AWS": "arn:aws:iam::123456789012:root"
       },
-      "Resource": "arn:${data.aws_partition.current.partition}:s3:::example/*",
+      "Resource": "arn:aws:s3:::example/*",
       "Sid": "Stmt1446575236270"
     }
   ],
@@ -55,9 +55,9 @@ resource "aws_s3_bucket_policy" "example" {
       "Action": "s3:PutObject",
       "Effect": "Allow",
       "Principal": {
-        "AWS": "${data.aws_elb_service_account.current.arn}"
+        "AWS": "arn:aws:iam::123456789012:root"
       },
-      "Resource": "arn:${data.aws_partition.current.partition}:s3:::example/*",
+      "Resource": "arn:aws:s3:::example/*",
       "Sid": "Stmt1446575236270"
     }
   ],

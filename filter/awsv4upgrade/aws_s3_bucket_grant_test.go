@@ -18,6 +18,8 @@ func TestAWSS3BucketGrantFilter(t *testing.T) {
 		{
 			name: "simple",
 			src: `
+data "aws_canonical_user_id" "current_user" {}
+
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
 
@@ -36,6 +38,8 @@ resource "aws_s3_bucket" "example" {
 `,
 			ok: true,
 			want: `
+data "aws_canonical_user_id" "current_user" {}
+
 resource "aws_s3_bucket" "example" {
   bucket = "tfedit-test"
 

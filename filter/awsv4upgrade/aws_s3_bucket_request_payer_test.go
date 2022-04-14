@@ -19,7 +19,7 @@ func TestAWSS3BucketRequestPayerFilter(t *testing.T) {
 			name: "simple",
 			src: `
 resource "aws_s3_bucket" "example" {
-  bucket = "tfedit-test"
+  bucket        = "tfedit-test"
   request_payer = "Requester"
 }
 `,
