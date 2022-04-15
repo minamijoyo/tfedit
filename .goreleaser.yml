@@ -1,0 +1,38 @@
+# .goreleaser.yml
+# Build customization
+builds:
+  - binary: tfedit
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+release:
+  prerelease: auto
+changelog:
+  filters:
+    exclude:
+      - Merge pull request
+      - Merge branch
+      - Update README
+      - Update CHANGELOG
+brews:
+  - tap:
+      owner: minamijoyo
+      name: homebrew-tfedit
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    commit_author:
+      name: "Masayuki Morita"
+      email: minamijoyo@gmail.com
+    homepage: https://github.com/minamijoyo/tfedit
+    description: "A refactoring tool for Terraform"
+    skip_upload: auto
+    test: |
+      system "#{bin}/tfedit version"
+    install: |
+      bin.install "tfedit"
