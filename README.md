@@ -309,18 +309,35 @@ Use "tfedit [command] --help" for more information about a command.
 $ tfedit filter --help
 Apply a built-in filter
 
-Arguments:
-  FILTER_TYPE    A type of filter.
-                 Valid values are:
-                 - awsv4upgrade
-                   Upgrade configurations to AWS provider v4.
-                   Only aws_s3_bucket refactor is supported.
-
 Usage:
-  tfedit filter <FILTER_TYPE> [flags]
+  tfedit filter [flags]
+  tfedit filter [command]
+
+Available Commands:
+  awsv4upgrade Apply a built-in filter for awsv4upgrade
 
 Flags:
   -h, --help   help for filter
+
+Global Flags:
+  -f, --file string   A path of input file (default "-")
+  -u, --update        Update files in-place
+
+Use "tfedit filter [command] --help" for more information about a command.
+```
+
+```
+$ tfedit filter awsv4upgrade --help
+Apply a built-in filter for awsv4upgrade
+
+Upgrade configurations to AWS provider v4.
+Only aws_s3_bucket refactor is supported.
+
+Usage:
+  tfedit filter awsv4upgrade [flags]
+
+Flags:
+  -h, --help   help for awsv4upgrade
 
 Global Flags:
   -f, --file string   A path of input file (default "-")

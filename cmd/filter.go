@@ -14,31 +14,43 @@ func init() {
 
 func newFilterCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "filter <FILTER_TYPE>",
+		Use:   "filter",
 		Short: "Apply a built-in filter",
-		Long: `Apply a built-in filter
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return cmd.Help()
+		},
+	}
 
-Arguments:
-  FILTER_TYPE    A type of filter.
-                 Valid values are:
-                 - awsv4upgrade
-                   Upgrade configurations to AWS provider v4.
-                   Only aws_s3_bucket refactor is supported.
+	cmd.AddCommand(
+		newFilterAwsv4upgradeCmd(),
+	)
+
+	return cmd
+}
+
+func newFilterAwsv4upgradeCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "awsv4upgrade",
+		Short: "Apply a built-in filter for awsv4upgrade",
+		Long: `Apply a built-in filter for awsv4upgrade
+
+Upgrade configurations to AWS provider v4.
+Only aws_s3_bucket refactor is supported.
 `,
-		RunE: runFilterCmd,
+		RunE: runFilterAwsv4upgradeCmd,
 	}
 
 	return cmd
 }
 
-func runFilterCmd(cmd *cobra.Command, args []string) error {
-	if len(args) != 1 {
-		return fmt.Errorf("expected 1 argument, but got %d arguments", len(args))
+func runFilterAwsv4upgradeCmd(cmd *cobra.Command, args []string) error {
+	if len(args) != 0 {
+		return fmt.Errorf("expected 0 argument, but got %d arguments", len(args))
 	}
 
 	file := viper.GetString("file")
 	update := viper.GetBool("update")
-	filter, err := filter.NewFilterByType(args[0])
+	filter, err := filter.NewFilterByType("awsv4upgrade")
 	if err != nil {
 		return err
 	}
