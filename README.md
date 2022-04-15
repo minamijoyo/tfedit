@@ -273,6 +273,20 @@ $ docker exec -it tfedit_localstack_1 awslocal s3api list-buckets
 
 ## Install
 
+### Homebrew
+
+If you are macOS user:
+
+```
+$ brew install minamijoyo/tfedit/tfedit
+```
+
+### Download
+
+Download the latest compiled binaries and put it anywhere in your executable path.
+
+https://github.com/minamijoyo/tfedit/releases
+
 ### Source
 
 If you have Go 1.17+ development environment:
