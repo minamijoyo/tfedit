@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"os"
 	"text/template"
 
 	tfjson "github.com/hashicorp/terraform-json"
@@ -29,14 +28,9 @@ func (r *AWSS3BucketACLFilterResource) ID() string {
 	return r.Bucket + "," + r.ACL
 }
 
-func Generate(planFile string) ([]byte, error) {
-	b, err := os.ReadFile(planFile)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read file: %s", err)
-	}
-
+func Generate(planJSON []byte) ([]byte, error) {
 	var plan tfjson.Plan
-	if err := json.Unmarshal(b, &plan); err != nil {
+	if err := json.Unmarshal(planJSON, &plan); err != nil {
 		return nil, fmt.Errorf("failed to parse plan file: %s", err)
 	}
 

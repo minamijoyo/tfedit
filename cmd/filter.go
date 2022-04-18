@@ -11,7 +11,7 @@ import (
 func init() {
 	filterCmd := newFilterCmd()
 	flags := filterCmd.PersistentFlags()
-	flags.StringP("file", "f", "-", "A path of input file")
+	flags.StringP("file", "f", "-", "A path to input Terraform configuration file")
 	flags.BoolP("update", "u", false, "Update files in-place")
 	_ = viper.BindPFlag("file", flags.Lookup("file"))
 	_ = viper.BindPFlag("update", flags.Lookup("update"))
