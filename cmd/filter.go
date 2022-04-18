@@ -9,7 +9,14 @@ import (
 )
 
 func init() {
-	RootCmd.AddCommand(newFilterCmd())
+	filterCmd := newFilterCmd()
+	flags := filterCmd.PersistentFlags()
+	flags.StringP("file", "f", "-", "A path of input file")
+	flags.BoolP("update", "u", false, "Update files in-place")
+	_ = viper.BindPFlag("file", flags.Lookup("file"))
+	_ = viper.BindPFlag("update", flags.Lookup("update"))
+
+	RootCmd.AddCommand(filterCmd)
 }
 
 func newFilterCmd() *cobra.Command {
