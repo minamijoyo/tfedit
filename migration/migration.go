@@ -7,7 +7,8 @@ import (
 	"text/template"
 
 	tfjson "github.com/hashicorp/terraform-json"
-	"github.com/mitchellh/mapstructure"
+	"github.com/minamijoyo/tfedit/migration/schema"
+	_ "github.com/minamijoyo/tfedit/migration/schema/aws"
 )
 
 var migrationTemplate string = `migration "state" "awsv4upgrade" {
@@ -18,15 +19,6 @@ var migrationTemplate string = `migration "state" "awsv4upgrade" {
   ]
 }
 `
-
-type AWSS3BucketACLFilterResource struct {
-	Bucket string
-	ACL    string
-}
-
-func (r *AWSS3BucketACLFilterResource) ID() string {
-	return r.Bucket + "," + r.ACL
-}
 
 func Generate(planJSON []byte) ([]byte, error) {
 	var plan tfjson.Plan
@@ -39,9 +31,8 @@ func Generate(planJSON []byte) ([]byte, error) {
 		if rc.Change.Actions.Create() {
 			address := rc.Address
 			after := rc.Change.After.(map[string]interface{})
-			var r AWSS3BucketACLFilterResource
-			mapstructure.Decode(after, &r)
-			migrateAction := fmt.Sprintf("import %s %s", address, r.ID())
+			importID := schema.ImportID(rc.Type, after)
+			migrateAction := fmt.Sprintf("import %s %s", address, importID)
 			migrateActions = append(migrateActions, migrateAction)
 		}
 	}
