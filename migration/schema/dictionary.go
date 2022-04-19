@@ -1,5 +1,7 @@
 package schema
 
+import "strings"
+
 type Resource map[string]interface{}
 type ImportIDFunc func(r Resource) string
 
@@ -30,4 +32,20 @@ func RegisterImportIDFunc(resourceType string, f ImportIDFunc) {
 
 func ImportID(resourceType string, r Resource) string {
 	return defaultDictionary.ImportID(resourceType, r)
+}
+
+func ImportIDFuncByAttribute(key string) ImportIDFunc {
+	return func(r Resource) string {
+		return r[key].(string)
+	}
+}
+
+func ImportIDFuncByMultiAttributes(keys []string, sep string) ImportIDFunc {
+	return func(r Resource) string {
+		elems := []string{}
+		for _, key := range keys {
+			elems = append(elems, r[key].(string))
+		}
+		return strings.Join(elems, sep)
+	}
 }
