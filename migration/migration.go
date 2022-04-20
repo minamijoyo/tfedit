@@ -1,26 +1,51 @@
 package migration
 
 import (
-	"github.com/minamijoyo/tfedit/migration/schema"
-	_ "github.com/minamijoyo/tfedit/migration/schema/aws" // Register schema for aws
+	"bytes"
+	"fmt"
+	"text/template"
 )
 
-func Generate(planJSON []byte) ([]byte, error) {
-	plan, err := NewPlan(planJSON)
-	if err != nil {
-		return nil, err
+// StateMigration is a type which is equivalent to tfmigrate.StateMigratorConfig of
+// minamijoyo/tfmigrate.
+// The current implementation doesn't encode migration actions to a file
+// directly with gohcl, so we avoid to depend on tfmigrate's type and we define
+// only what we need here.
+type StateMigration struct {
+	// Dir is a working directory for executing terraform command.
+	Dir string
+	// Actions is a list of state action.
+	Actions []Action
+}
+
+var migrationTemplate = `migration "state" "awsv4upgrade" {
+  actions = [
+  {{- range .Actions }}
+    "{{ .MigrationAction }}",
+  {{- end }}
+  ]
+}
+`
+
+var compiledMigrationTemplate = template.Must(template.New("migration").Parse(migrationTemplate))
+
+// AppendActions appends a list of actions to migration.
+func (m *StateMigration) AppendActions(actions ...Action) {
+	m.Actions = append(m.Actions, actions...)
+}
+
+// Render converts a state migration config to bytes
+// Encoding StateMigratorConfig directly with gohcl has some problems.
+// An array contains multiple elements is output as one line. It's not readable
+// for multiple actions. In additon, the default value is set explicitly, it's
+// not only redundant but also increases cognitive load for user who isn't
+// familiar with tfmigrate.
+// So we use text/template to render a migration file.
+func (m *StateMigration) Render() ([]byte, error) {
+	var output bytes.Buffer
+	if err := compiledMigrationTemplate.Execute(&output, m); err != nil {
+		return nil, fmt.Errorf("failed to render migration file: %s", err)
 	}
 
-	var migration StateMigration
-	for _, rc := range plan.ResourceChanges() {
-		if rc.Change.Actions.Create() {
-			address := rc.Address
-			after := rc.Change.After.(map[string]interface{})
-			importID := schema.ImportID(rc.Type, after)
-			action := NewStateImportAction(address, importID)
-			migration.AppendAction(action)
-		}
-	}
-
-	return migration.Render()
+	return output.Bytes(), nil
 }
