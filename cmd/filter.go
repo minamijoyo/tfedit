@@ -13,8 +13,8 @@ func init() {
 	flags := filterCmd.PersistentFlags()
 	flags.StringP("file", "f", "-", "A path to input Terraform configuration file")
 	flags.BoolP("update", "u", false, "Update files in-place")
-	_ = viper.BindPFlag("file", flags.Lookup("file"))
-	_ = viper.BindPFlag("update", flags.Lookup("update"))
+	_ = viper.BindPFlag("filter.file", flags.Lookup("file"))
+	_ = viper.BindPFlag("filter.update", flags.Lookup("update"))
 
 	RootCmd.AddCommand(filterCmd)
 }
@@ -55,8 +55,8 @@ func runFilterAwsv4upgradeCmd(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("expected 0 argument, but got %d arguments", len(args))
 	}
 
-	file := viper.GetString("file")
-	update := viper.GetBool("update")
+	file := viper.GetString("filter.file")
+	update := viper.GetBool("filter.update")
 	filter, err := filter.NewFilterByType("awsv4upgrade")
 	if err != nil {
 		return err

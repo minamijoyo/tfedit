@@ -15,8 +15,8 @@ func init() {
 	flags := migrationCmd.PersistentFlags()
 	flags.StringP("file", "f", "-", "A path to input Terraform plan file in JSON format")
 	flags.StringP("out", "o", "-", "Write a migration file to a given path")
-	_ = viper.BindPFlag("file", flags.Lookup("file"))
-	_ = viper.BindPFlag("out", flags.Lookup("out"))
+	_ = viper.BindPFlag("migration.file", flags.Lookup("file"))
+	_ = viper.BindPFlag("migration.out", flags.Lookup("out"))
 
 	RootCmd.AddCommand(migrationCmd)
 }
@@ -58,8 +58,8 @@ func runMigrationAwsv4upgradeCmd(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("expected 0 argument, but got %d arguments", len(args))
 	}
 
-	planFile := viper.GetString("file")
-	migrationFile := viper.GetString("out")
+	planFile := viper.GetString("migration.file")
+	migrationFile := viper.GetString("migration.out")
 
 	var planJSON []byte
 	var err error
