@@ -8,7 +8,7 @@ import (
 
 	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/minamijoyo/tfedit/migration/schema"
-	_ "github.com/minamijoyo/tfedit/migration/schema/aws"
+	_ "github.com/minamijoyo/tfedit/migration/schema/aws" // Register schema for aws
 )
 
 var migrationTemplate string = `migration "state" "awsv4upgrade" {
