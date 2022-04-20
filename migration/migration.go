@@ -21,8 +21,8 @@ func Generate(planJSON []byte) ([]byte, error) {
 			address := rc.Address
 			after := rc.Change.After.(map[string]interface{})
 			importID := schema.ImportID(rc.Type, after)
-			migrateAction := fmt.Sprintf("import %s %s", address, importID)
-			file.AppendAction(migrateAction)
+			action := NewStateImportAction(address, importID)
+			file.AppendAction(action)
 		}
 	}
 
