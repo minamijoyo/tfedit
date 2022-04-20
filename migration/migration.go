@@ -15,16 +15,16 @@ func Generate(planJSON []byte) ([]byte, error) {
 		return nil, fmt.Errorf("failed to parse plan file: %s", err)
 	}
 
-	var file File
+	var migration StateMigration
 	for _, rc := range plan.ResourceChanges {
 		if rc.Change.Actions.Create() {
 			address := rc.Address
 			after := rc.Change.After.(map[string]interface{})
 			importID := schema.ImportID(rc.Type, after)
 			action := NewStateImportAction(address, importID)
-			file.AppendAction(action)
+			migration.AppendAction(action)
 		}
 	}
 
-	return file.Render()
+	return migration.Render()
 }
