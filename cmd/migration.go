@@ -86,7 +86,7 @@ func runMigrationAwsv4upgradeCmd(cmd *cobra.Command, args []string) error {
 	if migrationFile == "-" {
 		fmt.Fprintf(cmd.OutOrStdout(), string(output))
 	} else {
-		if err := os.WriteFile(migrationFile, output, os.ModePerm); err != nil {
+		if err := os.WriteFile(migrationFile, output, 0644); err != nil {
 			return fmt.Errorf("failed to write file: %s", err)
 		}
 	}

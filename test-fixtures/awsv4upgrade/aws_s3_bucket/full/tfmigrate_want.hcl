@@ -1,8 +1,6 @@
-migration "state" "test" {
+migration "state" "fromplan" {
   actions = [
-    # You must give the log-delivery group WRITE and READ_ACP permissions to the target bucket
     "import aws_s3_bucket_acl.log tfedit-log,log-delivery-write",
-
     "import aws_s3_bucket_accelerate_configuration.example tfedit-test",
     "import aws_s3_bucket_acl.example tfedit-test,private",
     "import aws_s3_bucket_cors_configuration.example tfedit-test",
