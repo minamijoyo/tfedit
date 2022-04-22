@@ -9,13 +9,12 @@ import (
 // StateMigration is a type which is equivalent to tfmigrate.StateMigratorConfig of
 // minamijoyo/tfmigrate.
 // The current implementation doesn't encode migration actions to a file
-// directly with gohcl, so we avoid to depend on tfmigrate's type and we define
-// only what we need here.
+// directly with gohcl, so we define only what we need here.
 type StateMigration struct {
 	// Dir is a working directory for executing terraform command.
 	Dir string
 	// Actions is a list of state action.
-	Actions []Action
+	Actions []StateAction
 }
 
 var migrationTemplate = `migration "state" "awsv4upgrade" {
@@ -30,7 +29,7 @@ var migrationTemplate = `migration "state" "awsv4upgrade" {
 var compiledMigrationTemplate = template.Must(template.New("migration").Parse(migrationTemplate))
 
 // AppendActions appends a list of actions to migration.
-func (m *StateMigration) AppendActions(actions ...Action) {
+func (m *StateMigration) AppendActions(actions ...StateAction) {
 	m.Actions = append(m.Actions, actions...)
 }
 

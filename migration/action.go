@@ -2,22 +2,22 @@ package migration
 
 import "fmt"
 
-// Action is an interface of terraform command for state migration.
-type Action interface {
+// StateAction is an interface of terraform command for state migration.
+type StateAction interface {
 	// MigrationAction returns a string of terraform command for state migration.
 	MigrationAction() string
 }
 
-// StateImportAction implements the Action interface.
+// StateImportAction implements the StateAction interface.
 type StateImportAction struct {
 	address string
 	id      string
 }
 
-var _ Action = (*StateImportAction)(nil)
+var _ StateAction = (*StateImportAction)(nil)
 
 // NewStateImportAction returns a new instance of StateImportAction.
-func NewStateImportAction(address string, id string) Action {
+func NewStateImportAction(address string, id string) StateAction {
 	return &StateImportAction{
 		address: address,
 		id:      id,
