@@ -20,6 +20,9 @@ type StateMigration struct {
 }
 
 var migrationTemplate = `migration "state" "{{ .Name }}" {
+{{- if ne .Dir "" }}
+  dir = "{{ .Dir }}"
+{{- end }}
   actions = [
   {{- range .Actions }}
     "{{ .MigrationAction }}",
@@ -31,9 +34,10 @@ var migrationTemplate = `migration "state" "{{ .Name }}" {
 var compiledMigrationTemplate = template.Must(template.New("migration").Parse(migrationTemplate))
 
 // NewStateMigration returns a new instance of StateMigration.
-func NewStateMigration(name string) *StateMigration {
+func NewStateMigration(name string, dir string) *StateMigration {
 	return &StateMigration{
 		Name: name,
+		Dir:  dir,
 	}
 }
 

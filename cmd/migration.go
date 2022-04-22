@@ -15,8 +15,10 @@ func init() {
 	flags := migrationCmd.PersistentFlags()
 	flags.StringP("file", "f", "-", "A path to input Terraform plan file in JSON format")
 	flags.StringP("out", "o", "-", "Write a migration file to a given path")
+	flags.StringP("dir", "d", "", "Set a dir attribute in a migration file")
 	_ = viper.BindPFlag("migration.file", flags.Lookup("file"))
 	_ = viper.BindPFlag("migration.out", flags.Lookup("out"))
+	_ = viper.BindPFlag("migration.dir", flags.Lookup("dir"))
 
 	RootCmd.AddCommand(migrationCmd)
 }
@@ -60,6 +62,7 @@ func runMigrationAwsv4upgradeCmd(cmd *cobra.Command, args []string) error {
 
 	planFile := viper.GetString("migration.file")
 	migrationFile := viper.GetString("migration.out")
+	migrationDir := viper.GetString("migration.dir")
 
 	var planJSON []byte
 	var err error
@@ -75,7 +78,7 @@ func runMigrationAwsv4upgradeCmd(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	output, err := migration.Generate(planJSON)
+	output, err := migration.Generate(planJSON, migrationDir)
 	if err != nil {
 		return err
 	}
