@@ -32,7 +32,7 @@ func NewDefaultPlanAnalyzer() PlanAnalyzer {
 func (a *defaultPlanAnalyzer) Analyze(plan *Plan) *StateMigration {
 	subject := NewSubject(plan)
 
-	var migration StateMigration
+	migration := NewStateMigration("fromplan")
 	current := subject
 	for _, r := range a.resolvers {
 		next, actions := r.Resolve(current)
@@ -40,5 +40,5 @@ func (a *defaultPlanAnalyzer) Analyze(plan *Plan) *StateMigration {
 		current = next
 	}
 
-	return &migration
+	return migration
 }
