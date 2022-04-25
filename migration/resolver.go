@@ -2,7 +2,6 @@ package migration
 
 import (
 	"github.com/minamijoyo/tfedit/migration/schema"
-	_ "github.com/minamijoyo/tfedit/migration/schema/aws" // Register schema for aws
 )
 
 // Resolver is an interface that abstracts a rule for solving a subject.
@@ -14,9 +13,18 @@ type Resolver interface {
 
 // StateImportResolver is an implementation of Resolver for import.
 type StateImportResolver struct {
+	// A dictionary for provider schema.
+	dictionary *schema.Dictionary
 }
 
 var _ Resolver = (*StateImportResolver)(nil)
+
+// NewStateImportResolver returns a new instance of StateImportResolver.
+func NewStateImportResolver(d *schema.Dictionary) Resolver {
+	return &StateImportResolver{
+		dictionary: d,
+	}
+}
 
 // Resolve tries to resolve some conflicts in a given subject and returns the
 // updated subject and state migration actions.
@@ -30,7 +38,7 @@ func (r *StateImportResolver) Resolve(s *Subject) (*Subject, []StateAction) {
 
 		switch c.PlannedActionType() {
 		case "create":
-			importID := schema.ImportID(c.ResourceType(), c.ResourceAfter())
+			importID := r.dictionary.ImportID(c.ResourceType(), c.ResourceAfter())
 			action := NewStateImportAction(c.Address(), importID)
 			actions = append(actions, action)
 			c.MarkAsResolved()

@@ -2,14 +2,8 @@ package aws
 
 import "github.com/minamijoyo/tfedit/migration/schema"
 
-func init() {
-	registerS3Schema()
-}
-
-// registerS3Schema defines calculation functions of import ID for each resource type.
-// It's expected to be called on initialize by blank import.
-func registerS3Schema() {
-	importIDMap := map[string]schema.ImportIDFunc{
+func registerS3Schema(d *schema.Dictionary) {
+	d.RegisterImportIDFuncMap(map[string]schema.ImportIDFunc{
 		"aws_s3_bucket_accelerate_configuration":             schema.ImportIDFuncByAttribute("bucket"),
 		"aws_s3_bucket_acl":                                  schema.ImportIDFuncByMultiAttributes([]string{"bucket", "acl"}, ","),
 		"aws_s3_bucket_cors_configuration":                   schema.ImportIDFuncByAttribute("bucket"),
@@ -22,9 +16,5 @@ func registerS3Schema() {
 		"aws_s3_bucket_server_side_encryption_configuration": schema.ImportIDFuncByAttribute("bucket"),
 		"aws_s3_bucket_versioning":                           schema.ImportIDFuncByAttribute("bucket"),
 		"aws_s3_bucket_website_configuration":                schema.ImportIDFuncByAttribute("bucket"),
-	}
-
-	for k, v := range importIDMap {
-		schema.RegisterImportIDFunc(k, v)
-	}
+	})
 }

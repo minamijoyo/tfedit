@@ -1,6 +1,8 @@
 package schema
 
-import "strings"
+import (
+	"strings"
+)
 
 // Resource is a type which is equivalent to a type of
 // Plan.ResourceChanges[].Change.After in hashicorp/terraform-json,
@@ -29,25 +31,17 @@ func (d *Dictionary) RegisterImportIDFunc(resourceType string, f ImportIDFunc) {
 	d.importIDMap[resourceType] = f
 }
 
+// RegisterImportIDFuncMap is a helper method to register a map of ImportIDFunc.
+func (d *Dictionary) RegisterImportIDFuncMap(importIDFuncMap map[string]ImportIDFunc) {
+	for k, v := range importIDFuncMap {
+		d.RegisterImportIDFunc(k, v)
+	}
+}
+
 // ImportID calculates an import ID from a given resource.
 func (d *Dictionary) ImportID(resourceType string, r Resource) string {
 	f := d.importIDMap[resourceType]
 	return f(r)
-}
-
-// defaultDictionary is defined as a package variable so that definitions
-// for each resource type can be registered from outside the package.
-var defaultDictionary = NewDictionary()
-
-// RegisterImportIDFunc registers an ImportIDFunc for a given resource type to
-// the default Dictionary.
-func RegisterImportIDFunc(resourceType string, f ImportIDFunc) {
-	defaultDictionary.RegisterImportIDFunc(resourceType, f)
-}
-
-// ImportID calculates an import ID from a given resource using the default dictionary.
-func ImportID(resourceType string, r Resource) string {
-	return defaultDictionary.ImportID(resourceType, r)
 }
 
 // ImportIDFuncByAttribute is a helper method to define an ImportIDFunc which
