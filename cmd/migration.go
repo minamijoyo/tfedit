@@ -84,8 +84,12 @@ func runMigrationAwsv4upgradeCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	if migrationFile == "-" {
-		fmt.Fprintf(cmd.OutOrStdout(), string(output))
+		fmt.Fprint(cmd.OutOrStdout(), string(output))
 	} else {
+		// nolint: gosec
+		// G306: Expect WriteFile permissions to be 0600 or less
+		// In general, a migration file is expected to commit to git and it does
+		// not contain any credentials, so there is no problem.
 		if err := os.WriteFile(migrationFile, output, 0644); err != nil {
 			return fmt.Errorf("failed to write file: %s", err)
 		}
