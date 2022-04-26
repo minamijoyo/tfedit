@@ -24,6 +24,61 @@ func TestImportIDFuncAWSS3BucketACL(t *testing.T) {
 `,
 			want: "tfedit-test,private",
 		},
+		{
+			desc: "grant",
+			resource: `
+{
+  "access_control_policy": [
+    {
+      "grant": [
+        {
+          "grantee": [
+            {
+              "email_address": "",
+              "id": "",
+              "type": "Group",
+              "uri": "http://acs.amazonaws.com/groups/s3/LogDelivery"
+            }
+          ],
+          "permission": "READ_ACP"
+        },
+        {
+          "grantee": [
+            {
+              "email_address": "",
+              "id": "",
+              "type": "Group",
+              "uri": "http://acs.amazonaws.com/groups/s3/LogDelivery"
+            }
+          ],
+          "permission": "WRITE"
+        },
+        {
+          "grantee": [
+            {
+              "email_address": "",
+              "id": "bcaf1ffd86f41161ca5fb16fd081034f",
+              "type": "CanonicalUser",
+              "uri": ""
+            }
+          ],
+          "permission": "FULL_CONTROL"
+        }
+      ],
+      "owner": [
+        {
+          "id": "set_aws_canonical_user_id"
+        }
+      ]
+    }
+  ],
+  "acl": null,
+  "bucket": "tfedit-test",
+  "expected_bucket_owner": null
+}
+`,
+			want: "tfedit-test",
+		},
 	}
 
 	for _, tc := range cases {
