@@ -1,6 +1,10 @@
 package aws
 
-import "github.com/minamijoyo/tfedit/migration/schema"
+import (
+	"fmt"
+
+	"github.com/minamijoyo/tfedit/migration/schema"
+)
 
 func registerS3Schema(d *schema.Dictionary) {
 	d.RegisterImportIDFuncMap(map[string]schema.ImportIDFunc{
@@ -21,11 +25,14 @@ func registerS3Schema(d *schema.Dictionary) {
 
 // importIDFuncAWSS3BucketACL is a importIDFunc for aws_s3_bucket_acl.
 // https://registry.terraform.io/providers/hashicorp%20%20/aws/latest/docs/resources/s3_bucket_acl#import
-func importIDFuncAWSS3BucketACL(r schema.Resource) string {
+func importIDFuncAWSS3BucketACL(r schema.Resource) (string, error) {
 	// The acl argument conflicts with access_control_policy
-	if r["acl"] != nil { // acl
+	switch {
+	case r["acl"] != nil && r["access_control_policy"] == nil: // acl
 		return schema.ImportIDFuncByMultiAttributes([]string{"bucket", "acl"}, ",")(r)
+	case r["acl"] == nil && r["access_control_policy"] != nil: // grant
+		return schema.ImportIDFuncByAttribute("bucket")(r)
+	default:
+		return "", fmt.Errorf("failed to parse aws_s3_bucket_acl resource for import: %#v", r)
 	}
-	// grant
-	return schema.ImportIDFuncByAttribute("bucket")(r)
 }

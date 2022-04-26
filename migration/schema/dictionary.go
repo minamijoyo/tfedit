@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -12,7 +13,7 @@ import (
 type Resource map[string]interface{}
 
 // ImportIDFunc is a type of function which calculates an import ID from a given resource.
-type ImportIDFunc func(r Resource) string
+type ImportIDFunc func(r Resource) (string, error)
 
 // Dictionary is a map which defines ImportIDFunc for each resource type.
 type Dictionary struct {
@@ -39,27 +40,40 @@ func (d *Dictionary) RegisterImportIDFuncMap(importIDFuncMap map[string]ImportID
 }
 
 // ImportID calculates an import ID from a given resource.
-func (d *Dictionary) ImportID(resourceType string, r Resource) string {
-	f := d.importIDMap[resourceType]
+func (d *Dictionary) ImportID(resourceType string, r Resource) (string, error) {
+	f, ok := d.importIDMap[resourceType]
+	if !ok {
+		return "", fmt.Errorf("unknown resource type for import: %s", resourceType)
+	}
 	return f(r)
 }
 
 // ImportIDFuncByAttribute is a helper method to define an ImportIDFunc which
 // simply uses a specific single attribute as an import ID.
 func ImportIDFuncByAttribute(key string) ImportIDFunc {
-	return func(r Resource) string {
-		return r[key].(string)
+	return func(r Resource) (string, error) {
+		id, ok := r[key].(string)
+		if !ok {
+			return "", fmt.Errorf("failed to cast %s to string", key)
+		}
+
+		return id, nil
 	}
 }
 
 // ImportIDFuncByMultiAttributes is a helper method to define an ImportIDFunc which
 // joins multiple attributes by a given separater.
 func ImportIDFuncByMultiAttributes(keys []string, sep string) ImportIDFunc {
-	return func(r Resource) string {
+	return func(r Resource) (string, error) {
 		elems := []string{}
 		for _, key := range keys {
-			elems = append(elems, r[key].(string))
+			e, ok := r[key].(string)
+			if !ok {
+				return "", fmt.Errorf("failed to cast %s to string", key)
+			}
+			elems = append(elems, e)
 		}
-		return strings.Join(elems, sep)
+
+		return strings.Join(elems, sep), nil
 	}
 }

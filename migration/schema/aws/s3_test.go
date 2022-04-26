@@ -11,6 +11,7 @@ func TestImportIDFuncAWSS3BucketACL(t *testing.T) {
 	cases := []struct {
 		desc     string
 		resource string
+		ok       bool
 		want     string
 	}{
 		{
@@ -22,6 +23,7 @@ func TestImportIDFuncAWSS3BucketACL(t *testing.T) {
   "expected_bucket_owner": null
 }
 `,
+			ok:   true,
 			want: "tfedit-test,private",
 		},
 		{
@@ -77,7 +79,32 @@ func TestImportIDFuncAWSS3BucketACL(t *testing.T) {
   "expected_bucket_owner": null
 }
 `,
+			ok:   true,
 			want: "tfedit-test",
+		},
+		{
+			desc: "invalid",
+			resource: `
+{
+  "bucket": "tfedit-test",
+  "expected_bucket_owner": null
+}
+`,
+			ok:   false,
+			want: "",
+		},
+		{
+			desc: "conflict",
+			resource: `
+{
+  "acl": "private",
+  "bucket": "tfedit-test",
+  "expected_bucket_owner": null,
+  "access_control_policy": []
+}
+`,
+			ok:   false,
+			want: "",
 		},
 	}
 
@@ -88,7 +115,15 @@ func TestImportIDFuncAWSS3BucketACL(t *testing.T) {
 				t.Fatalf("failed to unmarshal json: %s", err)
 			}
 
-			got := importIDFuncAWSS3BucketACL(r)
+			got, err := importIDFuncAWSS3BucketACL(r)
+
+			if tc.ok && err != nil {
+				t.Fatalf("unexpected err = %s", err)
+			}
+
+			if !tc.ok && err == nil {
+				t.Fatalf("expected to return an error, but no error, got: %s", got)
+			}
 
 			if got != tc.want {
 				t.Errorf("got = %s, but want = %s", got, tc.want)

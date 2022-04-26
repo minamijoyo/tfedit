@@ -15,7 +15,10 @@ func Generate(planJSON []byte, dir string) ([]byte, error) {
 
 	dictionary := NewDefaultDictionary()
 	analyzer := NewDefaultPlanAnalyzer(dictionary)
-	migration := analyzer.Analyze(plan, dir)
+	migration, err := analyzer.Analyze(plan, dir)
+	if err != nil {
+		return nil, err
+	}
 
 	return migration.Render()
 }

@@ -8,7 +8,7 @@ import (
 type Resolver interface {
 	// Resolve tries to resolve some conflicts in a given subject and returns the
 	// updated subject and state migration actions.
-	Resolve(s *Subject) (*Subject, []StateAction)
+	Resolve(s *Subject) (*Subject, []StateAction, error)
 }
 
 // StateImportResolver is an implementation of Resolver for import.
@@ -29,7 +29,7 @@ func NewStateImportResolver(d *schema.Dictionary) Resolver {
 // Resolve tries to resolve some conflicts in a given subject and returns the
 // updated subject and state migration actions.
 // It translates a planned create action into an import state migration.
-func (r *StateImportResolver) Resolve(s *Subject) (*Subject, []StateAction) {
+func (r *StateImportResolver) Resolve(s *Subject) (*Subject, []StateAction, error) {
 	actions := []StateAction{}
 	for _, c := range s.Conflicts() {
 		if c.IsResolved() {
@@ -38,12 +38,15 @@ func (r *StateImportResolver) Resolve(s *Subject) (*Subject, []StateAction) {
 
 		switch c.PlannedActionType() {
 		case "create":
-			importID := r.dictionary.ImportID(c.ResourceType(), c.ResourceAfter())
+			importID, err := r.dictionary.ImportID(c.ResourceType(), c.ResourceAfter())
+			if err != nil {
+				return nil, nil, err
+			}
 			action := NewStateImportAction(c.Address(), importID)
 			actions = append(actions, action)
 			c.MarkAsResolved()
 		}
 	}
 
-	return s, actions
+	return s, actions, nil
 }

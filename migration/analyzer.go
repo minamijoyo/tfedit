@@ -7,7 +7,7 @@ type PlanAnalyzer interface {
 	// Analyze analyzes a given plan and generates a state migration so that
 	// the plan results in no changes.
 	// The dir is set to a dir attribute in a migration file.
-	Analyze(plan *Plan, dir string) *StateMigration
+	Analyze(plan *Plan, dir string) (*StateMigration, error)
 }
 
 // defaultPlanAnalyzer is a default implementation for PlanAnalyzer.
@@ -36,16 +36,19 @@ func NewDefaultPlanAnalyzer(d *schema.Dictionary) PlanAnalyzer {
 // Analyze analyzes a given plan and generates a state migration so that
 // the plan results in no changes.
 // The dir is set to a dir attribute in a migration file.
-func (a *defaultPlanAnalyzer) Analyze(plan *Plan, dir string) *StateMigration {
+func (a *defaultPlanAnalyzer) Analyze(plan *Plan, dir string) (*StateMigration, error) {
 	subject := NewSubject(plan)
 
 	migration := NewStateMigration("fromplan", dir)
 	current := subject
 	for _, r := range a.resolvers {
-		next, actions := r.Resolve(current)
+		next, actions, err := r.Resolve(current)
+		if err != nil {
+			return nil, err
+		}
 		migration.AppendActions(actions...)
 		current = next
 	}
 
-	return migration
+	return migration, nil
 }
