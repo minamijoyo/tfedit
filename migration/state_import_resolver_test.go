@@ -117,6 +117,30 @@ func TestStateImportResolver(t *testing.T) {
 				},
 			},
 		},
+		{
+			desc: "unknown resource type",
+			s: &Subject{
+				conflicts: []*Conflict{
+					{
+						rc: &tfjson.ResourceChange{
+							Address: "foo_test.example",
+							Type:    "foo_test",
+							Change: &tfjson.Change{
+								Actions: tfjson.Actions{
+									"create",
+								},
+								Before: nil,
+								After:  map[string]interface{}{},
+							},
+						},
+						resolved: false,
+					},
+				},
+			},
+			ok:       false,
+			resolved: false,
+			want:     nil,
+		},
 	}
 
 	for _, tc := range cases {
@@ -132,11 +156,13 @@ func TestStateImportResolver(t *testing.T) {
 				t.Fatalf("expected to return an error, but no error, got: %s", actions)
 			}
 
-			if subject.IsResolved() != tc.resolved {
-				t.Errorf("unexpected the resolved status of subject. got = %t, but want = %t", subject.IsResolved(), tc.resolved)
-			}
-			if diff := cmp.Diff(actions, tc.want, cmp.AllowUnexported(StateImportAction{})); diff != "" {
-				t.Fatalf("got:\n%#v\nwant:\n%#v\ndiff:\n%s", actions, tc.want, diff)
+			if tc.ok {
+				if subject.IsResolved() != tc.resolved {
+					t.Errorf("unexpected the resolved status of subject. got = %t, but want = %t", subject.IsResolved(), tc.resolved)
+				}
+				if diff := cmp.Diff(actions, tc.want, cmp.AllowUnexported(StateImportAction{})); diff != "" {
+					t.Fatalf("got:\n%#v\nwant:\n%#v\ndiff:\n%s", actions, tc.want, diff)
+				}
 			}
 		})
 	}
