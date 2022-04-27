@@ -10,8 +10,10 @@ type Subject struct {
 func NewSubject(plan *Plan) *Subject {
 	conflicts := []*Conflict{}
 	for _, rc := range plan.ResourceChanges() {
-		c := NewConflict(rc)
-		conflicts = append(conflicts, c)
+		if !rc.Change.Actions.NoOp() {
+			c := NewConflict(rc)
+			conflicts = append(conflicts, c)
+		}
 	}
 
 	return &Subject{
