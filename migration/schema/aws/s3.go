@@ -33,6 +33,6 @@ func importIDFuncAWSS3BucketACL(r schema.Resource) (string, error) {
 	case r["acl"] == nil && r["access_control_policy"] != nil: // grant
 		return schema.ImportIDFuncByAttribute("bucket")(r)
 	default:
-		return "", fmt.Errorf("failed to parse aws_s3_bucket_acl resource for import: %#v", r)
+		return "", fmt.Errorf("failed to detect an ID of aws_s3_bucket_acl resource for import: %#v", r)
 	}
 }
