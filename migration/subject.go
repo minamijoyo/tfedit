@@ -21,9 +21,16 @@ func NewSubject(plan *Plan) *Subject {
 	}
 }
 
-// Conflicts returns a list of conflicts. It may include already resolved.
-func (s *Subject) Conflicts() []*Conflict {
-	return s.conflicts
+// UnresolvedConflicts returns a list of unresolved conflicts.
+func (s *Subject) UnresolvedConflicts() []*Conflict {
+	ret := []*Conflict{}
+	for _, c := range s.conflicts {
+		if !c.IsResolved() {
+			ret = append(ret, c)
+		}
+	}
+
+	return ret
 }
 
 // IsResolved returns true if all conflicts have been resolved, otherwise false.

@@ -24,11 +24,7 @@ func NewStateImportResolver(d *schema.Dictionary) Resolver {
 // It translates a planned create action into an import state migration.
 func (r *StateImportResolver) Resolve(s *Subject) (*Subject, []StateAction, error) {
 	actions := []StateAction{}
-	for _, c := range s.Conflicts() {
-		if c.IsResolved() {
-			continue
-		}
-
+	for _, c := range s.UnresolvedConflicts() {
 		switch c.PlannedActionType() {
 		case "create":
 			importID, err := r.dictionary.ImportID(c.ResourceType(), c.ResourceAfter())
