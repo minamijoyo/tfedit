@@ -60,7 +60,7 @@ filter()
 generate()
 {
   terraform plan -input=false -no-color -out=tmp.tfplan
-  terraform show -json tmp.tfplan | tfedit migration awsv4upgrade -o=tfmigrate_fromplan.hcl
+  terraform show -json tmp.tfplan | tfedit migration fromplan -o=tfmigrate_fromplan.hcl
   cat tfmigrate_fromplan.hcl
   diff -u tfmigrate_want.hcl tfmigrate_fromplan.hcl
   rm -f tmp.tfplan

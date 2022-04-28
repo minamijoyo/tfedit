@@ -11,58 +11,57 @@ import (
 )
 
 func init() {
-	migrationCmd := newMigrationCmd()
-	flags := migrationCmd.PersistentFlags()
-	flags.StringP("file", "f", "-", "A path to input Terraform plan file in JSON format")
-	flags.StringP("out", "o", "-", "Write a migration file to a given path")
-	flags.StringP("dir", "d", "", "Set a dir attribute in a migration file")
-	_ = viper.BindPFlag("migration.file", flags.Lookup("file"))
-	_ = viper.BindPFlag("migration.out", flags.Lookup("out"))
-	_ = viper.BindPFlag("migration.dir", flags.Lookup("dir"))
-
-	RootCmd.AddCommand(migrationCmd)
+	RootCmd.AddCommand(newMigrationCmd())
 }
 
 func newMigrationCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "migration",
-		Short: "Generate a migration file for a built-in filter",
+		Short: "Generate a migration file for state operations",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.Help()
 		},
 	}
 
 	cmd.AddCommand(
-		newMigrationAwsv4upgradeCmd(),
+		newMigrationFromplanCmd(),
 	)
 
 	return cmd
 }
 
-func newMigrationAwsv4upgradeCmd() *cobra.Command {
+func newMigrationFromplanCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "awsv4upgrade",
-		Short: "Generate a migration file for awsv4upgrade",
-		Long: `Generate a migration file for awsv4upgrade
+		Use:   "fromplan",
+		Short: "Generate a migration file from Terraform JSON plan file",
+		Long: `Generate a migration file from Terraform JSON plan file
 
 Read a Terraform plan file in JSON format and
 generate a migration file in tfmigrate HCL format.
-Only aws_s3_bucket refactor is supported.
+Currently, only import actions required by awsv4upgrade are supported.
 `,
-		RunE: runMigrationAwsv4upgradeCmd,
+		RunE: runMigrationFromplanCmd,
 	}
+
+	flags := cmd.Flags()
+	flags.StringP("file", "f", "-", "A path to input Terraform JSON plan file")
+	flags.StringP("out", "o", "-", "Write a migration file to a given path")
+	flags.StringP("dir", "d", "", "Set a dir attribute in a migration file")
+	_ = viper.BindPFlag("migration.fromplan.file", flags.Lookup("file"))
+	_ = viper.BindPFlag("migration.fromplan.out", flags.Lookup("out"))
+	_ = viper.BindPFlag("migration.fromplan.dir", flags.Lookup("dir"))
 
 	return cmd
 }
 
-func runMigrationAwsv4upgradeCmd(cmd *cobra.Command, args []string) error {
+func runMigrationFromplanCmd(cmd *cobra.Command, args []string) error {
 	if len(args) != 0 {
 		return fmt.Errorf("expected 0 argument, but got %d arguments", len(args))
 	}
 
-	planFile := viper.GetString("migration.file")
-	migrationFile := viper.GetString("migration.out")
-	migrationDir := viper.GetString("migration.dir")
+	planFile := viper.GetString("migration.fromplan.file")
+	migrationFile := viper.GetString("migration.fromplan.out")
+	migrationDir := viper.GetString("migration.fromplan.dir")
 
 	var planJSON []byte
 	var err error
