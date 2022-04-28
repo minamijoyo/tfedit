@@ -11,6 +11,8 @@ Easy refactoring Terraform configurations in a scalable way.
 - Keep comments: Update lots of existing Terraform configurations without losing comments as much as possible.
 - Built-in operations:
   - filter awsv4upgrade: Upgrade configurations to AWS provider v4. Only `aws_s3_bucket` refactor is supported.
+- Generate a migration file for state operations: Read a Terraform plan file in JSON format and generate a migration file in [tfmigrate](https://github.com/minamijoyo/tfmigrate) HCL format. Currently, only import actions required by awsv4upgrade are supported.
+
 
 In short, given the following Terraform configuration file for the AWS provider v3:
 
@@ -38,9 +40,31 @@ resource "aws_s3_bucket_acl" "example" {
 
 You can see the `acl` argument has been split into an `aws_s3_bucket_acl` resource for the AWS provider v4 compatible.
 
-Although the initial goal of this project is providing a way for bulk refactoring of the `aws_s3_bucket` resource required by breaking changes in AWS provider v4, but the project scope is not limited to specific use-cases. It's by no means intended to be an upgrade tool for all your providers. Instead of covering all you need, it provides reusable building blocks for Terraform refactoring and shows examples for how to compose them in real world use-cases.
+To resolve the conflict between the configuration and the existing state, you need to import the new resource. As you know, you can run the `terraform import` command directly, but if you prefer to check the upgrade results without updating remote state, use [tfmigrate](https://github.com/minamijoyo/tfmigrate), which allows you to run the `terraform import` command in a declarative way.
 
-As you know, Terraform refactoring often requires not only configuration changes, but also Terraform state migrations. However, it's error-prone and not suitable for CI/CD. For declarative Terraform state migration, use [tfmigrate](https://github.com/minamijoyo/tfmigrate).
+Generate a migration file for importing the new resource:
+
+```
+$ terraform plan -out=tmp.tfplan
+$ terraform show -json tmp.tfplan | tfedit migration fromplan -o=tfmigrate_fromplan.hcl
+$ cat tfmigrate_fromplan.hcl
+migration "state" "fromplan" {
+  actions = [
+    "import aws_s3_bucket_acl.example tfedit-test,private",
+  ]
+}
+```
+
+Then, apply it with tfmigrate:
+
+```
+$ tfmigrate apply tfmigrate_fromplan.hcl
+```
+
+The `tfmigrate apply` command computes a new state locally and pushes it to remote state.
+It will fail if the `terraform plan` command detects any diffs with the new state before updating remote states. So you can safely refactor your configurations.
+
+Although the initial goal of this project is providing a way for bulk refactoring of the `aws_s3_bucket` resource required by breaking changes in AWS provider v4, but the project scope is not limited to specific use-cases. It's by no means intended to be an upgrade tool for all your providers. Instead of covering all you need, it provides reusable building blocks for Terraform refactoring and shows examples for how to compose them in real world use-cases.
 
 If you are not ready for the upgrade, you can pin version constraints in your Terraform configurations with [tfupdate](https://github.com/minamijoyo/tfupdate).
 
@@ -69,7 +93,7 @@ For upgrading AWS provider v4, some rules have not been implemented yet. The cur
   - [ ] for_each
   - [ ] dynamic
 - [ ] Rename references in an expression to new resource type
-- [ ] Generate import commands for new split resources
+- [x] Generate import commands for new split resources
 
 Known limitations:
 - Some arguments were changed not only their names but also valid values. In this case, if a value of the argument is a variable, not literal, it's impossible to automatically rewrite the value of the variable. It potentially could be passed from outside of module or even overwritten at runtime. If it's not literal, you need to change the value of the variable by yourself. The following arguments have this limitation:
@@ -208,22 +232,25 @@ At this point, if you run the `terraform plan` command, you can see that a new `
 Plan: 1 to add, 0 to change, 0 to destroy.
 ```
 
-To resolve the conflict between the configuration and the existing state, you need to import the new resource. As you know, you can run the `terraform import` command directly, but if you prefer to check the upgrade results without updating remote state, use [tfmigrate](https://github.com/minamijoyo/tfmigrate), which allows you to run the `terraform import` command in a declarative way. Currently, generating a migration file feature has not been implemented yet, so you need to create a migration file manually.
+To resolve the conflict between the configuration and the existing state, you need to import the new resource. As you know, you can run the `terraform import` command directly, but if you prefer to check the upgrade results without updating remote state, use [tfmigrate](https://github.com/minamijoyo/tfmigrate), which allows you to run the `terraform import` command in a declarative way.
+
+Generate a migration file for importing the new resource:
 
 ```
-# cat << EOF > tfmigrate_test.hcl
-migration "state" "test" {
+$ terraform plan -out=tmp.tfplan
+$ terraform show -json tmp.tfplan | tfedit migration fromplan -o=tfmigrate_fromplan.hcl
+$ cat tfmigrate_fromplan.hcl
+migration "state" "fromplan" {
   actions = [
     "import aws_s3_bucket_acl.example tfedit-test,private",
   ]
 }
-EOF
 ```
 
 Run the `tfmigrate plan` command to check to see if the `terraform plan` command has no changes after the migration without updating remote state:
 
 ```
-# tfmigrate plan tfmigrate_test.hcl
+# tfmigrate plan tfmigrate_fromplan.hcl
 (snip.)
 YYYY/MM/DD hh:mm:ss [INFO] [migrator] state migrator plan success!
 # echo $?
@@ -233,14 +260,14 @@ YYYY/MM/DD hh:mm:ss [INFO] [migrator] state migrator plan success!
 If looks good, apply it:
 
 ```
-# tfmigrate apply tfmigrate_test.hcl
+# tfmigrate apply tfmigrate_fromplan.hcl
 (snip.)
 YYYY/MM/DD hh:mm:ss [INFO] [migrator] state migrator apply success!
 # echo $?
 0
 ```
 
-The apply command computes a new state and pushes it to remote state.
+The `tfmigrate apply` command computes a new state and pushes it to remote state.
 It will fail if the `terraform plan` command detects any diffs with the new state.
 
 Finally, You can confirm the latest remote state has no changes with the `terraform plan` command in v4:
@@ -309,12 +336,11 @@ Available Commands:
   completion  Generate the autocompletion script for the specified shell
   filter      Apply a built-in filter
   help        Help about any command
+  migration   Generate a migration file for state operations
   version     Print version
 
 Flags:
-  -f, --file string   A path of input file (default "-")
-  -h, --help          help for tfedit
-  -u, --update        Update files in-place
+  -h, --help   help for tfedit
 
 Use "tfedit [command] --help" for more information about a command.
 ```
@@ -360,6 +386,44 @@ Global Flags:
 
 By default, the input is read from stdin, and the output is written to stdout.
 You can also read a file with `-f` flag, and update the file in-place with `-u` flag.
+
+```
+$ tfedit migration --help
+Generate a migration file for state operations
+
+Usage:
+  tfedit migration [flags]
+  tfedit migration [command]
+
+Available Commands:
+  fromplan    Generate a migration file from Terraform JSON plan file
+
+Flags:
+  -h, --help   help for migration
+
+Use "tfedit migration [command] --help" for more information about a command.
+```
+
+```
+$ tfedit migration fromplan --help
+Generate a migration file from Terraform JSON plan file
+
+Read a Terraform plan file in JSON format and
+generate a migration file in tfmigrate HCL format.
+Currently, only import actions required by awsv4upgrade are supported.
+
+Usage:
+  tfedit migration fromplan [flags]
+
+Flags:
+  -d, --dir string    Set a dir attribute in a migration file
+  -f, --file string   A path to input Terraform JSON plan file (default "-")
+  -h, --help          help for fromplan
+  -o, --out string    Write a migration file to a given path (default "-")
+```
+
+By default, the input is read from stdin, and the output is written to stdout.
+You can also read a file with `-f` flag, and write a file with `-o` flag.
 
 ## License
 
