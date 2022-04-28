@@ -78,7 +78,7 @@ func runMigrationAwsv4upgradeCmd(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	output, err := migration.Generate(planJSON, migrationDir)
+	output, err := migration.GenerateFromPlan(planJSON, migrationDir)
 	if err != nil {
 		return err
 	}

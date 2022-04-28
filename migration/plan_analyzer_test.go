@@ -7,7 +7,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestGenerate(t *testing.T) {
+func TestGenerateFromPlan(t *testing.T) {
 	cases := []struct {
 		desc     string
 		planFile string
@@ -73,7 +73,7 @@ func TestGenerate(t *testing.T) {
 				t.Fatalf("failed to read file: %s", err)
 			}
 
-			output, err := Generate(planJSON, tc.dir)
+			output, err := GenerateFromPlan(planJSON, tc.dir)
 			if tc.ok && err != nil {
 				t.Fatalf("unexpected err = %s", err)
 			}

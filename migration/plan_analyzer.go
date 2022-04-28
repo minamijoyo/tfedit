@@ -1,6 +1,9 @@
 package migration
 
-import "github.com/minamijoyo/tfedit/migration/schema"
+import (
+	"github.com/minamijoyo/tfedit/migration/schema"
+	"github.com/minamijoyo/tfedit/migration/schema/aws"
+)
 
 // PlanAnalyzer is an interface that abstracts the analysis rules of plan.
 type PlanAnalyzer interface {
@@ -51,4 +54,30 @@ func (a *defaultPlanAnalyzer) Analyze(plan *Plan, dir string) (*StateMigration, 
 	}
 
 	return migration, nil
+}
+
+// GenerateFromPlan returns bytes of a migration file which reverts a given
+// planned changes.
+// The dir is set to a dir attribute in a migration file.
+func GenerateFromPlan(planJSON []byte, dir string) ([]byte, error) {
+	plan, err := NewPlan(planJSON)
+	if err != nil {
+		return nil, err
+	}
+
+	dictionary := NewDefaultDictionary()
+	analyzer := NewDefaultPlanAnalyzer(dictionary)
+	migration, err := analyzer.Analyze(plan, dir)
+	if err != nil {
+		return nil, err
+	}
+
+	return migration.Render()
+}
+
+// NewDefaultDictionary returns a default built-in Dictionary.
+func NewDefaultDictionary() *schema.Dictionary {
+	d := schema.NewDictionary()
+	aws.RegisterSchema(d)
+	return d
 }
