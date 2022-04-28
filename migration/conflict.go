@@ -1,6 +1,8 @@
 package migration
 
 import (
+	"fmt"
+
 	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/minamijoyo/tfedit/migration/schema"
 )
@@ -62,7 +64,11 @@ func (c *Conflict) Address() string {
 
 // ResourceAfter retruns a planned resource after change.
 // It doesn't contains attributes known after apply.
-func (c *Conflict) ResourceAfter() schema.Resource {
-	after := c.rc.Change.After.(map[string]interface{})
-	return schema.Resource(after)
+func (c *Conflict) ResourceAfter() (schema.Resource, error) {
+	after, ok := c.rc.Change.After.(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("failed to cast the ResourceChange.Change.After object to Resource: %#v", c.rc.Change.After)
+	}
+
+	return schema.Resource(after), nil
 }

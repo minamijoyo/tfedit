@@ -27,10 +27,16 @@ func (r *StateImportResolver) Resolve(s *Subject) (*Subject, []StateAction, erro
 	for _, c := range s.UnresolvedConflicts() {
 		switch c.PlannedActionType() {
 		case "create":
-			importID, err := r.dictionary.ImportID(c.ResourceType(), c.ResourceAfter())
+			resource, err := c.ResourceAfter()
 			if err != nil {
 				return nil, nil, err
 			}
+
+			importID, err := r.dictionary.ImportID(c.ResourceType(), resource)
+			if err != nil {
+				return nil, nil, err
+			}
+
 			action := NewStateImportAction(c.Address(), importID)
 			actions = append(actions, action)
 			c.MarkAsResolved()

@@ -197,6 +197,7 @@ func TestConflictResourceAfter(t *testing.T) {
 	cases := []struct {
 		desc string
 		c    *Conflict
+		ok   bool
 		want schema.Resource
 	}{
 		{
@@ -233,17 +234,40 @@ func TestConflictResourceAfter(t *testing.T) {
 				},
 				resolved: false,
 			},
+			ok: true,
 			want: schema.Resource(map[string]interface{}{
 				"acl":                   "private",
 				"bucket":                "tfedit-test",
 				"expected_bucket_owner": nil,
 			}),
 		},
+		{
+			desc: "type cast error",
+			c: &Conflict{
+				rc: &tfjson.ResourceChange{
+					Change: &tfjson.Change{
+						After: nil,
+					},
+				},
+				resolved: false,
+			},
+			ok:   false,
+			want: nil,
+		},
 	}
 
 	for _, tc := range cases {
 		t.Run(tc.desc, func(t *testing.T) {
-			got := tc.c.ResourceAfter()
+			got, err := tc.c.ResourceAfter()
+
+			if tc.ok && err != nil {
+				t.Fatalf("unexpected err = %s", err)
+			}
+
+			if !tc.ok && err == nil {
+				t.Fatalf("expected to return an error, but no error, got: %#v", got)
+			}
+
 			if diff := cmp.Diff(got, tc.want); diff != "" {
 				t.Fatalf("got:\n%#v\nwant:\n%#v\ndiff:\n%s", got, tc.want, diff)
 			}
