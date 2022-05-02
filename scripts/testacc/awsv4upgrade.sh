@@ -9,7 +9,7 @@ usage()
 
   Arguments:
     command: A name of step tu run. Valid values are:
-             run | setup | upgrade | filter | migrate | cleanup
+             run | setup | upgrade | filter | generate | migrate | cleanup
     fixture: A name of fixture in test-fixtures/awsv4upgrade/aws_s3_bucket/
 EOF
 }
@@ -45,7 +45,7 @@ filter()
 
   cat main.tf
 
-  tfedit filter awsv4upgrade -u -f main.tf
+  find . -type f -name '*.tf' -print0 | xargs -0 -I {} tfedit filter awsv4upgrade -u -f {}
 
   cat main.tf
 
@@ -57,9 +57,18 @@ filter()
   fi
 }
 
+generate()
+{
+  terraform plan -input=false -no-color -out=tmp.tfplan
+  terraform show -json tmp.tfplan | tfedit migration fromplan -o=tfmigrate_fromplan.hcl
+  cat tfmigrate_fromplan.hcl
+  diff -u tfmigrate_want.hcl tfmigrate_fromplan.hcl
+  rm -f tmp.tfplan
+}
+
 migrate()
 {
-  tfmigrate apply tfmigrate_test.hcl
+  tfmigrate apply tfmigrate_fromplan.hcl
   terraform plan -input=false -no-color -detailed-exitcode
   terraform state list
 }
@@ -75,6 +84,7 @@ run()
   setup
   upgrade
   filter
+  generate
   migrate
   cleanup
 }
@@ -97,7 +107,7 @@ mkdir -p "$WORKDIR"
 pushd "$WORKDIR"
 
 case "$COMMAND" in
-  run | setup | upgrade | filter | migrate | cleanup )
+  run | setup | upgrade | filter | generate | migrate | cleanup )
     "$COMMAND"
     RET=$?
     ;;

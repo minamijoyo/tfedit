@@ -1,0 +1,944 @@
+{
+  "format_version": "1.0",
+  "terraform_version": "1.1.8",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_s3_bucket.example",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "example",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "acceleration_status": "",
+            "acl": "private",
+            "arn": "arn:aws:s3:::tfedit-test",
+            "bucket": "tfedit-test",
+            "bucket_domain_name": "tfedit-test.s3.amazonaws.com",
+            "bucket_prefix": null,
+            "bucket_regional_domain_name": "tfedit-test.s3.ap-northeast-1.amazonaws.com",
+            "cors_rule": [],
+            "force_destroy": false,
+            "grant": [
+              {
+                "id": "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a",
+                "permissions": [
+                  "FULL_CONTROL"
+                ],
+                "type": "CanonicalUser",
+                "uri": ""
+              }
+            ],
+            "hosted_zone_id": "Z2M4EHUR26P7ZW",
+            "id": "tfedit-test",
+            "lifecycle_rule": [],
+            "logging": [],
+            "object_lock_configuration": [],
+            "object_lock_enabled": false,
+            "policy": "",
+            "region": "ap-northeast-1",
+            "replication_configuration": [
+              {
+                "role": "arn:aws:iam::123456789012:role/tfedit-role",
+                "rules": [
+                  {
+                    "delete_marker_replication_status": "Enabled",
+                    "destination": [
+                      {
+                        "access_control_translation": [],
+                        "account_id": "",
+                        "bucket": "arn:aws:s3:::tfedit-destination",
+                        "metrics": [
+                          {
+                            "minutes": 15,
+                            "status": "Enabled"
+                          }
+                        ],
+                        "replica_kms_key_id": "",
+                        "replication_time": [
+                          {
+                            "minutes": 15,
+                            "status": "Enabled"
+                          }
+                        ],
+                        "storage_class": "STANDARD"
+                      }
+                    ],
+                    "filter": [
+                      {
+                        "prefix": "",
+                        "tags": {}
+                      }
+                    ],
+                    "id": "foobar",
+                    "prefix": "",
+                    "priority": 0,
+                    "source_selection_criteria": [],
+                    "status": "Enabled"
+                  }
+                ]
+              }
+            ],
+            "request_payer": "BucketOwner",
+            "server_side_encryption_configuration": [],
+            "tags": {},
+            "tags_all": {},
+            "versioning": [
+              {
+                "enabled": false,
+                "mfa_delete": false
+              }
+            ],
+            "website": [],
+            "website_domain": null,
+            "website_endpoint": null
+          },
+          "sensitive_values": {
+            "cors_rule": [],
+            "grant": [
+              {
+                "permissions": [
+                  false
+                ]
+              }
+            ],
+            "lifecycle_rule": [],
+            "logging": [],
+            "object_lock_configuration": [],
+            "replication_configuration": [
+              {
+                "rules": [
+                  {
+                    "destination": [
+                      {
+                        "access_control_translation": [],
+                        "metrics": [
+                          {}
+                        ],
+                        "replication_time": [
+                          {}
+                        ]
+                      }
+                    ],
+                    "filter": [
+                      {
+                        "tags": {}
+                      }
+                    ],
+                    "source_selection_criteria": []
+                  }
+                ]
+              }
+            ],
+            "server_side_encryption_configuration": [],
+            "tags": {},
+            "tags_all": {},
+            "versioning": [
+              {}
+            ],
+            "website": []
+          }
+        },
+        {
+          "address": "aws_s3_bucket_acl.example",
+          "mode": "managed",
+          "type": "aws_s3_bucket_acl",
+          "name": "example",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "acl": "private",
+            "bucket": "tfedit-test",
+            "expected_bucket_owner": null
+          },
+          "sensitive_values": {
+            "access_control_policy": []
+          }
+        }
+      ]
+    }
+  },
+  "resource_drift": [
+    {
+      "address": "aws_s3_bucket.example",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "example",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "before": {
+          "acceleration_status": "",
+          "acl": "private",
+          "arn": "arn:aws:s3:::tfedit-test",
+          "bucket": "tfedit-test",
+          "bucket_domain_name": "tfedit-test.s3.amazonaws.com",
+          "bucket_prefix": null,
+          "bucket_regional_domain_name": "tfedit-test.s3.ap-northeast-1.amazonaws.com",
+          "cors_rule": [],
+          "force_destroy": false,
+          "grant": [],
+          "hosted_zone_id": "Z2M4EHUR26P7ZW",
+          "id": "tfedit-test",
+          "lifecycle_rule": [],
+          "logging": [],
+          "object_lock_configuration": [],
+          "object_lock_enabled": null,
+          "policy": null,
+          "region": "ap-northeast-1",
+          "replication_configuration": [
+            {
+              "role": "arn:aws:iam::123456789012:role/tfedit-role",
+              "rules": [
+                {
+                  "delete_marker_replication_status": "Enabled",
+                  "destination": [
+                    {
+                      "access_control_translation": [],
+                      "account_id": "",
+                      "bucket": "arn:aws:s3:::tfedit-destination",
+                      "metrics": [
+                        {
+                          "minutes": 15,
+                          "status": "Enabled"
+                        }
+                      ],
+                      "replica_kms_key_id": "",
+                      "replication_time": [
+                        {
+                          "minutes": 15,
+                          "status": "Enabled"
+                        }
+                      ],
+                      "storage_class": "STANDARD"
+                    }
+                  ],
+                  "filter": [
+                    {
+                      "prefix": "",
+                      "tags": {}
+                    }
+                  ],
+                  "id": "foobar",
+                  "prefix": "",
+                  "priority": 0,
+                  "source_selection_criteria": [],
+                  "status": "Enabled"
+                }
+              ]
+            }
+          ],
+          "request_payer": "BucketOwner",
+          "server_side_encryption_configuration": [],
+          "tags": {},
+          "tags_all": {},
+          "versioning": [
+            {
+              "enabled": false,
+              "mfa_delete": false
+            }
+          ],
+          "website": [],
+          "website_domain": null,
+          "website_endpoint": null
+        },
+        "after": {
+          "acceleration_status": "",
+          "acl": "private",
+          "arn": "arn:aws:s3:::tfedit-test",
+          "bucket": "tfedit-test",
+          "bucket_domain_name": "tfedit-test.s3.amazonaws.com",
+          "bucket_prefix": null,
+          "bucket_regional_domain_name": "tfedit-test.s3.ap-northeast-1.amazonaws.com",
+          "cors_rule": [],
+          "force_destroy": false,
+          "grant": [
+            {
+              "id": "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a",
+              "permissions": [
+                "FULL_CONTROL"
+              ],
+              "type": "CanonicalUser",
+              "uri": ""
+            }
+          ],
+          "hosted_zone_id": "Z2M4EHUR26P7ZW",
+          "id": "tfedit-test",
+          "lifecycle_rule": [],
+          "logging": [],
+          "object_lock_configuration": [],
+          "object_lock_enabled": false,
+          "policy": "",
+          "region": "ap-northeast-1",
+          "replication_configuration": [
+            {
+              "role": "arn:aws:iam::123456789012:role/tfedit-role",
+              "rules": [
+                {
+                  "delete_marker_replication_status": "Enabled",
+                  "destination": [
+                    {
+                      "access_control_translation": [],
+                      "account_id": "",
+                      "bucket": "arn:aws:s3:::tfedit-destination",
+                      "metrics": [
+                        {
+                          "minutes": 15,
+                          "status": "Enabled"
+                        }
+                      ],
+                      "replica_kms_key_id": "",
+                      "replication_time": [
+                        {
+                          "minutes": 15,
+                          "status": "Enabled"
+                        }
+                      ],
+                      "storage_class": "STANDARD"
+                    }
+                  ],
+                  "filter": [
+                    {
+                      "prefix": "",
+                      "tags": {}
+                    }
+                  ],
+                  "id": "foobar",
+                  "prefix": "",
+                  "priority": 0,
+                  "source_selection_criteria": [],
+                  "status": "Enabled"
+                }
+              ]
+            }
+          ],
+          "request_payer": "BucketOwner",
+          "server_side_encryption_configuration": [],
+          "tags": {},
+          "tags_all": {},
+          "versioning": [
+            {
+              "enabled": false,
+              "mfa_delete": false
+            }
+          ],
+          "website": [],
+          "website_domain": null,
+          "website_endpoint": null
+        },
+        "after_unknown": {},
+        "before_sensitive": {
+          "cors_rule": [],
+          "grant": [],
+          "lifecycle_rule": [],
+          "logging": [],
+          "object_lock_configuration": [],
+          "replication_configuration": [
+            {
+              "rules": [
+                {
+                  "destination": [
+                    {
+                      "access_control_translation": [],
+                      "metrics": [
+                        {}
+                      ],
+                      "replication_time": [
+                        {}
+                      ]
+                    }
+                  ],
+                  "filter": [
+                    {
+                      "tags": {}
+                    }
+                  ],
+                  "source_selection_criteria": []
+                }
+              ]
+            }
+          ],
+          "server_side_encryption_configuration": [],
+          "tags": {},
+          "tags_all": {},
+          "versioning": [
+            {}
+          ],
+          "website": []
+        },
+        "after_sensitive": {
+          "cors_rule": [],
+          "grant": [
+            {
+              "permissions": [
+                false
+              ]
+            }
+          ],
+          "lifecycle_rule": [],
+          "logging": [],
+          "object_lock_configuration": [],
+          "replication_configuration": [
+            {
+              "rules": [
+                {
+                  "destination": [
+                    {
+                      "access_control_translation": [],
+                      "metrics": [
+                        {}
+                      ],
+                      "replication_time": [
+                        {}
+                      ]
+                    }
+                  ],
+                  "filter": [
+                    {
+                      "tags": {}
+                    }
+                  ],
+                  "source_selection_criteria": []
+                }
+              ]
+            }
+          ],
+          "server_side_encryption_configuration": [],
+          "tags": {},
+          "tags_all": {},
+          "versioning": [
+            {}
+          ],
+          "website": []
+        }
+      }
+    }
+  ],
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket.example",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "example",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": {
+          "acceleration_status": "",
+          "acl": "private",
+          "arn": "arn:aws:s3:::tfedit-test",
+          "bucket": "tfedit-test",
+          "bucket_domain_name": "tfedit-test.s3.amazonaws.com",
+          "bucket_prefix": null,
+          "bucket_regional_domain_name": "tfedit-test.s3.ap-northeast-1.amazonaws.com",
+          "cors_rule": [],
+          "force_destroy": false,
+          "grant": [
+            {
+              "id": "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a",
+              "permissions": [
+                "FULL_CONTROL"
+              ],
+              "type": "CanonicalUser",
+              "uri": ""
+            }
+          ],
+          "hosted_zone_id": "Z2M4EHUR26P7ZW",
+          "id": "tfedit-test",
+          "lifecycle_rule": [],
+          "logging": [],
+          "object_lock_configuration": [],
+          "object_lock_enabled": false,
+          "policy": "",
+          "region": "ap-northeast-1",
+          "replication_configuration": [
+            {
+              "role": "arn:aws:iam::123456789012:role/tfedit-role",
+              "rules": [
+                {
+                  "delete_marker_replication_status": "Enabled",
+                  "destination": [
+                    {
+                      "access_control_translation": [],
+                      "account_id": "",
+                      "bucket": "arn:aws:s3:::tfedit-destination",
+                      "metrics": [
+                        {
+                          "minutes": 15,
+                          "status": "Enabled"
+                        }
+                      ],
+                      "replica_kms_key_id": "",
+                      "replication_time": [
+                        {
+                          "minutes": 15,
+                          "status": "Enabled"
+                        }
+                      ],
+                      "storage_class": "STANDARD"
+                    }
+                  ],
+                  "filter": [
+                    {
+                      "prefix": "",
+                      "tags": {}
+                    }
+                  ],
+                  "id": "foobar",
+                  "prefix": "",
+                  "priority": 0,
+                  "source_selection_criteria": [],
+                  "status": "Enabled"
+                }
+              ]
+            }
+          ],
+          "request_payer": "BucketOwner",
+          "server_side_encryption_configuration": [],
+          "tags": {},
+          "tags_all": {},
+          "versioning": [
+            {
+              "enabled": false,
+              "mfa_delete": false
+            }
+          ],
+          "website": [],
+          "website_domain": null,
+          "website_endpoint": null
+        },
+        "after": {
+          "acceleration_status": "",
+          "acl": "private",
+          "arn": "arn:aws:s3:::tfedit-test",
+          "bucket": "tfedit-test",
+          "bucket_domain_name": "tfedit-test.s3.amazonaws.com",
+          "bucket_prefix": null,
+          "bucket_regional_domain_name": "tfedit-test.s3.ap-northeast-1.amazonaws.com",
+          "cors_rule": [],
+          "force_destroy": false,
+          "grant": [
+            {
+              "id": "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a",
+              "permissions": [
+                "FULL_CONTROL"
+              ],
+              "type": "CanonicalUser",
+              "uri": ""
+            }
+          ],
+          "hosted_zone_id": "Z2M4EHUR26P7ZW",
+          "id": "tfedit-test",
+          "lifecycle_rule": [],
+          "logging": [],
+          "object_lock_configuration": [],
+          "object_lock_enabled": false,
+          "policy": "",
+          "region": "ap-northeast-1",
+          "replication_configuration": [
+            {
+              "role": "arn:aws:iam::123456789012:role/tfedit-role",
+              "rules": [
+                {
+                  "delete_marker_replication_status": "Enabled",
+                  "destination": [
+                    {
+                      "access_control_translation": [],
+                      "account_id": "",
+                      "bucket": "arn:aws:s3:::tfedit-destination",
+                      "metrics": [
+                        {
+                          "minutes": 15,
+                          "status": "Enabled"
+                        }
+                      ],
+                      "replica_kms_key_id": "",
+                      "replication_time": [
+                        {
+                          "minutes": 15,
+                          "status": "Enabled"
+                        }
+                      ],
+                      "storage_class": "STANDARD"
+                    }
+                  ],
+                  "filter": [
+                    {
+                      "prefix": "",
+                      "tags": {}
+                    }
+                  ],
+                  "id": "foobar",
+                  "prefix": "",
+                  "priority": 0,
+                  "source_selection_criteria": [],
+                  "status": "Enabled"
+                }
+              ]
+            }
+          ],
+          "request_payer": "BucketOwner",
+          "server_side_encryption_configuration": [],
+          "tags": {},
+          "tags_all": {},
+          "versioning": [
+            {
+              "enabled": false,
+              "mfa_delete": false
+            }
+          ],
+          "website": [],
+          "website_domain": null,
+          "website_endpoint": null
+        },
+        "after_unknown": {},
+        "before_sensitive": {
+          "cors_rule": [],
+          "grant": [
+            {
+              "permissions": [
+                false
+              ]
+            }
+          ],
+          "lifecycle_rule": [],
+          "logging": [],
+          "object_lock_configuration": [],
+          "replication_configuration": [
+            {
+              "rules": [
+                {
+                  "destination": [
+                    {
+                      "access_control_translation": [],
+                      "metrics": [
+                        {}
+                      ],
+                      "replication_time": [
+                        {}
+                      ]
+                    }
+                  ],
+                  "filter": [
+                    {
+                      "tags": {}
+                    }
+                  ],
+                  "source_selection_criteria": []
+                }
+              ]
+            }
+          ],
+          "server_side_encryption_configuration": [],
+          "tags": {},
+          "tags_all": {},
+          "versioning": [
+            {}
+          ],
+          "website": []
+        },
+        "after_sensitive": {
+          "cors_rule": [],
+          "grant": [
+            {
+              "permissions": [
+                false
+              ]
+            }
+          ],
+          "lifecycle_rule": [],
+          "logging": [],
+          "object_lock_configuration": [],
+          "replication_configuration": [
+            {
+              "rules": [
+                {
+                  "destination": [
+                    {
+                      "access_control_translation": [],
+                      "metrics": [
+                        {}
+                      ],
+                      "replication_time": [
+                        {}
+                      ]
+                    }
+                  ],
+                  "filter": [
+                    {
+                      "tags": {}
+                    }
+                  ],
+                  "source_selection_criteria": []
+                }
+              ]
+            }
+          ],
+          "server_side_encryption_configuration": [],
+          "tags": {},
+          "tags_all": {},
+          "versioning": [
+            {}
+          ],
+          "website": []
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket_acl.example",
+      "mode": "managed",
+      "type": "aws_s3_bucket_acl",
+      "name": "example",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "acl": "private",
+          "bucket": "tfedit-test",
+          "expected_bucket_owner": null
+        },
+        "after_unknown": {
+          "access_control_policy": true,
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "access_control_policy": []
+        }
+      }
+    }
+  ],
+  "prior_state": {
+    "format_version": "1.0",
+    "terraform_version": "1.1.8",
+    "values": {
+      "root_module": {
+        "resources": [
+          {
+            "address": "aws_s3_bucket.example",
+            "mode": "managed",
+            "type": "aws_s3_bucket",
+            "name": "example",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "values": {
+              "acceleration_status": "",
+              "acl": "private",
+              "arn": "arn:aws:s3:::tfedit-test",
+              "bucket": "tfedit-test",
+              "bucket_domain_name": "tfedit-test.s3.amazonaws.com",
+              "bucket_prefix": null,
+              "bucket_regional_domain_name": "tfedit-test.s3.ap-northeast-1.amazonaws.com",
+              "cors_rule": [],
+              "force_destroy": false,
+              "grant": [
+                {
+                  "id": "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a",
+                  "permissions": [
+                    "FULL_CONTROL"
+                  ],
+                  "type": "CanonicalUser",
+                  "uri": ""
+                }
+              ],
+              "hosted_zone_id": "Z2M4EHUR26P7ZW",
+              "id": "tfedit-test",
+              "lifecycle_rule": [],
+              "logging": [],
+              "object_lock_configuration": [],
+              "object_lock_enabled": false,
+              "policy": "",
+              "region": "ap-northeast-1",
+              "replication_configuration": [
+                {
+                  "role": "arn:aws:iam::123456789012:role/tfedit-role",
+                  "rules": [
+                    {
+                      "delete_marker_replication_status": "Enabled",
+                      "destination": [
+                        {
+                          "access_control_translation": [],
+                          "account_id": "",
+                          "bucket": "arn:aws:s3:::tfedit-destination",
+                          "metrics": [
+                            {
+                              "minutes": 15,
+                              "status": "Enabled"
+                            }
+                          ],
+                          "replica_kms_key_id": "",
+                          "replication_time": [
+                            {
+                              "minutes": 15,
+                              "status": "Enabled"
+                            }
+                          ],
+                          "storage_class": "STANDARD"
+                        }
+                      ],
+                      "filter": [
+                        {
+                          "prefix": "",
+                          "tags": {}
+                        }
+                      ],
+                      "id": "foobar",
+                      "prefix": "",
+                      "priority": 0,
+                      "source_selection_criteria": [],
+                      "status": "Enabled"
+                    }
+                  ]
+                }
+              ],
+              "request_payer": "BucketOwner",
+              "server_side_encryption_configuration": [],
+              "tags": {},
+              "tags_all": {},
+              "versioning": [
+                {
+                  "enabled": false,
+                  "mfa_delete": false
+                }
+              ],
+              "website": [],
+              "website_domain": null,
+              "website_endpoint": null
+            },
+            "sensitive_values": {
+              "cors_rule": [],
+              "grant": [
+                {
+                  "permissions": [
+                    false
+                  ]
+                }
+              ],
+              "lifecycle_rule": [],
+              "logging": [],
+              "object_lock_configuration": [],
+              "replication_configuration": [
+                {
+                  "rules": [
+                    {
+                      "destination": [
+                        {
+                          "access_control_translation": [],
+                          "metrics": [
+                            {}
+                          ],
+                          "replication_time": [
+                            {}
+                          ]
+                        }
+                      ],
+                      "filter": [
+                        {
+                          "tags": {}
+                        }
+                      ],
+                      "source_selection_criteria": []
+                    }
+                  ]
+                }
+              ],
+              "server_side_encryption_configuration": [],
+              "tags": {},
+              "tags_all": {},
+              "versioning": [
+                {}
+              ],
+              "website": []
+            }
+          }
+        ]
+      }
+    }
+  },
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "version_constraint": "~> 4.9",
+        "expressions": {
+          "access_key": {
+            "constant_value": "dummy"
+          },
+          "endpoints": [
+            {
+              "s3": {
+                "constant_value": "http://localstack:4566"
+              }
+            }
+          ],
+          "region": {
+            "constant_value": "ap-northeast-1"
+          },
+          "s3_use_path_style": {
+            "constant_value": true
+          },
+          "secret_key": {
+            "constant_value": "dummy"
+          },
+          "skip_credentials_validation": {
+            "constant_value": true
+          },
+          "skip_metadata_api_check": {
+            "constant_value": true
+          },
+          "skip_region_validation": {
+            "constant_value": true
+          },
+          "skip_requesting_account_id": {
+            "constant_value": true
+          }
+        }
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_s3_bucket.example",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "example",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "constant_value": "tfedit-test"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_s3_bucket_acl.example",
+          "mode": "managed",
+          "type": "aws_s3_bucket_acl",
+          "name": "example",
+          "provider_config_key": "aws",
+          "expressions": {
+            "acl": {
+              "constant_value": "private"
+            },
+            "bucket": {
+              "references": [
+                "aws_s3_bucket.example.id",
+                "aws_s3_bucket.example"
+              ]
+            }
+          },
+          "schema_version": 0
+        }
+      ]
+    }
+  }
+}

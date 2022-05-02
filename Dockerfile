@@ -25,7 +25,7 @@ RUN curl -fsSL https://github.com/minamijoyo/hcledit/releases/download/v${HCLEDI
   | tar -xzC /usr/local/bin && chmod +x /usr/local/bin/hcledit
 
 # Install tfmigrate
-ENV TFMIGRATE_VERSION 0.3.2
+ENV TFMIGRATE_VERSION 0.3.3
 RUN curl -fsSL https://github.com/minamijoyo/tfmigrate/releases/download/v${TFMIGRATE_VERSION}/tfmigrate_${TFMIGRATE_VERSION}_linux_amd64.tar.gz \
   | tar -xzC /usr/local/bin && chmod +x /usr/local/bin/tfmigrate
 

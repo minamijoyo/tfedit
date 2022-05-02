@@ -5,7 +5,6 @@ import (
 
 	"github.com/minamijoyo/hcledit/editor"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // RootCmd is a top level command instance
@@ -17,13 +16,6 @@ var RootCmd = &cobra.Command{
 }
 
 func init() {
-	// set global flags
-	flags := RootCmd.PersistentFlags()
-	flags.StringP("file", "f", "-", "A path of input file")
-	flags.BoolP("update", "u", false, "Update files in-place")
-	_ = viper.BindPFlag("file", flags.Lookup("file"))
-	_ = viper.BindPFlag("update", flags.Lookup("update"))
-
 	setDefaultStream(RootCmd)
 }
 
