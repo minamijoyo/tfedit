@@ -18,7 +18,7 @@ type Conflict struct {
 	resolved bool
 }
 
-// NewConflict returns a new instalce of Conflict.
+// NewConflict returns a new instance of Conflict.
 func NewConflict(rc *tfjson.ResourceChange) *Conflict {
 	return &Conflict{
 		rc:       rc,

@@ -23,7 +23,7 @@ func registerS3Schema(d *schema.Dictionary) {
 	})
 }
 
-// importIDFuncAWSS3BucketACL is a importIDFunc for aws_s3_bucket_acl.
+// importIDFuncAWSS3BucketACL is an implementation of importIDFunc for aws_s3_bucket_acl.
 // https://registry.terraform.io/providers/hashicorp%20%20/aws/latest/docs/resources/s3_bucket_acl#import
 func importIDFuncAWSS3BucketACL(r schema.Resource) (string, error) {
 	// The acl argument conflicts with access_control_policy

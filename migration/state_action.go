@@ -4,7 +4,7 @@ import "fmt"
 
 // StateAction is an interface of terraform command for state migration.
 type StateAction interface {
-	// MigrationAction returns a string of terraform command for state migration.
+	// MigrationAction returns a string of terraform command arguments for state migration.
 	MigrationAction() string
 }
 
@@ -24,7 +24,7 @@ func NewStateImportAction(address string, id string) StateAction {
 	}
 }
 
-// MigrationAction returns a string of terraform command for state migration.
+// MigrationAction returns a string of terraform command arguments for state migration.
 func (a *StateImportAction) MigrationAction() string {
 	return fmt.Sprintf("import %s %s", a.address, a.id)
 }
