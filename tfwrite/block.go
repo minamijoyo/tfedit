@@ -34,6 +34,10 @@ type Block interface {
 	// RemoveAttribute removes an attribute for a given name from the block.
 	RemoveAttribute(name string)
 
+	// CopyAttribute is a helper method which copies an attribute from a given block.
+	// Do nothing if the given block doesn't have the attribute.
+	CopyAttribute(from Block, name string)
+
 	// AppendNestedBlock appends a given nested block to the parent block.
 	AppendNestedBlock(nestedBlock Block)
 
@@ -122,6 +126,14 @@ func (b *block) AppendAttribute(attr *Attribute) {
 // RemoveAttribute removes an attribute for a given name from the block.
 func (b *block) RemoveAttribute(name string) {
 	b.raw.Body().RemoveAttribute(name)
+}
+
+// CopyAttribute is a helper method which copies an attribute from a given block.
+// Do nothing if the given block doesn't have the attribute.
+func (b *block) CopyAttribute(from Block, name string) {
+	if attr := from.GetAttribute(name); attr != nil {
+		b.AppendAttribute(attr)
+	}
 }
 
 // AppendNestedBlock appends a given nested block to the parent block.

@@ -30,7 +30,7 @@ func (f *AWSS3BucketRequestPayerFilter) ResourceFilter(inFile *tfwrite.File, res
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
 	inFile.AppendResource(newResource)
-	setBucketArgument(newResource, resource)
+	setParentBucket(newResource, resource)
 
 	// Map an `request_payer` attribute to an `payer` attribute.
 	// request_payer = "Requester" => payer = "Requester"

@@ -63,6 +63,52 @@ func TestStateMigrationRender(t *testing.T) {
 }
 `,
 		},
+		{
+			desc: "count",
+			name: "mytest",
+			dir:  "",
+			actions: []StateAction{
+				&StateImportAction{
+					address: "foo_bar.example[0]",
+					id:      "test-0",
+				},
+				&StateImportAction{
+					address: "foo_bar.example[1]",
+					id:      "test-1",
+				},
+			},
+			ok: true,
+			want: `migration "state" "mytest" {
+  actions = [
+    "import foo_bar.example[0] test-0",
+    "import foo_bar.example[1] test-1",
+  ]
+}
+`,
+		},
+		{
+			desc: "for_each",
+			name: "mytest",
+			dir:  "",
+			actions: []StateAction{
+				&StateImportAction{
+					address: "foo_bar.example[\"foo\"]",
+					id:      "test-foo",
+				},
+				&StateImportAction{
+					address: "foo_bar.example[\"bar\"]",
+					id:      "test-bar",
+				},
+			},
+			ok: true,
+			want: `migration "state" "mytest" {
+  actions = [
+    "import 'foo_bar.example[\"foo\"]' test-foo",
+    "import 'foo_bar.example[\"bar\"]' test-bar",
+  ]
+}
+`,
+		},
 	}
 
 	for _, tc := range cases {

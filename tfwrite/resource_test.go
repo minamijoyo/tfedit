@@ -98,6 +98,56 @@ resource "aws_s3_bucket" "example" {}
 	}
 }
 
+func TestResourceReferableName(t *testing.T) {
+	cases := []struct {
+		desc string
+		src  string
+		want string
+		ok   bool
+	}{
+		{
+			desc: "count",
+			src: `
+resource "aws_s3_bucket" "example" {
+  count = 2
+}
+`,
+			want: "example[count.index]",
+			ok:   true,
+		},
+		{
+			desc: "for_each",
+			src: `
+resource "aws_s3_bucket" "example" {
+  for_each = toset(["foo", "bar"])
+}
+`,
+			want: "example[each.key]",
+			ok:   true,
+		},
+		{
+			desc: "default",
+			src: `
+resource "aws_s3_bucket" "example" {
+}
+`,
+			want: "example",
+			ok:   true,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.desc, func(t *testing.T) {
+			f := parseTestFile(t, tc.src)
+			r := findFirstTestResource(t, f)
+			got := r.ReferableName()
+			if got != tc.want {
+				t.Errorf("got = %s, but want = %s", got, tc.want)
+			}
+		})
+	}
+}
+
 func TestResourceSetAttributeByReference(t *testing.T) {
 	cases := []struct {
 		desc string
@@ -122,6 +172,56 @@ resource "aws_s3_bucket" "example" {
 
 resource "aws_s3_bucket_acl" "example" {
   bucket = aws_s3_bucket.example.id
+}
+`,
+			ok: true,
+		},
+		{
+			desc: "count",
+			src: `
+resource "aws_s3_bucket" "example" {
+  count  = 2
+  bucket = "tfedit-test"
+}
+
+resource "aws_s3_bucket_acl" "example" {
+  count = 2
+}
+`,
+			want: `
+resource "aws_s3_bucket" "example" {
+  count  = 2
+  bucket = "tfedit-test"
+}
+
+resource "aws_s3_bucket_acl" "example" {
+  count  = 2
+  bucket = aws_s3_bucket.example[count.index].id
+}
+`,
+			ok: true,
+		},
+		{
+			desc: "for_each",
+			src: `
+resource "aws_s3_bucket" "example" {
+  for_each = toset(["foo", "bar"])
+  bucket   = "tfedit-test"
+}
+
+resource "aws_s3_bucket_acl" "example" {
+  for_each = toset(["foo", "bar"])
+}
+`,
+			want: `
+resource "aws_s3_bucket" "example" {
+  for_each = toset(["foo", "bar"])
+  bucket   = "tfedit-test"
+}
+
+resource "aws_s3_bucket_acl" "example" {
+  for_each = toset(["foo", "bar"])
+  bucket   = aws_s3_bucket.example[each.key].id
 }
 `,
 			ok: true,

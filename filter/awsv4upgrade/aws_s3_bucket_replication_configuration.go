@@ -32,7 +32,7 @@ func (f *AWSS3BucketReplicationConfigurationFilter) ResourceFilter(inFile *tfwri
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
 	inFile.AppendResource(newResource)
-	setBucketArgument(newResource, resource)
+	setParentBucket(newResource, resource)
 
 	for _, nestedBlock := range nestedBlocks {
 		roleAttr := nestedBlock.GetAttribute("role")
