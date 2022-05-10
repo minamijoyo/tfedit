@@ -304,6 +304,79 @@ foo {
 	}
 }
 
+func TestBlockCopyAttribute(t *testing.T) {
+	cases := []struct {
+		desc string
+		src  string
+		name string
+		want string
+		ok   bool
+	}{
+		{
+			desc: "simple",
+			src: `
+foo1 {
+  bar = "baz"
+  qux = "quux"
+}
+
+foo2 {
+  qux = "quux"
+}
+`,
+			name: "bar",
+			want: `
+foo1 {
+  bar = "baz"
+  qux = "quux"
+}
+
+foo2 {
+  qux = "quux"
+  bar = "baz"
+}
+`,
+			ok: true,
+		},
+		{
+			desc: "not found",
+			src: `
+foo1 {
+  qux = "quux"
+}
+
+foo2 {
+  qux = "quux"
+}
+`,
+			name: "bar",
+			want: `
+foo1 {
+  qux = "quux"
+}
+
+foo2 {
+  qux = "quux"
+}
+`,
+			ok: true,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.desc, func(t *testing.T) {
+			f := parseTestFile(t, tc.src)
+			blocks := findTestBlocks(t, f)
+			blocks[1].CopyAttribute(blocks[0], tc.name)
+
+			got := printTestFile(t, f)
+			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Fatalf("got:\n%s\nwant:\n%s\ndiff:\n%s", got, tc.want, diff)
+			}
+		})
+	}
+}
+
 func TestBlockAppendNestedBlock(t *testing.T) {
 	cases := []struct {
 		desc string

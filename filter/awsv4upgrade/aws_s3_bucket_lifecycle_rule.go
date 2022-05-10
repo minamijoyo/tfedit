@@ -36,7 +36,7 @@ func (f *AWSS3BucketLifecycleRuleFilter) ResourceFilter(inFile *tfwrite.File, re
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
 	inFile.AppendResource(newResource)
-	setBucketArgument(newResource, resource)
+	setParentBucket(newResource, resource)
 
 	for _, nestedBlock := range nestedBlocks {
 		// Rename a `lifecycle_rule` block to a `rule` block

@@ -30,7 +30,7 @@ func (f *AWSS3BucketWebsiteFilter) ResourceFilter(inFile *tfwrite.File, resource
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
 	inFile.AppendResource(newResource)
-	setBucketArgument(newResource, resource)
+	setParentBucket(newResource, resource)
 
 	websiteBlock := nestedBlocks[0]
 

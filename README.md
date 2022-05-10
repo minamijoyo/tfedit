@@ -103,8 +103,8 @@ For upgrading AWS provider v4, some rules have not been implemented yet. The cur
   - [x] versioning
   - [x] website
 - [ ] Meta arguments of resource
-  - [ ] count
-  - [ ] for_each
+  - [x] count
+  - [x] for_each
   - [ ] dynamic
 - [ ] Rename references in an expression to new resource type
 - [x] Generate import commands for new split resources

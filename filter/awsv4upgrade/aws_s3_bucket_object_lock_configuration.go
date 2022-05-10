@@ -33,7 +33,7 @@ func (f *AWSS3BucketObjectLockConfigurationFilter) ResourceFilter(inFile *tfwrit
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
 	inFile.AppendResource(newResource)
-	setBucketArgument(newResource, resource)
+	setParentBucket(newResource, resource)
 
 	objectLockBlock := nestedBlocks[0]
 

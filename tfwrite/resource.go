@@ -34,9 +34,40 @@ func (r *Resource) SchemaType() string {
 }
 
 // Name returns a name of resource.
+// It returns the second label of block.
 func (r *Resource) Name() string {
 	labels := r.block.raw.Labels()
 	return labels[1]
+}
+
+// Count returns a meta argument of count.
+// It returns nil if not found.
+func (r *Resource) Count() *Attribute {
+	return r.GetAttribute("count")
+}
+
+// ForEach returns a meta argument of for_each.
+// It returns nil if not found.
+func (r *Resource) ForEach() *Attribute {
+	return r.GetAttribute("for_each")
+}
+
+// ReferableName returns a name of resource instance which can be referenced as
+// a part of address.
+// It contains an index reference if count or for_each is set.
+// If neither count nor for_each is set, it just returns the name.
+func (r *Resource) ReferableName() string {
+	name := r.Name()
+
+	if count := r.Count(); count != nil {
+		return name + "[count.index]"
+	}
+
+	if forEach := r.ForEach(); forEach != nil {
+		return name + "[each.key]"
+	}
+
+	return name
 }
 
 // SetAttributeByReference sets an attribute for a given name to a reference of
@@ -44,7 +75,7 @@ func (r *Resource) Name() string {
 func (r *Resource) SetAttributeByReference(name string, refResource *Resource, refAttribute string) {
 	traversal := hcl.Traversal{
 		hcl.TraverseRoot{Name: refResource.SchemaType()},
-		hcl.TraverseAttr{Name: refResource.Name()},
+		hcl.TraverseAttr{Name: refResource.ReferableName()},
 		hcl.TraverseAttr{Name: refAttribute},
 	}
 	r.block.raw.Body().SetAttributeTraversal(name, traversal)

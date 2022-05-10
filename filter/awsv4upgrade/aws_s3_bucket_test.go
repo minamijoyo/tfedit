@@ -546,6 +546,52 @@ resource "aws_s3_bucket_acl" "example" {
 }
 `,
 		},
+		{
+			name: "count",
+			src: `
+resource "aws_s3_bucket" "example" {
+  count  = 2
+  bucket = "tfedit-test-${count.index}"
+  acl    = "private"
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket" "example" {
+  count  = 2
+  bucket = "tfedit-test-${count.index}"
+}
+
+resource "aws_s3_bucket_acl" "example" {
+  count  = 2
+  bucket = aws_s3_bucket.example[count.index].id
+  acl    = "private"
+}
+`,
+		},
+		{
+			name: "for_each",
+			src: `
+resource "aws_s3_bucket" "example" {
+  for_each = toset(["foo", "bar"])
+  bucket   = "tfedit-test-${each.key}"
+  acl      = "private"
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket" "example" {
+  for_each = toset(["foo", "bar"])
+  bucket   = "tfedit-test-${each.key}"
+}
+
+resource "aws_s3_bucket_acl" "example" {
+  for_each = toset(["foo", "bar"])
+  bucket   = aws_s3_bucket.example[each.key].id
+  acl      = "private"
+}
+`,
+		},
 	}
 
 	for _, tc := range cases {

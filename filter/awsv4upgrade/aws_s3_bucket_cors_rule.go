@@ -30,7 +30,7 @@ func (f *AWSS3BucketCorsRuleFilter) ResourceFilter(inFile *tfwrite.File, resourc
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
 	inFile.AppendResource(newResource)
-	setBucketArgument(newResource, resource)
+	setParentBucket(newResource, resource)
 
 	for _, nestedBlock := range nestedBlocks {
 		newResource.AppendNestedBlock(nestedBlock)

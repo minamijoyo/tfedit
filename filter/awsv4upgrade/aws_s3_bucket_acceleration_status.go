@@ -30,7 +30,7 @@ func (f *AWSS3BucketAccelerationStatusFilter) ResourceFilter(inFile *tfwrite.Fil
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
 	inFile.AppendResource(newResource)
-	setBucketArgument(newResource, resource)
+	setParentBucket(newResource, resource)
 
 	// Map an `acceleration_status` attribute to an `status` attribute.
 	// acceleration_status = "Enabled" => status = "Enabled"
