@@ -40,7 +40,8 @@ jobs:
     strategy:
       matrix:
         terraform:
-        - 1.1.8
+        - 1.2.0
+        - 1.1.9
     env:
       TERRAFORM_VERSION: ${{ matrix.terraform }}
     steps:
