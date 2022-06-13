@@ -5,10 +5,10 @@ go 1.17
 require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/google/go-cmp v0.5.7
-	github.com/hashicorp/hcl/v2 v2.11.1
+	github.com/hashicorp/hcl/v2 v2.12.0
 	github.com/hashicorp/logutils v1.0.0
 	github.com/hashicorp/terraform-json v0.13.0
-	github.com/minamijoyo/hcledit v0.2.4-0.20220223085546-e31138854650
+	github.com/minamijoyo/hcledit v0.2.4
 	github.com/spf13/cobra v1.3.0
 	github.com/spf13/viper v1.10.1
 	github.com/zclconf/go-cty v1.9.1
