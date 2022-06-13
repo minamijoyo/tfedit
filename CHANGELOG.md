@@ -1,5 +1,10 @@
 ## master (Unreleased)
 
+ENHANCEMENTS:
+
+* Update Go to v1.17.10 and Alpine to v3.16 ([#36](https://github.com/minamijoyo/tfedit/pull/36))
+* Update hcl to v2.12.0 and hcledit to v0.2.4 ([#37](https://github.com/minamijoyo/tfedit/pull/37))
+
 ## 0.1.0 (2022/06/07)
 
 ENHANCEMENTS:
