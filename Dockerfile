@@ -20,7 +20,7 @@ RUN curl -fsSL https://github.com/minamijoyo/tfupdate/releases/download/v${TFUPD
   | tar -xzC /usr/local/bin && chmod +x /usr/local/bin/tfupdate
 
 # Install hcledit
-ENV HCLEDIT_VERSION 0.2.3
+ENV HCLEDIT_VERSION 0.2.4
 RUN curl -fsSL https://github.com/minamijoyo/hcledit/releases/download/v${HCLEDIT_VERSION}/hcledit_${HCLEDIT_VERSION}_linux_amd64.tar.gz \
   | tar -xzC /usr/local/bin && chmod +x /usr/local/bin/hcledit
 
