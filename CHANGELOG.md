@@ -1,9 +1,13 @@
 ## master (Unreleased)
 
+## 0.1.1 (2022/06/16)
+
 ENHANCEMENTS:
 
 * Update Go to v1.17.10 and Alpine to v3.16 ([#36](https://github.com/minamijoyo/tfedit/pull/36))
 * Update hcl to v2.12.0 and hcledit to v0.2.4 ([#37](https://github.com/minamijoyo/tfedit/pull/37))
+* Update Go to v1.18.3 ([#38](https://github.com/minamijoyo/tfedit/pull/38))
+* Update terraform-json to v0.14.0 ([#39](https://github.com/minamijoyo/tfedit/pull/39))
 
 ## 0.1.0 (2022/06/07)
 
