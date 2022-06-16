@@ -1,7 +1,7 @@
 ARG TERRAFORM_VERSION=latest
 FROM hashicorp/terraform:$TERRAFORM_VERSION AS terraform
 
-FROM golang:1.17.10-alpine3.16
+FROM golang:1.18.3-alpine3.16
 RUN apk --no-cache add make git bash curl jq
 
 # A workaround for a permission issue of git.
@@ -20,7 +20,7 @@ RUN curl -fsSL https://github.com/minamijoyo/tfupdate/releases/download/v${TFUPD
   | tar -xzC /usr/local/bin && chmod +x /usr/local/bin/tfupdate
 
 # Install hcledit
-ENV HCLEDIT_VERSION 0.2.4
+ENV HCLEDIT_VERSION 0.2.5
 RUN curl -fsSL https://github.com/minamijoyo/hcledit/releases/download/v${HCLEDIT_VERSION}/hcledit_${HCLEDIT_VERSION}_linux_amd64.tar.gz \
   | tar -xzC /usr/local/bin && chmod +x /usr/local/bin/hcledit
 
