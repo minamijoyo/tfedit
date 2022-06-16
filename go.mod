@@ -8,7 +8,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.12.0
 	github.com/hashicorp/logutils v1.0.0
 	github.com/hashicorp/terraform-json v0.13.0
-	github.com/minamijoyo/hcledit v0.2.4
+	github.com/minamijoyo/hcledit v0.2.5
 	github.com/spf13/cobra v1.3.0
 	github.com/spf13/viper v1.10.1
 	github.com/zclconf/go-cty v1.9.1
@@ -30,7 +30,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
-	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
+	golang.org/x/sys v0.0.0-20220615213510-4f61da869c0c // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
