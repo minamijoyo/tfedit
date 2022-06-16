@@ -331,7 +331,7 @@ https://github.com/minamijoyo/tfedit/releases
 
 ### Source
 
-If you have Go 1.17+ development environment:
+If you have Go 1.18+ development environment:
 
 ```
 $ go install github.com/minamijoyo/tfedit@latest
