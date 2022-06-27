@@ -112,6 +112,64 @@ resource "aws_s3_bucket" "example" {
 }
 `,
 		},
+		{
+			name: "mfa_delete = true",
+			src: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+  versioning {
+    enabled    = true
+    mfa_delete = true
+  }
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+}
+
+resource "aws_s3_bucket_versioning" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  versioning_configuration {
+    mfa_delete = "Enabled"
+    status     = "Enabled"
+  }
+}
+`,
+		},
+		{
+			name: "mfa_delete = false",
+			src: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+  versioning {
+    enabled    = true
+    mfa_delete = false
+  }
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+}
+
+resource "aws_s3_bucket_versioning" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  versioning_configuration {
+    mfa_delete = "Disabled"
+    status     = "Enabled"
+  }
+}
+`,
+		},
 	}
 
 	for _, tc := range cases {
