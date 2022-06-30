@@ -40,6 +40,14 @@ func TestStateMigrationRender(t *testing.T) {
 `,
 		},
 		{
+			desc:    "empty",
+			name:    "mytest",
+			dir:     "",
+			actions: []StateAction{},
+			ok:      true,
+			want:    "",
+		},
+		{
 			desc: "simple with dir",
 			name: "mytest",
 			dir:  "tmp/dir1",

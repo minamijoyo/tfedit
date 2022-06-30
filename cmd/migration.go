@@ -82,6 +82,15 @@ func runMigrationFromplanCmd(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	// Suppress creating a migration file when no action.
+	// It is not only redundant, but also causes an error as an invalid migration
+	// file when loaded by tfmigrate.
+	if len(output) == 0 {
+		// Intentionally does not return errors so that we can simply ignore
+		// irrelevant directories when processing multiple directories.
+		return nil
+	}
+
 	if migrationFile == "-" {
 		fmt.Fprint(cmd.OutOrStdout(), string(output))
 	} else {
