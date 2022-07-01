@@ -46,7 +46,8 @@ func (m *StateMigration) AppendActions(actions ...StateAction) {
 	m.Actions = append(m.Actions, actions...)
 }
 
-// Render converts a state migration config to bytes
+// Render converts a state migration config to bytes.
+// Return an empty slice when no action without error.
 // Encoding StateMigratorConfig directly with gohcl has some problems.
 // An array contains multiple elements is output as one line. It's not readable
 // for multiple actions. In additon, the default value is set explicitly, it's
@@ -54,6 +55,11 @@ func (m *StateMigration) AppendActions(actions ...StateAction) {
 // familiar with tfmigrate.
 // So we use text/template to render a migration file.
 func (m *StateMigration) Render() ([]byte, error) {
+	// Return an empty slice when no action without error.
+	if len(m.Actions) == 0 {
+		return []byte{}, nil
+	}
+
 	var output bytes.Buffer
 	if err := compiledMigrationTemplate.Execute(&output, m); err != nil {
 		return nil, fmt.Errorf("failed to render migration file: %s", err)
