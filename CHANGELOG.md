@@ -1,5 +1,10 @@
 ## master (Unreleased)
 
+BUG FIXES:
+
+* Map mfa_delete true/false => Enabled/Disabled for aws_s3_bucket_versioning ([#41](https://github.com/minamijoyo/tfedit/pull/41))
+* Suppress creating a migration file when no action ([#42](https://github.com/minamijoyo/tfedit/pull/42))
+
 ## 0.1.1 (2022/06/16)
 
 ENHANCEMENTS:
