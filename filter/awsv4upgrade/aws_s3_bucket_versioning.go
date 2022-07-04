@@ -60,6 +60,27 @@ func (f *AWSS3BucketVersioningFilter) ResourceFilter(inFile *tfwrite.File, resou
 		nestedBlock.RemoveAttribute("enabled")
 	}
 
+	// Map an `mfa_delete` attribute.
+	// true => "Enabled"
+	// false => "Disabled"
+	// There is also the mfa argument in v4, but it seems practically meaningless. Simply ignore it.
+	mfaDeleteAttr := nestedBlock.GetAttribute("mfa_delete")
+	if mfaDeleteAttr != nil {
+		mfaDelete, err := mfaDeleteAttr.ValueAsString()
+		if err == nil {
+			switch mfaDelete {
+			case "true":
+				nestedBlock.SetAttributeValue("mfa_delete", cty.StringVal("Enabled"))
+			case "false":
+				nestedBlock.SetAttributeValue("mfa_delete", cty.StringVal("Disabled"))
+			default:
+				// If the value is a variable, not literal, we cannot rewrite it automatically.
+				// Set original raw tokens as it is.
+				nestedBlock.SetAttributeRaw("mfa_delete", mfaDeleteAttr.ValueAsTokens())
+			}
+		}
+	}
+
 	newResource.AppendNestedBlock(nestedBlock)
 	resource.RemoveNestedBlock(nestedBlock)
 
