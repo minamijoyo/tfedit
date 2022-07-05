@@ -191,9 +191,14 @@ func (f *AWSS3BucketLifecycleRuleFilter) ResourceFilter(inFile *tfwrite.File, re
 		// }
 		abortAttr := nestedBlock.GetAttribute("abort_incomplete_multipart_upload_days")
 		if abortAttr != nil {
-			abortBlock := tfwrite.NewEmptyNestedBlock("abort_incomplete_multipart_upload")
-			nestedBlock.AppendNestedBlock(abortBlock)
-			abortBlock.SetAttributeRaw("days_after_initiation", abortAttr.ValueAsTokens())
+			abort, err := abortAttr.ValueAsString()
+			// When the value is 0, adding a block will result in a migration plan diff,
+			// so suppress adding the block.
+			if err == nil && abort != "0" {
+				abortBlock := tfwrite.NewEmptyNestedBlock("abort_incomplete_multipart_upload")
+				nestedBlock.AppendNestedBlock(abortBlock)
+				abortBlock.SetAttributeRaw("days_after_initiation", abortAttr.ValueAsTokens())
+			}
 			nestedBlock.RemoveAttribute("abort_incomplete_multipart_upload_days")
 		}
 

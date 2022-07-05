@@ -346,6 +346,40 @@ resource "aws_s3_bucket_lifecycle_configuration" "example" {
 `,
 		},
 		{
+			name: "with abort_incomplete_multipart_upload_days = 0",
+			src: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+  lifecycle_rule {
+    id      = "rule-0"
+    enabled = true
+    abort_incomplete_multipart_upload_days = 0
+  }
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  rule {
+    id     = "rule-0"
+    status = "Enabled"
+
+    filter {
+      prefix = ""
+    }
+  }
+}
+`,
+		},
+		{
 			name: "argument not found",
 			src: `
 resource "aws_s3_bucket" "example" {
