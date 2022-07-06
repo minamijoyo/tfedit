@@ -294,6 +294,156 @@ resource "aws_s3_bucket_lifecycle_configuration" "example" {
 `,
 		},
 		{
+			name: "with empty prefix and tags",
+			src: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+  lifecycle_rule {
+    id      = "log"
+    enabled = true
+    prefix  = ""
+    tags    = {}
+
+    noncurrent_version_transition {
+      days          = 30
+      storage_class = "GLACIER"
+    }
+
+    noncurrent_version_expiration {
+      days = 90
+    }
+  }
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  rule {
+    id = "log"
+
+    noncurrent_version_transition {
+      storage_class   = "GLACIER"
+      noncurrent_days = 30
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 90
+    }
+    status = "Enabled"
+
+    filter {
+    }
+  }
+}
+`,
+		},
+		{
+			name: "with tags but no prefix",
+			src: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+  lifecycle_rule {
+    id      = "log"
+    enabled = true
+
+    tags = {
+      rule      = "log"
+      autoclean = "true"
+    }
+
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 60
+      storage_class = "GLACIER"
+    }
+
+    expiration {
+      days = 90
+    }
+  }
+
+  lifecycle_rule {
+    id      = "tmp"
+    prefix  = "tmp/"
+    enabled = true
+
+    expiration {
+      days = 90
+    }
+  }
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket" "example" {
+  bucket = "tfedit-test"
+
+
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  rule {
+    id = "log"
+
+
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 60
+      storage_class = "GLACIER"
+    }
+
+    expiration {
+      days = 90
+    }
+    status = "Enabled"
+
+    filter {
+
+      and {
+        prefix = ""
+        tags = {
+          rule      = "log"
+          autoclean = "true"
+        }
+      }
+    }
+  }
+
+  rule {
+    id = "tmp"
+
+    expiration {
+      days = 90
+    }
+    status = "Enabled"
+
+    filter {
+      prefix = "tmp/"
+    }
+  }
+}
+`,
+		},
+		{
 			name: "with date in transition and expiration",
 			src: `
 resource "aws_s3_bucket" "example" {
