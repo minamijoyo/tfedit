@@ -4,6 +4,12 @@ BUG FIXES:
 
 * Map mfa_delete true/false => Enabled/Disabled for aws_s3_bucket_versioning ([#41](https://github.com/minamijoyo/tfedit/pull/41))
 * Suppress creating a migration file when no action ([#42](https://github.com/minamijoyo/tfedit/pull/42))
+* Suppress adding invalid days_after_initiation for aws_s3_bucket_lifecycle_configuration ([#43](https://github.com/minamijoyo/tfedit/pull/43))
+* Fix invalid filter and tags for aws_s3_bucket_lifecycle_configuration ([#45](https://github.com/minamijoyo/tfedit/pull/45))
+
+ENHANCEMENTS:
+
+* Use a native cache feature in actions/setup-go ([#44](https://github.com/minamijoyo/tfedit/pull/44))
 
 ## 0.1.1 (2022/06/16)
 
