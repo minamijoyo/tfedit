@@ -87,32 +87,48 @@ func (f *AWSS3BucketLifecycleRuleFilter) ResourceFilter(inFile *tfwrite.File, re
 		// }
 		// Create a filter block
 		filterBlock := tfwrite.NewEmptyNestedBlock("filter")
-		// A child block points a `filter` or an `and` block.
-		var childBlock *tfwrite.NestedBlock
 		nestedBlock.AppendNestedBlock(filterBlock)
 		prefixAttr := nestedBlock.GetAttribute("prefix")
 		tagsAttr := nestedBlock.GetAttribute("tags")
-		if tagsAttr != nil && prefixAttr != nil {
-			andBlock := tfwrite.NewEmptyNestedBlock("and")
-			filterBlock.AppendNestedBlock(andBlock)
-			childBlock = andBlock
-		} else {
-			childBlock = filterBlock
-		}
-		if prefixAttr != nil {
-			childBlock.SetAttributeRaw("prefix", prefixAttr.ValueAsTokens())
-			nestedBlock.RemoveAttribute("prefix")
-		} else {
-			// If a prefix attribute is not found, set an empty string by default.
-			// According to the upgrade guide,
-			// when aws s3api get-bucket-lifecycle-configuration returns `"Filter" : {}`,
-			// we should not set prefix, however we cannot know it without an API call,
-			// so we just assume it contains `"Filter" : { "Prefix": "" }` here.
-			childBlock.SetAttributeValue("prefix", cty.StringVal(""))
-		}
 		if tagsAttr != nil {
-			childBlock.SetAttributeRaw("tags", tagsAttr.ValueAsTokens())
+			tags, err := tagsAttr.ValueAsString()
+			if err == nil {
+				if tags != "{}" {
+					// Non empty tags should be wrapped by an `and` block.
+					andBlock := tfwrite.NewEmptyNestedBlock("and")
+					filterBlock.AppendNestedBlock(andBlock)
+					if prefixAttr != nil {
+						andBlock.SetAttributeRaw("prefix", prefixAttr.ValueAsTokens())
+						nestedBlock.RemoveAttribute("prefix")
+					} else {
+						// If a prefix attribute is not found, set an empty string by default.
+						andBlock.SetAttributeValue("prefix", cty.StringVal(""))
+					}
+					andBlock.SetAttributeRaw("tags", tagsAttr.ValueAsTokens())
+				} else {
+					// When both prefix and tags were empty but defined, it will result
+					// in a migration plan diff, so remove them and put an empty filter.
+					if prefixAttr != nil {
+						prefix, err := prefixAttr.ValueAsString()
+						if err == nil && prefix == `""` {
+							nestedBlock.RemoveAttribute("prefix")
+						}
+					}
+				}
+			}
 			nestedBlock.RemoveAttribute("tags")
+		} else {
+			if prefixAttr != nil {
+				filterBlock.SetAttributeRaw("prefix", prefixAttr.ValueAsTokens())
+				nestedBlock.RemoveAttribute("prefix")
+			} else {
+				// If a prefix attribute is not found, set an empty string by default.
+				// According to the upgrade guide,
+				// when aws s3api get-bucket-lifecycle-configuration returns `"Filter" : {}`,
+				// we should not set prefix, however we cannot know it without an API call,
+				// so we just assume it contains `"Filter" : { "Prefix": "" }` here.
+				filterBlock.SetAttributeValue("prefix", cty.StringVal(""))
+			}
 		}
 
 		// Convert a timestamp format for a date attribute in transition.
