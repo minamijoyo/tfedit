@@ -1,5 +1,9 @@
 ## master (Unreleased)
 
+ENHANCEMENTS:
+
+* Use GitHub App token for updating brew formula on release ([#46](https://github.com/minamijoyo/tfedit/pull/46))
+
 ## 0.1.2 (2022/07/06)
 
 BUG FIXES:
