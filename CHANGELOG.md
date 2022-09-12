@@ -1,5 +1,9 @@
 ## master (Unreleased)
 
+NEW FEATURES:
+
+* Add support for provider meta argument ([#51](https://github.com/minamijoyo/tfedit/pull/51))
+
 ## 0.1.3 (2022/08/12)
 
 ENHANCEMENTS:
