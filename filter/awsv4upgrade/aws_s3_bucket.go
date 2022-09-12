@@ -55,10 +55,11 @@ func (f *AWSS3BucketFilter) ResourceFilter(inFile *tfwrite.File, resource *tfwri
 }
 
 // setParentBucket is a helper method for setting the followings:
-// - copy count and for_each meta arguments
+// - copy provider, count and for_each meta arguments
 // - set a bucket argument of a new `aws_s3_bucket_*` resource to the original `aws_s3_bucket` resource.
 func setParentBucket(newResource *tfwrite.Resource, oldResource *tfwrite.Resource) {
-	// copy count and for_each meta arguments
+	// copy provider, count and for_each meta arguments
+	newResource.CopyAttribute(oldResource, "provider")
 	newResource.CopyAttribute(oldResource, "count")
 	newResource.CopyAttribute(oldResource, "for_each")
 

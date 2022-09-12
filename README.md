@@ -103,6 +103,7 @@ For upgrading AWS provider v4, some rules have not been implemented yet. The cur
   - [x] versioning
   - [x] website
 - [ ] Meta arguments of resource
+  - [x] provider
   - [x] count
   - [x] for_each
   - [ ] dynamic
