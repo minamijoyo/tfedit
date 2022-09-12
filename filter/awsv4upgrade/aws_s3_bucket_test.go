@@ -592,6 +592,29 @@ resource "aws_s3_bucket_acl" "example" {
 }
 `,
 		},
+		{
+			name: "provider",
+			src: `
+resource "aws_s3_bucket" "example" {
+  provider = aws.foo
+  bucket   = "tfedit-test"
+  acl      = "private"
+}
+`,
+			ok: true,
+			want: `
+resource "aws_s3_bucket" "example" {
+  provider = aws.foo
+  bucket   = "tfedit-test"
+}
+
+resource "aws_s3_bucket_acl" "example" {
+  provider = aws.foo
+  bucket   = aws_s3_bucket.example.id
+  acl      = "private"
+}
+`,
+		},
 	}
 
 	for _, tc := range cases {
