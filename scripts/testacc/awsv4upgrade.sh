@@ -28,10 +28,6 @@ upgrade()
   tfupdate provider aws -v "~> 4.9" .
   terraform init -input=false -no-color -upgrade
   terraform -v
-
-  # fix path style for sandbox only
-  hcledit attribute rm -u -f config.tf provider.aws.s3_force_path_style
-  hcledit attribute append -u -f config.tf provider.aws.s3_use_path_style true
 }
 
 filter()

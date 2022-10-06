@@ -10,7 +10,7 @@ Easy refactoring Terraform configurations in a scalable way.
 - CLI-friendly: Read HCL from stdin, apply filters and write results to stdout, easily pipe and combine other commands.
 - Keep comments: Update lots of existing Terraform configurations without losing comments as much as possible.
 - Built-in operations:
-  - filter awsv4upgrade: Upgrade configurations to AWS provider v4. Only `aws_s3_bucket` refactor is supported.
+  - filter awsv4upgrade: Upgrade configurations to AWS provider v4.
 - Generate a migration file for state operations: Read a Terraform plan file in JSON format and generate a migration file in [tfmigrate](https://github.com/minamijoyo/tfmigrate) HCL format. Currently, only import actions required by awsv4upgrade are supported.
 
 Although the initial goal of this project is providing a way for bulk refactoring of the `aws_s3_bucket` resource required by breaking changes in AWS provider v4, but the project scope is not limited to specific use-cases. It's by no means intended to be an upgrade tool for all your providers. Instead of covering all you need, it provides reusable building blocks for Terraform refactoring and shows examples for how to compose them in real world use-cases.
@@ -110,6 +110,11 @@ For upgrading AWS provider v4, some rules have not been implemented yet. The cur
 - [ ] Rename references in an expression to new resource type
 - [x] Generate import commands for new split resources
 
+[New Provider Arguments](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#new-provider-arguments)
+
+- [ ] Arguments of provider aws
+  - [x] s3_force_path_style
+
 ### Known limitations:
 - Some arguments were changed not only their names but also valid values. In this case, if a value of the argument is a variable, not literal, it's impossible to automatically rewrite the value of the variable. It potentially could be passed from outside of module or even overwritten at runtime. If it's not literal, you need to change the value of the variable by yourself. The following arguments have this limitation:
   - grant:
@@ -190,13 +195,6 @@ Then, let's upgrade the AWS provider to the latest v4.x. We recommend upgrading 
 Terraform v1.1.8
 on linux_amd64
 + provider registry.terraform.io/hashicorp/aws v4.9.0
-```
-
-One thing to note is that the `s3_force_path_style` attribute in the `provider "aws"` block has been renamed to a new `s3_use_path_style` attribute in v4, so rename it with [hcledit](https://github.com/minamijoyo/hcledit). This is an issue in the sandbox environment and this step is not needed in a real AWS environment:
-
-```
-# hcledit attribute rm -u -f config.tf provider.aws.s3_force_path_style
-# hcledit attribute append -u -f config.tf provider.aws.s3_use_path_style true
 ```
 
 You can see a deprecation warning as follows:
@@ -389,7 +387,6 @@ $ tfedit filter awsv4upgrade --help
 Apply a built-in filter for awsv4upgrade
 
 Upgrade configurations to AWS provider v4.
-Only aws_s3_bucket refactor is supported.
 
 Usage:
   tfedit filter awsv4upgrade [flags]

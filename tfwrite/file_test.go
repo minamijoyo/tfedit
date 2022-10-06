@@ -50,6 +50,65 @@ resource "foo_test" "example2" {}
 	}
 }
 
+func TestFileFindProvidersByType(t *testing.T) {
+	cases := []struct {
+		desc         string
+		src          string
+		providerType string
+		want         string
+		ok           bool
+	}{
+		{
+			desc: "simple",
+			src: `
+provider "aws" {
+  region = "ap-northeast-1"
+  alias  = "ap_northeast_1"
+}
+
+provider "aws" {
+  region = "us-east-1"
+  alias  = "us_east_1"
+}
+
+provider "google" {}
+
+resource "aws_s3_bucket" "example" {}
+`,
+			providerType: "aws",
+			want: `
+provider "aws" {
+  region = "ap-northeast-1"
+  alias  = "ap_northeast_1"
+}
+
+provider "aws" {
+  region = "us-east-1"
+  alias  = "us_east_1"
+}
+`,
+			ok: true,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.desc, func(t *testing.T) {
+			f := parseTestFile(t, tc.src)
+			providers := f.FindProvidersByType(tc.providerType)
+
+			newFile := NewEmptyFile()
+			for _, p := range providers {
+				newFile.AppendProvider(p)
+			}
+
+			got := printTestFile(t, newFile)
+			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Fatalf("got:\n%s\nwant:\n%s\ndiff:\n%s", got, tc.want, diff)
+			}
+		})
+	}
+}
+
 func TestFileAppendResource(t *testing.T) {
 	cases := []struct {
 		desc         string
@@ -81,6 +140,44 @@ resource "foo_test" "example2" {
 			f := parseTestFile(t, tc.src)
 			r := NewEmptyResource(tc.resourceType, tc.resourceName)
 			f.AppendResource(r)
+
+			got := printTestFile(t, f)
+			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Fatalf("got:\n%s\nwant:\n%s\ndiff:\n%s", got, tc.want, diff)
+			}
+		})
+	}
+}
+
+func TestFileAppendProvider(t *testing.T) {
+	cases := []struct {
+		desc         string
+		src          string
+		providerType string
+		want         string
+		ok           bool
+	}{
+		{
+			desc: "simple",
+			src: `
+provider "aws" {}
+`,
+			providerType: "google",
+			want: `
+provider "aws" {}
+
+provider "google" {
+}
+`,
+			ok: true,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.desc, func(t *testing.T) {
+			f := parseTestFile(t, tc.src)
+			p := NewEmptyProvider(tc.providerType)
+			f.AppendProvider(p)
 
 			got := printTestFile(t, f)
 			if diff := cmp.Diff(got, tc.want); diff != "" {
