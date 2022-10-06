@@ -19,9 +19,9 @@ func NewAllFilter() editor.Filter {
 }
 
 // Filter upgrades configurations to AWS provider v4.
-// Only aws_s3_bucket refactor is supported.
 func (f *AllFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
 	m := editor.NewMultiFilter([]editor.Filter{
+		NewProviderAWSFilter(),
 		NewAWSS3BucketFilter(),
 	})
 	return m.Filter(inFile)

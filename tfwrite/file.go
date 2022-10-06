@@ -45,9 +45,38 @@ func (f *File) FindResourcesByType(resourceType string) []*Resource {
 	return matched
 }
 
+// FindProvidersByType returns all matching providers from the body that have the
+// given providerType or returns an empty list if not found.
+func (f *File) FindProvidersByType(providerType string) []*Provider {
+	var matched []*Provider
+
+	for _, block := range f.raw.Body().Blocks() {
+		if block.Type() != "provider" {
+			continue
+		}
+
+		labels := block.Labels()
+		if len(labels) == 1 && labels[0] != providerType {
+			continue
+		}
+
+		provider := NewProvider(block)
+		matched = append(matched, provider)
+	}
+
+	return matched
+}
+
 // AppendResource appends a given resource to the file.
 func (f *File) AppendResource(resource *Resource) {
 	body := f.raw.Body()
 	body.AppendNewline()
 	body.AppendBlock(resource.raw)
+}
+
+// AppendProvider appends a given provider to the file.
+func (f *File) AppendProvider(provider *Provider) {
+	body := f.raw.Body()
+	body.AppendNewline()
+	body.AppendBlock(provider.raw)
 }

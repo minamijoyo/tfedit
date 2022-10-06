@@ -42,7 +42,6 @@ func newFilterAwsv4upgradeCmd() *cobra.Command {
 		Long: `Apply a built-in filter for awsv4upgrade
 
 Upgrade configurations to AWS provider v4.
-Only aws_s3_bucket refactor is supported.
 `,
 		RunE: runFilterAwsv4upgradeCmd,
 	}
