@@ -16,6 +16,11 @@ type Block interface {
 	// Type returns a type of block.
 	Type() string
 
+	// SchemaType returns the first label of block.
+	// If it does not have a label, return an empty string.
+	// Note that it's not the same as the *hclwrite.Block.Type().
+	SchemaType() string
+
 	// SetType updates the type name of the block to a given name.
 	SetType(typeName string)
 
@@ -91,6 +96,17 @@ func (b *block) Raw() *hclwrite.Block {
 // Type returns a type of block.
 func (b *block) Type() string {
 	return b.raw.Type()
+}
+
+// SchemaType returns the first label of block.
+// If it does not have a label, return an empty string.
+// Note that it's not the same as the *hclwrite.Block.Type().
+func (b *block) SchemaType() string {
+	labels := b.raw.Labels()
+	if len(labels) >= 1 {
+		return labels[0]
+	}
+	return ""
 }
 
 // SetType updates the type name of the block to a given name.

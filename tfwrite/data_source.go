@@ -24,14 +24,6 @@ func NewEmptyDataSource(dataSourceType string, dataSourceName string) *DataSourc
 	return NewDataSource(block)
 }
 
-// SchemaType returns a type of data source.
-// It returns the first label of block.
-// Note that it's not the same as the *hclwrite.Block.Type().
-func (r *DataSource) SchemaType() string {
-	labels := r.block.raw.Labels()
-	return labels[0]
-}
-
 // Name returns a name of data source.
 // It returns the second label of block.
 func (r *DataSource) Name() string {

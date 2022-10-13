@@ -24,13 +24,29 @@ func (f *File) Raw() *hclwrite.File {
 }
 
 // findBlocksByType returns all matching blocks from the body that have the
-// given blockType or returns an empty list if not found.
-func (f *File) findBlocksByType(blockType string) []*block {
-	var blocks []*block
+// given blockType and schemaType or returns an empty list if not found.
+// If the given schemaType is a non-empty string, filter the results.
+func (f *File) findBlocksByType(blockType string, schemaType string) []Block {
+	var blocks []Block
 
 	for _, block := range f.Raw().Body().Blocks() {
 		if block.Type() == blockType {
-			blocks = append(blocks, newBlock(block))
+			var b Block
+			switch blockType {
+			case "resource":
+				b = NewResource(block)
+			case "data":
+				b = NewDataSource(block)
+			case "provider":
+				b = NewProvider(block)
+			default:
+				continue
+			}
+
+			if schemaType != "" && schemaType != b.SchemaType() {
+				continue
+			}
+			blocks = append(blocks, b)
 		}
 	}
 
@@ -38,16 +54,12 @@ func (f *File) findBlocksByType(blockType string) []*block {
 }
 
 // FindResourcesByType returns all matching resources from the body that have the
-// given resourceType or returns an empty list if not found.
+// given schemaType or returns an empty list if not found.
 func (f *File) FindResourcesByType(schemaType string) []*Resource {
 	var matched []*Resource
 
-	for _, block := range f.findBlocksByType("resource") {
-		b := NewResource(block.Raw())
-		if b.SchemaType() != schemaType {
-			continue
-		}
-
+	for _, block := range f.findBlocksByType("resource", schemaType) {
+		b := block.(*Resource)
 		matched = append(matched, b)
 	}
 
@@ -55,16 +67,12 @@ func (f *File) FindResourcesByType(schemaType string) []*Resource {
 }
 
 // FindDataSourcesByType returns all matching data sources from the body that have the
-// given dataSourceType or returns an empty list if not found.
+// given schemaType or returns an empty list if not found.
 func (f *File) FindDataSourcesByType(schemaType string) []*DataSource {
 	var matched []*DataSource
 
-	for _, block := range f.findBlocksByType("data") {
-		b := NewDataSource(block.Raw())
-		if b.SchemaType() != schemaType {
-			continue
-		}
-
+	for _, block := range f.findBlocksByType("data", schemaType) {
+		b := block.(*DataSource)
 		matched = append(matched, b)
 	}
 
@@ -72,16 +80,12 @@ func (f *File) FindDataSourcesByType(schemaType string) []*DataSource {
 }
 
 // FindProvidersByType returns all matching providers from the body that have the
-// given providerType or returns an empty list if not found.
+// given schemaType or returns an empty list if not found.
 func (f *File) FindProvidersByType(schemaType string) []*Provider {
 	var matched []*Provider
 
-	for _, block := range f.findBlocksByType("provider") {
-		b := NewProvider(block.Raw())
-		if b.SchemaType() != schemaType {
-			continue
-		}
-
+	for _, block := range f.findBlocksByType("provider", schemaType) {
+		b := block.(*Provider)
 		matched = append(matched, b)
 	}
 
