@@ -24,9 +24,9 @@ data "foo_test" "example" {}
 	for _, tc := range cases {
 		t.Run(tc.desc, func(t *testing.T) {
 			f := parseTestFile(t, tc.src)
-			r := findFirstTestDataSource(t, f)
+			b := NewDataSource(findFirstTestBlock(t, f).Raw())
 
-			got := r.Type()
+			got := b.Type()
 			if got != tc.want {
 				t.Errorf("got = %s, but want = %s", got, tc.want)
 			}
@@ -54,8 +54,8 @@ data "foo_test" "example" {}
 	for _, tc := range cases {
 		t.Run(tc.desc, func(t *testing.T) {
 			f := parseTestFile(t, tc.src)
-			r := findFirstTestDataSource(t, f)
-			got := r.SchemaType()
+			b := NewDataSource(findFirstTestBlock(t, f).Raw())
+			got := b.SchemaType()
 			if got != tc.want {
 				t.Errorf("got = %s, but want = %s", got, tc.want)
 			}
@@ -83,8 +83,8 @@ data "foo_test" "example" {}
 	for _, tc := range cases {
 		t.Run(tc.desc, func(t *testing.T) {
 			f := parseTestFile(t, tc.src)
-			r := findFirstTestDataSource(t, f)
-			got := r.Name()
+			b := NewDataSource(findFirstTestBlock(t, f).Raw())
+			got := b.Name()
 			if got != tc.want {
 				t.Errorf("got = %s, but want = %s", got, tc.want)
 			}
@@ -133,8 +133,8 @@ data "foo_test" "example" {
 	for _, tc := range cases {
 		t.Run(tc.desc, func(t *testing.T) {
 			f := parseTestFile(t, tc.src)
-			r := findFirstTestDataSource(t, f)
-			got := r.ReferableName()
+			b := NewDataSource(findFirstTestBlock(t, f).Raw())
+			got := b.ReferableName()
 			if got != tc.want {
 				t.Errorf("got = %s, but want = %s", got, tc.want)
 			}
