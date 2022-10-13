@@ -14,7 +14,7 @@ func TestProviderType(t *testing.T) {
 		{
 			desc: "simple",
 			src: `
-provider "foo"{}
+provider "foo" {}
 `,
 			want: "provider",
 			ok:   true,
@@ -44,7 +44,7 @@ func TestProviderSchemaType(t *testing.T) {
 		{
 			desc: "simple",
 			src: `
-provider "foo"{}
+provider "foo" {}
 `,
 			want: "foo",
 			ok:   true,
