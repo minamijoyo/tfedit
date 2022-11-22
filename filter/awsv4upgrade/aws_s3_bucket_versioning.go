@@ -1,25 +1,14 @@
 package awsv4upgrade
 
 import (
-	"github.com/minamijoyo/tfedit/tfeditor"
 	"github.com/minamijoyo/tfedit/tfwrite"
 	"github.com/zclconf/go-cty/cty"
 )
 
-// AWSS3BucketVersioningFilter is a filter implementation for upgrading the
-// versioning argument of aws_s3_bucket.
+// AWSS3BucketVersioningResourceFilter is a filter implementation for upgrading
+// the versioning argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#versioning-argument
-type AWSS3BucketVersioningFilter struct{}
-
-var _ tfeditor.ResourceFilter = (*AWSS3BucketVersioningFilter)(nil)
-
-// NewAWSS3BucketVersioningFilter creates a new instance of AWSS3BucketVersioningFilter.
-func NewAWSS3BucketVersioningFilter() tfeditor.ResourceFilter {
-	return &AWSS3BucketVersioningFilter{}
-}
-
-// ResourceFilter upgrades the versioning argument of aws_s3_bucket.
-func (f *AWSS3BucketVersioningFilter) ResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+func AWSS3BucketVersioningResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
 	oldNestedBlock := "versioning"
 	newResourceType := "aws_s3_bucket_versioning"
 	newNestedBlock := "versioning_configuration"

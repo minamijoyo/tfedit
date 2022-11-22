@@ -11,47 +11,48 @@ import (
 // aws_s3_bucket to AWS provider v4.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#s3-bucket-refactor
 type AWSS3BucketFilter struct {
-	filters []tfeditor.ResourceFilter
+	filters []tfeditor.BlockFilter
 }
 
 var _ editor.Filter = (*AWSS3BucketFilter)(nil)
 
 // NewAWSS3BucketFilter creates a new instance of AWSS3BucketFilter.
 func NewAWSS3BucketFilter() editor.Filter {
-	filters := []tfeditor.ResourceFilter{
-		&AWSS3BucketAccelerationStatusFilter{},
-		&AWSS3BucketACLFilter{},
-		&AWSS3BucketCorsRuleFilter{},
-		&AWSS3BucketGrantFilter{},
-		&AWSS3BucketLifecycleRuleFilter{},
-		&AWSS3BucketLoggingFilter{},
-		&AWSS3BucketObjectLockConfigurationFilter{},
-		&AWSS3BucketPolicyFilter{},
-		&AWSS3BucketReplicationConfigurationFilter{},
-		&AWSS3BucketRequestPayerFilter{},
-		&AWSS3BucketServerSideEncryptionConfigurationFilter{},
-		&AWSS3BucketVersioningFilter{},
-		&AWSS3BucketWebsiteFilter{},
+	filters := []tfeditor.BlockFilter{
+		tfeditor.ResourceFilterFunc(AWSS3BucketAccelerationStatusResourceFilter),
+		tfeditor.ResourceFilterFunc(AWSS3BucketACLResourceFilter),
+		tfeditor.ResourceFilterFunc(AWSS3BucketCorsRuleResourceFilter),
+		tfeditor.ResourceFilterFunc(AWSS3BucketGrantResourceFilter),
+		tfeditor.ResourceFilterFunc(AWSS3BucketLifecycleRuleResourceFilter),
+		tfeditor.ResourceFilterFunc(AWSS3BucketLoggingResourceFilter),
+		tfeditor.ResourceFilterFunc(AWSS3BucketObjectLockConfigurationResourceFilter),
+		tfeditor.ResourceFilterFunc(AWSS3BucketPolicyResourceFilter),
+		tfeditor.ResourceFilterFunc(AWSS3BucketReplicationConfigurationResourceFilter),
+		tfeditor.ResourceFilterFunc(AWSS3BucketRequestPayerResourceFilter),
+		tfeditor.ResourceFilterFunc(AWSS3BucketServerSideEncryptionConfigurationResourceFilter),
+		tfeditor.ResourceFilterFunc(AWSS3BucketVersioningResourceFilter),
+		tfeditor.ResourceFilterFunc(AWSS3BucketWebsiteResourceFilter),
 
 		// Remove redundant TokenNewLine tokens in the resource block after removing nested blocks.
 		// Since VerticalFormat clears tokens internally, we should call it at the end.
-		tfeditor.NewVerticalFormatterResourceFilter(),
+		tfeditor.BlockFilterFunc(tfeditor.VerticalFormatterFilter),
 	}
+
 	return &AWSS3BucketFilter{filters: filters}
 }
 
 // Filter upgrades arguments of aws_s3_bucket to AWS provider v4.
 // Some rules have not been implemented yet.
 func (f *AWSS3BucketFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
-	m := tfeditor.NewResourcesByTypeFilter("aws_s3_bucket", f)
+	m := tfeditor.NewBlocksByTypeFilter("resource", "aws_s3_bucket", f)
 	return m.Filter(inFile)
 }
 
-// ResourceFilter upgrades arguments of aws_s3_bucket to AWS provider v4.
+// BlockFilter upgrades arguments of aws_s3_bucket to AWS provider v4.
 // Some rules have not been implemented yet.
-func (f *AWSS3BucketFilter) ResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
-	m := tfeditor.NewMultiResourceFilter(f.filters)
-	return m.ResourceFilter(inFile, resource)
+func (f *AWSS3BucketFilter) BlockFilter(inFile *tfwrite.File, block tfwrite.Block) (*tfwrite.File, error) {
+	m := tfeditor.NewMultiBlockFilter(f.filters)
+	return m.BlockFilter(inFile, block)
 }
 
 // setParentBucket is a helper method for setting the followings:

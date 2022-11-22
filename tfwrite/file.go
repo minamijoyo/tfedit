@@ -23,10 +23,10 @@ func (f *File) Raw() *hclwrite.File {
 	return f.raw
 }
 
-// findBlocksByType returns all matching blocks from the body that have the
+// FindBlocksByType returns all matching blocks from the body that have the
 // given blockType and schemaType or returns an empty list if not found.
 // If the given schemaType is a non-empty string, filter the results.
-func (f *File) findBlocksByType(blockType string, schemaType string) []Block {
+func (f *File) FindBlocksByType(blockType string, schemaType string) []Block {
 	var blocks []Block
 
 	for _, block := range f.Raw().Body().Blocks() {
@@ -58,7 +58,7 @@ func (f *File) findBlocksByType(blockType string, schemaType string) []Block {
 func (f *File) FindResourcesByType(schemaType string) []*Resource {
 	var matched []*Resource
 
-	for _, block := range f.findBlocksByType("resource", schemaType) {
+	for _, block := range f.FindBlocksByType("resource", schemaType) {
 		b := block.(*Resource)
 		matched = append(matched, b)
 	}
@@ -71,7 +71,7 @@ func (f *File) FindResourcesByType(schemaType string) []*Resource {
 func (f *File) FindDataSourcesByType(schemaType string) []*DataSource {
 	var matched []*DataSource
 
-	for _, block := range f.findBlocksByType("data", schemaType) {
+	for _, block := range f.FindBlocksByType("data", schemaType) {
 		b := block.(*DataSource)
 		matched = append(matched, b)
 	}
@@ -84,7 +84,7 @@ func (f *File) FindDataSourcesByType(schemaType string) []*DataSource {
 func (f *File) FindProvidersByType(schemaType string) []*Provider {
 	var matched []*Provider
 
-	for _, block := range f.findBlocksByType("provider", schemaType) {
+	for _, block := range f.FindBlocksByType("provider", schemaType) {
 		b := block.(*Provider)
 		matched = append(matched, b)
 	}

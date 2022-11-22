@@ -1,6 +1,8 @@
 package tfeditor
 
 import (
+	"fmt"
+
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/minamijoyo/hcledit/editor"
 	"github.com/minamijoyo/tfedit/tfwrite"
@@ -12,6 +14,16 @@ type ResourceFilter interface {
 	// ResourceFilter reads Terraform configuration and rewrite a given resource,
 	// and writes Terraform configuration.
 	ResourceFilter(*tfwrite.File, *tfwrite.Resource) (*tfwrite.File, error)
+}
+
+type ResourceFilterFunc func(*tfwrite.File, *tfwrite.Resource) (*tfwrite.File, error)
+
+func (f ResourceFilterFunc) BlockFilter(inFile *tfwrite.File, block tfwrite.Block) (*tfwrite.File, error) {
+	resource, ok := block.(*tfwrite.Resource)
+	if !ok {
+		return nil, fmt.Errorf("failed to cast Block as Resource: %#v", block)
+	}
+	return f(inFile, resource)
 }
 
 // MultiResourceFilter is a ResourceFilter implementation which applies

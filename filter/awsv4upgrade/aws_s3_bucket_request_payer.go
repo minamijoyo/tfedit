@@ -1,24 +1,13 @@
 package awsv4upgrade
 
 import (
-	"github.com/minamijoyo/tfedit/tfeditor"
 	"github.com/minamijoyo/tfedit/tfwrite"
 )
 
-// AWSS3BucketRequestPayerFilter is a filter implementation for upgrading
-// the request_payer argument of aws_s3_bucket.
+// AWSS3BucketRequestPayerResourceFilter is a filter implementation for
+// upgrading the request_payer argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#request_payer-argument
-type AWSS3BucketRequestPayerFilter struct{}
-
-var _ tfeditor.ResourceFilter = (*AWSS3BucketRequestPayerFilter)(nil)
-
-// NewAWSS3BucketRequestPayerFilter creates a new instance of AWSS3BucketRequestPayerFilter.
-func NewAWSS3BucketRequestPayerFilter() tfeditor.ResourceFilter {
-	return &AWSS3BucketRequestPayerFilter{}
-}
-
-// ResourceFilter upgrades the request_payer argument of aws_s3_bucket.
-func (f *AWSS3BucketRequestPayerFilter) ResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+func AWSS3BucketRequestPayerResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
 	oldAttribute := "request_payer"
 	newResourceType := "aws_s3_bucket_request_payment_configuration"
 

@@ -1,25 +1,14 @@
 package awsv4upgrade
 
 import (
-	"github.com/minamijoyo/tfedit/tfeditor"
 	"github.com/minamijoyo/tfedit/tfwrite"
 	"github.com/zclconf/go-cty/cty"
 )
 
-// AWSS3BucketGrantFilter is a filter implementation for upgrading the
-// grant argument of aws_s3_bucket.
+// AWSS3BucketGrantResourceFilter is a filter implementation for
+// upgrading the grant argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#grant-argument
-type AWSS3BucketGrantFilter struct{}
-
-var _ tfeditor.ResourceFilter = (*AWSS3BucketGrantFilter)(nil)
-
-// NewAWSS3BucketGrantFilter creates a new instance of AWSS3BucketGrantFilter.
-func NewAWSS3BucketGrantFilter() tfeditor.ResourceFilter {
-	return &AWSS3BucketGrantFilter{}
-}
-
-// ResourceFilter upgrades the grant argument of aws_s3_bucket.
-func (f *AWSS3BucketGrantFilter) ResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+func AWSS3BucketGrantResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
 	oldNestedBlock := "grant"
 	newResourceType := "aws_s3_bucket_acl"
 
