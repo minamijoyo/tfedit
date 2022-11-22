@@ -16,8 +16,11 @@ type ResourceFilter interface {
 	ResourceFilter(*tfwrite.File, *tfwrite.Resource) (*tfwrite.File, error)
 }
 
+// ResourceFilterFunc is a helper method for implementing a BlockFilter interface.
 type ResourceFilterFunc func(*tfwrite.File, *tfwrite.Resource) (*tfwrite.File, error)
 
+// BlockFilter reads Terraform configuration and rewrite a given block,
+// and writes Terraform configuration.
 func (f ResourceFilterFunc) BlockFilter(inFile *tfwrite.File, block tfwrite.Block) (*tfwrite.File, error) {
 	resource, ok := block.(*tfwrite.Resource)
 	if !ok {

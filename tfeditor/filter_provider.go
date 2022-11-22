@@ -1,6 +1,8 @@
 package tfeditor
 
 import (
+	"fmt"
+
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/minamijoyo/hcledit/editor"
 	"github.com/minamijoyo/tfedit/tfwrite"
@@ -12,6 +14,19 @@ type ProviderFilter interface {
 	// ProviderFilter reads Terraform configuration and rewrite a given provider,
 	// and writes Terraform configuration.
 	ProviderFilter(*tfwrite.File, *tfwrite.Provider) (*tfwrite.File, error)
+}
+
+// ProviderFilterFunc is a helper method for implementing a BlockFilter interface.
+type ProviderFilterFunc func(*tfwrite.File, *tfwrite.Provider) (*tfwrite.File, error)
+
+// BlockFilter reads Terraform configuration and rewrite a given block,
+// and writes Terraform configuration.
+func (f ProviderFilterFunc) BlockFilter(inFile *tfwrite.File, block tfwrite.Block) (*tfwrite.File, error) {
+	provider, ok := block.(*tfwrite.Provider)
+	if !ok {
+		return nil, fmt.Errorf("failed to cast Block as Provider: %#v", block)
+	}
+	return f(inFile, provider)
 }
 
 // MultiProviderFilter is a ProviderFilter implementation which applies

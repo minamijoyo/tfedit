@@ -14,8 +14,11 @@ type BlockFilter interface {
 	BlockFilter(*tfwrite.File, tfwrite.Block) (*tfwrite.File, error)
 }
 
+// BlockFilterFunc is a helper method for implementing a BlockFilter interface.
 type BlockFilterFunc func(*tfwrite.File, tfwrite.Block) (*tfwrite.File, error)
 
+// BlockFilter reads Terraform configuration and rewrite a given block,
+// and writes Terraform configuration.
 func (f BlockFilterFunc) BlockFilter(inFile *tfwrite.File, block tfwrite.Block) (*tfwrite.File, error) {
 	return f(inFile, block)
 }
