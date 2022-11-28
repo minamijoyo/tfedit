@@ -1,6 +1,8 @@
 package tfeditor
 
 import (
+	"fmt"
+
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/minamijoyo/hcledit/editor"
 	"github.com/minamijoyo/tfedit/tfwrite"
@@ -21,6 +23,37 @@ type BlockFilterFunc func(*tfwrite.File, tfwrite.Block) (*tfwrite.File, error)
 // and writes Terraform configuration.
 func (f BlockFilterFunc) BlockFilter(inFile *tfwrite.File, block tfwrite.Block) (*tfwrite.File, error) {
 	return f(inFile, block)
+}
+
+// anyBlockFilterFunc is a generic helper method for implementing a BlockFilter
+// interface.
+// It would be great if we could treat ResourceFilter and other block filters
+// together in an orthogonal way and, at the same time, provide derived types
+// such as Resource to library users. To do this, We start using Generics here
+// to avoid code duplication, but it is not runtime safe because of the
+// interface cast. We reached this design decision after balancing the
+// convenience of library users and maintainers. However, since we are not
+// confident that the design is correct, we will only expose the derived type
+// aliases, and the generic implementation is kept private.
+type anyBlockFilterFunc[T tfwrite.Block] func(*tfwrite.File, T) (*tfwrite.File, error)
+
+// ResourceFilterFunc is a helper method for implementing a BlockFilter interface for Resource.
+type ResourceFilterFunc = anyBlockFilterFunc[*tfwrite.Resource]
+
+// DataSourceFilterFunc is a helper method for implementing a BlockFilter interface for DataSource.
+type DataSourceFilterFunc = anyBlockFilterFunc[*tfwrite.DataSource]
+
+// ProviderFilterFunc is a helper method for implementing a BlockFilter interface for Provider.
+type ProviderFilterFunc = anyBlockFilterFunc[*tfwrite.Provider]
+
+// BlockFilter reads Terraform configuration and rewrite a given block,
+// and writes Terraform configuration.
+func (f anyBlockFilterFunc[T]) BlockFilter(inFile *tfwrite.File, block tfwrite.Block) (*tfwrite.File, error) {
+	dereived, ok := block.(T)
+	if !ok {
+		return nil, fmt.Errorf("failed to cast Block as %T: %#v", *new(T), block)
+	}
+	return f(inFile, dereived)
 }
 
 // MultiBlockFilter is a BlockFilter implementation which applies
