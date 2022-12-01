@@ -110,24 +110,9 @@ func (f *File) FindProvidersByType(schemaType string) []*Provider {
 	return findAnyBlockByType[*Provider](f, schemaType)
 }
 
-// appendBlock appends a given block to the file.
-func (f *File) appendBlock(block Block) {
+// AppendBlock appends a given block to the file.
+func (f *File) AppendBlock(block Block) {
 	body := f.raw.Body()
 	body.AppendNewline()
 	body.AppendBlock(block.Raw())
-}
-
-// AppendResource appends a given resource to the file.
-func (f *File) AppendResource(block *Resource) {
-	f.appendBlock(block)
-}
-
-// AppendDataSource appends a given data source to the file.
-func (f *File) AppendDataSource(block *DataSource) {
-	f.appendBlock(block)
-}
-
-// AppendProvider appends a given provider to the file.
-func (f *File) AppendProvider(block *Provider) {
-	f.appendBlock(block)
 }

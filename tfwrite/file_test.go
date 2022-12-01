@@ -39,7 +39,7 @@ resource "foo_test" "example2" {}
 
 			newFile := NewEmptyFile()
 			for _, r := range resources {
-				newFile.AppendResource(r)
+				newFile.AppendBlock(r)
 			}
 
 			got := printTestFile(t, newFile)
@@ -98,7 +98,7 @@ provider "aws" {
 
 			newFile := NewEmptyFile()
 			for _, p := range providers {
-				newFile.AppendProvider(p)
+				newFile.AppendBlock(p)
 			}
 
 			got := printTestFile(t, newFile)
@@ -109,7 +109,7 @@ provider "aws" {
 	}
 }
 
-func TestFileAppendResource(t *testing.T) {
+func TestFileAppendBlock(t *testing.T) {
 	cases := []struct {
 		desc         string
 		src          string
@@ -139,45 +139,7 @@ resource "foo_test" "example2" {
 		t.Run(tc.desc, func(t *testing.T) {
 			f := parseTestFile(t, tc.src)
 			r := NewEmptyResource(tc.resourceType, tc.resourceName)
-			f.AppendResource(r)
-
-			got := printTestFile(t, f)
-			if diff := cmp.Diff(got, tc.want); diff != "" {
-				t.Fatalf("got:\n%s\nwant:\n%s\ndiff:\n%s", got, tc.want, diff)
-			}
-		})
-	}
-}
-
-func TestFileAppendProvider(t *testing.T) {
-	cases := []struct {
-		desc         string
-		src          string
-		providerType string
-		want         string
-		ok           bool
-	}{
-		{
-			desc: "simple",
-			src: `
-provider "aws" {}
-`,
-			providerType: "google",
-			want: `
-provider "aws" {}
-
-provider "google" {
-}
-`,
-			ok: true,
-		},
-	}
-
-	for _, tc := range cases {
-		t.Run(tc.desc, func(t *testing.T) {
-			f := parseTestFile(t, tc.src)
-			p := NewEmptyProvider(tc.providerType)
-			f.AppendProvider(p)
+			f.AppendBlock(r)
 
 			got := printTestFile(t, f)
 			if diff := cmp.Diff(got, tc.want); diff != "" {

@@ -19,7 +19,7 @@ func AWSS3BucketServerSideEncryptionConfigurationResourceFilter(inFile *tfwrite.
 
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
-	inFile.AppendResource(newResource)
+	inFile.AppendBlock(newResource)
 	setParentBucket(newResource, resource)
 	newResource.AppendUnwrappedNestedBlockBody(nestedBlocks[0])
 	resource.RemoveNestedBlock(nestedBlocks[0])

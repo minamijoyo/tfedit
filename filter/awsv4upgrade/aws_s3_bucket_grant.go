@@ -19,7 +19,7 @@ func AWSS3BucketGrantResourceFilter(inFile *tfwrite.File, resource *tfwrite.Reso
 
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
-	inFile.AppendResource(newResource)
+	inFile.AppendBlock(newResource)
 	setParentBucket(newResource, resource)
 
 	acpBlock := tfwrite.NewEmptyNestedBlock("access_control_policy")

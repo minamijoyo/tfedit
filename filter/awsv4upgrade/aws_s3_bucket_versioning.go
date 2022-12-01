@@ -20,7 +20,7 @@ func AWSS3BucketVersioningResourceFilter(inFile *tfwrite.File, resource *tfwrite
 
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
-	inFile.AppendResource(newResource)
+	inFile.AppendBlock(newResource)
 	setParentBucket(newResource, resource)
 
 	nestedBlock := nestedBlocks[0]

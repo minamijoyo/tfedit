@@ -18,7 +18,7 @@ func AWSS3BucketPolicyResourceFilter(inFile *tfwrite.File, resource *tfwrite.Res
 
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
-	inFile.AppendResource(newResource)
+	inFile.AppendBlock(newResource)
 	setParentBucket(newResource, resource)
 	newResource.AppendAttribute(attr)
 	resource.RemoveAttribute(oldAttribute)
