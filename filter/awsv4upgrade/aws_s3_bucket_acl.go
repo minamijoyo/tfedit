@@ -8,6 +8,10 @@ import (
 // acl argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#acl-argument
 func AWSS3BucketACLResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+	if resource.SchemaType() != "aws_s3_bucket" {
+		return inFile, nil
+	}
+
 	oldAttribute := "acl"
 	newResourceType := "aws_s3_bucket_acl"
 

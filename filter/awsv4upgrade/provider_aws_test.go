@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/minamijoyo/hcledit/editor"
+	"github.com/minamijoyo/tfedit/tfeditor"
 )
 
 func TestProviderAWSFilter(t *testing.T) {
@@ -118,7 +119,7 @@ provider "google" {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			filter := NewProviderAWSFilter()
+			filter := tfeditor.NewAllBlocksFilter(NewProviderAWSFilter())
 			o := editor.NewEditOperator(filter)
 			output, err := o.Apply([]byte(tc.src), "test")
 			if tc.ok && err != nil {

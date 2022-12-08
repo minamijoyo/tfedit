@@ -47,11 +47,13 @@ provider "aws" {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			filter := &ProviderAWSFilter{
-				filters: []tfeditor.BlockFilter{
-					tfeditor.ProviderFilterFunc(AWSS3ForcePathStyleProviderFilter),
+			filter := tfeditor.NewAllBlocksFilter(
+				&ProviderAWSFilter{
+					filters: []tfeditor.BlockFilter{
+						tfeditor.ProviderFilterFunc(AWSS3ForcePathStyleProviderFilter),
+					},
 				},
-			}
+			)
 			o := editor.NewEditOperator(filter)
 			output, err := o.Apply([]byte(tc.src), "test")
 			if tc.ok && err != nil {

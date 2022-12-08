@@ -9,6 +9,10 @@ import (
 // upgrading the grant argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#grant-argument
 func AWSS3BucketGrantResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+	if resource.SchemaType() != "aws_s3_bucket" {
+		return inFile, nil
+	}
+
 	oldNestedBlock := "grant"
 	newResourceType := "aws_s3_bucket_acl"
 

@@ -8,6 +8,10 @@ import (
 // the s3_force_path_style argument of provider aws block.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#s3_use_path_style
 func AWSS3ForcePathStyleProviderFilter(inFile *tfwrite.File, provider *tfwrite.Provider) (*tfwrite.File, error) {
+	if provider.SchemaType() != "aws" {
+		return inFile, nil
+	}
+
 	oldAttribute := "s3_force_path_style"
 	newAttribute := "s3_use_path_style"
 

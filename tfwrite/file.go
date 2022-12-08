@@ -51,7 +51,8 @@ func (f *File) Blocks() []Block {
 
 // FindBlocksByType returns all matching blocks from the body that have the
 // given blockType and schemaType or returns an empty list if not found.
-// If the given schemaType is a non-empty string, filter the results.
+// If the given blockType or schemaType are a non-empty string,
+// filter the results.
 func (f *File) FindBlocksByType(blockType string, schemaType string) []Block {
 	var matched []Block
 

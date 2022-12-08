@@ -1,8 +1,6 @@
 package tfeditor
 
 import (
-	"fmt"
-
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/minamijoyo/hcledit/editor"
 	"github.com/minamijoyo/tfedit/tfwrite"
@@ -51,7 +49,10 @@ type ProviderFilterFunc = anyBlockFilterFunc[*tfwrite.Provider]
 func (f anyBlockFilterFunc[T]) BlockFilter(inFile *tfwrite.File, block tfwrite.Block) (*tfwrite.File, error) {
 	dereived, ok := block.(T)
 	if !ok {
-		return nil, fmt.Errorf("failed to cast Block as %T: %#v", *new(T), block)
+		// If the type does not match, it is simply ignored without error.
+		// This design is based on the assumption that multiple types of block
+		// filters are to be applied to all blocks at once.
+		return inFile, nil
 	}
 	return f(inFile, dereived)
 }
@@ -115,4 +116,25 @@ func (f *BlocksByTypeFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, erro
 		current = next
 	}
 	return current.Raw(), nil
+}
+
+// AllBlocksFilter is a Filter implementation for applying a filter to all
+// blocks in a given file.
+type AllBlocksFilter struct {
+	filter BlockFilter
+}
+
+var _ editor.Filter = (*AllBlocksFilter)(nil)
+
+// NewAllBlocksFilter creates a new instance of NewAllBlocksFilter.
+func NewAllBlocksFilter(filter BlockFilter) editor.Filter {
+	return &BlocksByTypeFilter{
+		filter: filter,
+	}
+}
+
+// Filter applies a filter to all blocks in a given file.
+func (f *AllBlocksFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
+	bf := NewBlocksByTypeFilter("", "", f.filter)
+	return bf.Filter(inFile)
 }

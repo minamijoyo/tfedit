@@ -9,6 +9,10 @@ import (
 // argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#server_side_encryption_configuration-argument
 func AWSS3BucketServerSideEncryptionConfigurationResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+	if resource.SchemaType() != "aws_s3_bucket" {
+		return inFile, nil
+	}
+
 	oldNestedBlock := "server_side_encryption_configuration"
 	newResourceType := "aws_s3_bucket_server_side_encryption_configuration"
 

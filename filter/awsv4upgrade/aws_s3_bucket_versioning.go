@@ -9,6 +9,10 @@ import (
 // the versioning argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#versioning-argument
 func AWSS3BucketVersioningResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+	if resource.SchemaType() != "aws_s3_bucket" {
+		return inFile, nil
+	}
+
 	oldNestedBlock := "versioning"
 	newResourceType := "aws_s3_bucket_versioning"
 	newNestedBlock := "versioning_configuration"

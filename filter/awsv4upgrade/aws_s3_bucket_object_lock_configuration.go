@@ -9,6 +9,10 @@ import (
 // for upgrading the object_lock_configuration argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#object_lock_configuration-rule-argument
 func AWSS3BucketObjectLockConfigurationResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+	if resource.SchemaType() != "aws_s3_bucket" {
+		return inFile, nil
+	}
+
 	oldNestedBlock := "object_lock_configuration"
 	newResourceType := "aws_s3_bucket_object_lock_configuration"
 

@@ -8,6 +8,10 @@ import (
 // the website argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#website-website_domain-and-website_endpoint-arguments
 func AWSS3BucketWebsiteResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+	if resource.SchemaType() != "aws_s3_bucket" {
+		return inFile, nil
+	}
+
 	oldNestedBlock := "website"
 	newResourceType := "aws_s3_bucket_website_configuration"
 

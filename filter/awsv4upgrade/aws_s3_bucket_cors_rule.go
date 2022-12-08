@@ -8,6 +8,10 @@ import (
 // the cors_rule argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#cors_rule-argument
 func AWSS3BucketCorsRuleResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+	if resource.SchemaType() != "aws_s3_bucket" {
+		return inFile, nil
+	}
+
 	oldNestedBlock := "cors_rule"
 	newResourceType := "aws_s3_bucket_cors_configuration"
 

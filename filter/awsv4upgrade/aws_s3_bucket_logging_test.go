@@ -76,11 +76,13 @@ resource "aws_s3_bucket" "example" {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			filter := &AWSS3BucketFilter{
-				filters: []tfeditor.BlockFilter{
-					tfeditor.ResourceFilterFunc(AWSS3BucketLoggingResourceFilter),
+			filter := tfeditor.NewAllBlocksFilter(
+				&AWSS3BucketFilter{
+					filters: []tfeditor.BlockFilter{
+						tfeditor.ResourceFilterFunc(AWSS3BucketLoggingResourceFilter),
+					},
 				},
-			}
+			)
 			o := editor.NewEditOperator(filter)
 			output, err := o.Apply([]byte(tc.src), "test")
 			if tc.ok && err != nil {

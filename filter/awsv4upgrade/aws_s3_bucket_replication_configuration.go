@@ -8,6 +8,10 @@ import (
 // for upgrading the replication_configuration argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#replication_configuration-argument
 func AWSS3BucketReplicationConfigurationResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+	if resource.SchemaType() != "aws_s3_bucket" {
+		return inFile, nil
+	}
+
 	oldNestedBlock := "replication_configuration"
 	newResourceType := "aws_s3_bucket_replication_configuration"
 

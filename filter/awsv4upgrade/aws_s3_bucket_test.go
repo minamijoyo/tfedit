@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/minamijoyo/hcledit/editor"
+	"github.com/minamijoyo/tfedit/tfeditor"
 )
 
 func TestAWSS3BucketFilter(t *testing.T) {
@@ -619,7 +620,7 @@ resource "aws_s3_bucket_acl" "example" {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			filter := NewAWSS3BucketFilter()
+			filter := tfeditor.NewAllBlocksFilter(NewAWSS3BucketFilter())
 			o := editor.NewEditOperator(filter)
 			output, err := o.Apply([]byte(tc.src), "test")
 			if tc.ok && err != nil {

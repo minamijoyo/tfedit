@@ -1,8 +1,6 @@
 package awsv4upgrade
 
 import (
-	"github.com/hashicorp/hcl/v2/hclwrite"
-	"github.com/minamijoyo/hcledit/editor"
 	"github.com/minamijoyo/tfedit/tfeditor"
 	"github.com/minamijoyo/tfedit/tfwrite"
 )
@@ -14,10 +12,10 @@ type AWSS3BucketFilter struct {
 	filters []tfeditor.BlockFilter
 }
 
-var _ editor.Filter = (*AWSS3BucketFilter)(nil)
+var _ tfeditor.BlockFilter = (*AWSS3BucketFilter)(nil)
 
 // NewAWSS3BucketFilter creates a new instance of AWSS3BucketFilter.
-func NewAWSS3BucketFilter() editor.Filter {
+func NewAWSS3BucketFilter() tfeditor.BlockFilter {
 	filters := []tfeditor.BlockFilter{
 		tfeditor.ResourceFilterFunc(AWSS3BucketAccelerationStatusResourceFilter),
 		tfeditor.ResourceFilterFunc(AWSS3BucketACLResourceFilter),
@@ -39,13 +37,6 @@ func NewAWSS3BucketFilter() editor.Filter {
 	}
 
 	return &AWSS3BucketFilter{filters: filters}
-}
-
-// Filter upgrades arguments of aws_s3_bucket to AWS provider v4.
-// Some rules have not been implemented yet.
-func (f *AWSS3BucketFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
-	m := tfeditor.NewBlocksByTypeFilter("resource", "aws_s3_bucket", f)
-	return m.Filter(inFile)
 }
 
 // BlockFilter upgrades arguments of aws_s3_bucket to AWS provider v4.

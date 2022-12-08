@@ -8,6 +8,10 @@ import (
 // policy argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#policy-argument
 func AWSS3BucketPolicyResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+	if resource.SchemaType() != "aws_s3_bucket" {
+		return inFile, nil
+	}
+
 	oldAttribute := "policy"
 	newResourceType := "aws_s3_bucket_policy"
 

@@ -13,6 +13,10 @@ import (
 // upgrading the lifecycle_rule argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#lifecycle_rule-argument
 func AWSS3BucketLifecycleRuleResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+	if resource.SchemaType() != "aws_s3_bucket" {
+		return inFile, nil
+	}
+
 	oldNestedBlock := "lifecycle_rule"
 	newResourceType := "aws_s3_bucket_lifecycle_configuration"
 	newNestedBlock := "rule"

@@ -8,6 +8,10 @@ import (
 // upgrading the request_payer argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#request_payer-argument
 func AWSS3BucketRequestPayerResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+	if resource.SchemaType() != "aws_s3_bucket" {
+		return inFile, nil
+	}
+
 	oldAttribute := "request_payer"
 	newResourceType := "aws_s3_bucket_request_payment_configuration"
 
