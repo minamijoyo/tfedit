@@ -33,7 +33,7 @@ func NewAWSS3BucketFilter() tfeditor.BlockFilter {
 
 		// Remove redundant TokenNewLine tokens in the resource block after removing nested blocks.
 		// Since VerticalFormat clears tokens internally, we should call it at the end.
-		tfeditor.BlockFilterFunc(tfeditor.VerticalFormatterFilter),
+		tfeditor.NewVerticalFormatterBlockFilter("resource", "aws_s3_bucket"),
 	}
 
 	return &AWSS3BucketFilter{filters: filters}
