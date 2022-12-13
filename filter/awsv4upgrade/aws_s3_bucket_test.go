@@ -8,6 +8,17 @@ import (
 	"github.com/minamijoyo/tfedit/tfeditor"
 )
 
+// buildTestResourceFilter is a helper function which builds an editor filter for testing.
+func buildTestResourceFilter(f tfeditor.ResourceFilterFunc) editor.Filter {
+	return tfeditor.NewAllBlocksFilter(
+		&AWSS3BucketFilter{
+			filters: []tfeditor.BlockFilter{
+				tfeditor.ResourceFilterFunc(f),
+			},
+		},
+	)
+}
+
 func TestAWSS3BucketFilter(t *testing.T) {
 	cases := []struct {
 		name string

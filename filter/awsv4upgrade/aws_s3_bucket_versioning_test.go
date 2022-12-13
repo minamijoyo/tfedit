@@ -5,7 +5,6 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/minamijoyo/hcledit/editor"
-	"github.com/minamijoyo/tfedit/tfeditor"
 )
 
 func TestAWSS3BucketVersioningFilter(t *testing.T) {
@@ -174,13 +173,7 @@ resource "aws_s3_bucket_versioning" "example" {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			filter := tfeditor.NewAllBlocksFilter(
-				&AWSS3BucketFilter{
-					filters: []tfeditor.BlockFilter{
-						tfeditor.ResourceFilterFunc(AWSS3BucketVersioningResourceFilter),
-					},
-				},
-			)
+			filter := buildTestResourceFilter(AWSS3BucketVersioningResourceFilter)
 			o := editor.NewEditOperator(filter)
 			output, err := o.Apply([]byte(tc.src), "test")
 			if tc.ok && err != nil {

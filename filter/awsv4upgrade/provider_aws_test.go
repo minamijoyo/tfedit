@@ -8,6 +8,17 @@ import (
 	"github.com/minamijoyo/tfedit/tfeditor"
 )
 
+// buildTestProviderFilter is a helper function which builds an editor filter for testing.
+func buildTestProviderFilter(f tfeditor.ProviderFilterFunc) editor.Filter {
+	return tfeditor.NewAllBlocksFilter(
+		&ProviderAWSFilter{
+			filters: []tfeditor.BlockFilter{
+				tfeditor.ProviderFilterFunc(f),
+			},
+		},
+	)
+}
+
 func TestProviderAWSFilter(t *testing.T) {
 	cases := []struct {
 		name string
