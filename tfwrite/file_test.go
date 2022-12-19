@@ -162,68 +162,6 @@ resource "foo_test" "example2" {}
 	}
 }
 
-func TestFileFindResourcesByType(t *testing.T) {
-	cases := []struct {
-		desc       string
-		src        string
-		schemaType string
-		want       string
-		ok         bool
-	}{
-		{
-			desc: "resource",
-			src: `
-resource "foo_test" "example1" {}
-resource "foo_test" "example2" {}
-resource "foo_bar" "example1" {}
-data "foo_test" "example1" {}
-`,
-			schemaType: "",
-			want: `
-resource "foo_test" "example1" {}
-
-resource "foo_test" "example2" {}
-
-resource "foo_bar" "example1" {}
-`,
-			ok: true,
-		},
-		{
-			desc: "resource with schemaType",
-			src: `
-resource "foo_test" "example1" {}
-resource "foo_test" "example2" {}
-resource "foo_bar" "example1" {}
-data "foo_test" "example1" {}
-`,
-			schemaType: "foo_test",
-			want: `
-resource "foo_test" "example1" {}
-
-resource "foo_test" "example2" {}
-`,
-			ok: true,
-		},
-	}
-
-	for _, tc := range cases {
-		t.Run(tc.desc, func(t *testing.T) {
-			f := parseTestFile(t, tc.src)
-			blocks := f.FindResourcesByType(tc.schemaType)
-
-			newFile := NewEmptyFile()
-			for _, r := range blocks {
-				newFile.AppendBlock(r)
-			}
-
-			got := printTestFile(t, newFile)
-			if diff := cmp.Diff(got, tc.want); diff != "" {
-				t.Errorf("got:\n%s\nwant:\n%s\ndiff:\n%s", got, tc.want, diff)
-			}
-		})
-	}
-}
-
 func TestFileAppendBlock(t *testing.T) {
 	cases := []struct {
 		desc         string

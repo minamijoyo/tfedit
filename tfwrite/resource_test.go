@@ -231,8 +231,8 @@ resource "aws_s3_bucket_acl" "example" {
 	for _, tc := range cases {
 		t.Run(tc.desc, func(t *testing.T) {
 			f := parseTestFile(t, tc.src)
-			r := f.FindResourcesByType("aws_s3_bucket_acl")[0]
-			refResource := f.FindResourcesByType("aws_s3_bucket")[0]
+			r := f.FindBlocksByType("resource", "aws_s3_bucket_acl")[0].(*Resource)
+			refResource := f.FindBlocksByType("resource", "aws_s3_bucket")[0].(*Resource)
 			r.SetAttributeByReference("bucket", refResource, "id")
 			got := printTestFile(t, f)
 			if diff := cmp.Diff(got, tc.want); diff != "" {

@@ -69,48 +69,6 @@ func (f *File) FindBlocksByType(blockType string, schemaType string) []Block {
 	return matched
 }
 
-// findAnyBlockByType is a generic helper method for implementing block finders.
-// It returns all matching blocks from the body that have the given type
-// parameter and schemaType or returns an empty list if not found.
-// If the given schemaType is a non-empty string, filter the results.
-// Note that the Generics doesn't allow an instance method to have a type parameter.
-func findAnyBlockByType[T Block](f *File, schemaType string) []T {
-	var matched []T
-
-	for _, block := range f.Blocks() {
-		b, ok := block.(T)
-		if !ok {
-			// ignore other block types
-			continue
-		}
-
-		if schemaType != "" && schemaType != b.SchemaType() {
-			continue
-		}
-		matched = append(matched, b)
-	}
-
-	return matched
-}
-
-// FindResourcesByType returns all matching resources from the body that have the
-// given schemaType or returns an empty list if not found.
-func (f *File) FindResourcesByType(schemaType string) []*Resource {
-	return findAnyBlockByType[*Resource](f, schemaType)
-}
-
-// FindDataSourcesByType returns all matching data sources from the body that have the
-// given schemaType or returns an empty list if not found.
-func (f *File) FindDataSourcesByType(schemaType string) []*DataSource {
-	return findAnyBlockByType[*DataSource](f, schemaType)
-}
-
-// FindProvidersByType returns all matching providers from the body that have the
-// given schemaType or returns an empty list if not found.
-func (f *File) FindProvidersByType(schemaType string) []*Provider {
-	return findAnyBlockByType[*Provider](f, schemaType)
-}
-
 // AppendBlock appends a given block to the file.
 func (f *File) AppendBlock(block Block) {
 	body := f.raw.Body()
