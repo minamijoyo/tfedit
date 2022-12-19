@@ -1,5 +1,7 @@
 ## master (Unreleased)
 
+## 0.2.0 (2022/12/19)
+
 BREAKING CHANGES:
 
 * Redesigning the interface as a library ([#54](https://github.com/minamijoyo/tfedit/pull/54))
