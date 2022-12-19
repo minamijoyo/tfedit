@@ -111,7 +111,7 @@ block "foo_bar1" "example13" {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			bf := NewVerticalFormatterBlockFilter(tc.blockType, tc.schemaType)
-			filter := NewAllBlocksFilter(bf)
+			filter := NewFileFilter(bf)
 			o := editor.NewEditOperator(filter)
 			output, err := o.Apply([]byte(tc.src), "test")
 			if tc.ok && err != nil {

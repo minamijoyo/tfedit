@@ -10,7 +10,7 @@ import (
 
 // buildTestResourceFilter is a helper function which builds an editor filter for testing.
 func buildTestResourceFilter(f tfeditor.ResourceFilterFunc) editor.Filter {
-	return tfeditor.NewAllBlocksFilter(
+	return tfeditor.NewFileFilter(
 		&AWSS3BucketFilter{
 			filters: []tfeditor.BlockFilter{
 				tfeditor.ResourceFilterFunc(f),
@@ -631,7 +631,7 @@ resource "aws_s3_bucket_acl" "example" {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			filter := tfeditor.NewAllBlocksFilter(NewAWSS3BucketFilter())
+			filter := tfeditor.NewFileFilter(NewAWSS3BucketFilter())
 			o := editor.NewEditOperator(filter)
 			output, err := o.Apply([]byte(tc.src), "test")
 			if tc.ok && err != nil {

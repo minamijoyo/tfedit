@@ -26,6 +26,6 @@ func (f *AllFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
 		NewAWSS3BucketFilter(),
 	})
 
-	bf := tfeditor.NewAllBlocksFilter(mf)
+	bf := tfeditor.NewFileFilter(mf)
 	return bf.Filter(inFile)
 }
