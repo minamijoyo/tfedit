@@ -85,39 +85,6 @@ func (f *MultiBlockFilter) BlockFilter(inFile *tfwrite.File, block tfwrite.Block
 	return current, nil
 }
 
-// BlocksByTypeFilter is a Filter implementation for applying a filter to
-// multiple blocks with a given block type.
-type BlocksByTypeFilter struct {
-	blockType  string
-	schemaType string
-	filter     BlockFilter
-}
-
-var _ editor.Filter = (*BlocksByTypeFilter)(nil)
-
-// NewBlocksByTypeFilter creates a new instance of BlocksByTypeFilter.
-func NewBlocksByTypeFilter(blockType string, schemaType string, filter BlockFilter) editor.Filter {
-	return &BlocksByTypeFilter{
-		blockType:  blockType,
-		schemaType: schemaType,
-		filter:     filter,
-	}
-}
-
-// Filter applies a filter to multiple blocks with a given block type.
-func (f *BlocksByTypeFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
-	current := tfwrite.NewFile(inFile)
-	blocks := current.FindBlocksByType(f.blockType, f.schemaType)
-	for _, block := range blocks {
-		next, err := f.filter.BlockFilter(current, block)
-		if err != nil {
-			return nil, err
-		}
-		current = next
-	}
-	return current.Raw(), nil
-}
-
 // AllBlocksFilter is a Filter implementation for applying a filter to all
 // blocks in a given file.
 type AllBlocksFilter struct {
@@ -128,13 +95,21 @@ var _ editor.Filter = (*AllBlocksFilter)(nil)
 
 // NewAllBlocksFilter creates a new instance of NewAllBlocksFilter.
 func NewAllBlocksFilter(filter BlockFilter) editor.Filter {
-	return &BlocksByTypeFilter{
+	return &AllBlocksFilter{
 		filter: filter,
 	}
 }
 
 // Filter applies a filter to all blocks in a given file.
 func (f *AllBlocksFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
-	bf := NewBlocksByTypeFilter("", "", f.filter)
-	return bf.Filter(inFile)
+	current := tfwrite.NewFile(inFile)
+	blocks := current.Blocks()
+	for _, block := range blocks {
+		next, err := f.filter.BlockFilter(current, block)
+		if err != nil {
+			return nil, err
+		}
+		current = next
+	}
+	return current.Raw(), nil
 }
