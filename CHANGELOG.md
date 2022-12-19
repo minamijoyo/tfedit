@@ -1,9 +1,14 @@
 ## master (Unreleased)
 
+BREAKING CHANGES:
+
+* Redesigning the interface as a library ([#54](https://github.com/minamijoyo/tfedit/pull/54))
+
 NEW FEATURES:
 
 * Add support for provider meta argument ([#51](https://github.com/minamijoyo/tfedit/pull/51))
 * Rename s3_force_path_style to s3_use_path_style in provider aws block ([#52](https://github.com/minamijoyo/tfedit/pull/52))
+* Add DataSource type to tfwrite package ([#53](https://github.com/minamijoyo/tfedit/pull/53))
 
 ## 0.1.3 (2022/08/12)
 
