@@ -23,11 +23,3 @@ func NewEmptyProvider(providerType string) *Provider {
 	block := hclwrite.NewBlock("provider", []string{providerType})
 	return NewProvider(block)
 }
-
-// SchemaType returns a type of provider.
-// It returns the first label of block.
-// Note that it's not the same as the *hclwrite.Block.Type().
-func (p *Provider) SchemaType() string {
-	labels := p.block.raw.Labels()
-	return labels[0]
-}

@@ -3,6 +3,7 @@ package awsv4upgrade
 import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/minamijoyo/hcledit/editor"
+	"github.com/minamijoyo/tfedit/tfeditor"
 )
 
 // AllFilter is a filter implementation for upgrading configurations
@@ -20,9 +21,11 @@ func NewAllFilter() editor.Filter {
 
 // Filter upgrades configurations to AWS provider v4.
 func (f *AllFilter) Filter(inFile *hclwrite.File) (*hclwrite.File, error) {
-	m := editor.NewMultiFilter([]editor.Filter{
+	mf := tfeditor.NewMultiBlockFilter([]tfeditor.BlockFilter{
 		NewProviderAWSFilter(),
 		NewAWSS3BucketFilter(),
 	})
-	return m.Filter(inFile)
+
+	bf := tfeditor.NewFileFilter(mf)
+	return bf.Filter(inFile)
 }

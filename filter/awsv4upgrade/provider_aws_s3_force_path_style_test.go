@@ -5,7 +5,6 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/minamijoyo/hcledit/editor"
-	"github.com/minamijoyo/tfedit/tfeditor"
 )
 
 func TestProviderAWSS3ForcePathStyleFilter(t *testing.T) {
@@ -47,7 +46,7 @@ provider "aws" {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			filter := &ProviderAWSFilter{filters: []tfeditor.ProviderFilter{&ProviderAWSS3ForcePathStyleFilter{}}}
+			filter := buildTestProviderFilter(AWSS3ForcePathStyleProviderFilter)
 			o := editor.NewEditOperator(filter)
 			output, err := o.Apply([]byte(tc.src), "test")
 			if tc.ok && err != nil {

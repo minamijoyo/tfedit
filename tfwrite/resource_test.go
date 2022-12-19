@@ -30,9 +30,9 @@ resource "foo_test" "example" {
 	for _, tc := range cases {
 		t.Run(tc.desc, func(t *testing.T) {
 			f := parseTestFile(t, tc.src)
-			r := findFirstTestResource(t, f)
+			b := NewResource(findFirstTestBlock(t, f).Raw())
 
-			got := r.Type()
+			got := b.Type()
 			if got != tc.want {
 				t.Errorf("got = %s, but want = %s", got, tc.want)
 			}
@@ -60,8 +60,8 @@ resource "aws_s3_bucket" "example" {}
 	for _, tc := range cases {
 		t.Run(tc.desc, func(t *testing.T) {
 			f := parseTestFile(t, tc.src)
-			r := findFirstTestResource(t, f)
-			got := r.SchemaType()
+			b := NewResource(findFirstTestBlock(t, f).Raw())
+			got := b.SchemaType()
 			if got != tc.want {
 				t.Errorf("got = %s, but want = %s", got, tc.want)
 			}
@@ -89,8 +89,8 @@ resource "aws_s3_bucket" "example" {}
 	for _, tc := range cases {
 		t.Run(tc.desc, func(t *testing.T) {
 			f := parseTestFile(t, tc.src)
-			r := findFirstTestResource(t, f)
-			got := r.Name()
+			b := NewResource(findFirstTestBlock(t, f).Raw())
+			got := b.Name()
 			if got != tc.want {
 				t.Errorf("got = %s, but want = %s", got, tc.want)
 			}
@@ -139,8 +139,8 @@ resource "aws_s3_bucket" "example" {
 	for _, tc := range cases {
 		t.Run(tc.desc, func(t *testing.T) {
 			f := parseTestFile(t, tc.src)
-			r := findFirstTestResource(t, f)
-			got := r.ReferableName()
+			b := NewResource(findFirstTestBlock(t, f).Raw())
+			got := b.ReferableName()
 			if got != tc.want {
 				t.Errorf("got = %s, but want = %s", got, tc.want)
 			}
@@ -231,8 +231,8 @@ resource "aws_s3_bucket_acl" "example" {
 	for _, tc := range cases {
 		t.Run(tc.desc, func(t *testing.T) {
 			f := parseTestFile(t, tc.src)
-			r := f.FindResourcesByType("aws_s3_bucket_acl")[0]
-			refResource := f.FindResourcesByType("aws_s3_bucket")[0]
+			r := f.FindBlocksByType("resource", "aws_s3_bucket_acl")[0].(*Resource)
+			refResource := f.FindBlocksByType("resource", "aws_s3_bucket")[0].(*Resource)
 			r.SetAttributeByReference("bucket", refResource, "id")
 			got := printTestFile(t, f)
 			if diff := cmp.Diff(got, tc.want); diff != "" {

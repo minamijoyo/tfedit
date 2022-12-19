@@ -47,6 +47,45 @@ func TestBlockType(t *testing.T) {
 	}
 }
 
+func TestBlockSchemaType(t *testing.T) {
+	cases := []struct {
+		desc string
+		src  string
+		want string
+		ok   bool
+	}{
+		{
+			desc: "no label",
+			src:  `terraform  {}`,
+			want: "",
+			ok:   true,
+		},
+		{
+			desc: "with a single label",
+			src:  `provider "aws" {}`,
+			want: "aws",
+			ok:   true,
+		},
+		{
+			desc: "with multiple labels",
+			src:  `resource "aws_s3_bucket" "example" {}`,
+			want: "aws_s3_bucket",
+			ok:   true,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.desc, func(t *testing.T) {
+			f := parseTestFile(t, tc.src)
+			b := findFirstTestBlock(t, f)
+			got := b.SchemaType()
+			if got != tc.want {
+				t.Errorf("got = %s, but want = %s", got, tc.want)
+			}
+		})
+	}
+}
+
 func TestBlockSetType(t *testing.T) {
 	cases := []struct {
 		desc     string

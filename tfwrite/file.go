@@ -23,89 +23,55 @@ func (f *File) Raw() *hclwrite.File {
 	return f.raw
 }
 
-// FindResourcesByType returns all matching resources from the body that have the
-// given resourceType or returns an empty list if not found.
-func (f *File) FindResourcesByType(resourceType string) []*Resource {
-	var matched []*Resource
+// parseBlock is a factory method for Block.
+func parseBlock(block *hclwrite.Block) Block {
+	switch block.Type() {
+	case "resource":
+		return NewResource(block)
+	case "data":
+		return NewDataSource(block)
+	case "provider":
+		return NewProvider(block)
+	default:
+		return newBlock(block) // unknown
+	}
+}
 
-	for _, block := range f.raw.Body().Blocks() {
-		if block.Type() != "resource" {
+// Blocks returns all blocks.
+func (f *File) Blocks() []Block {
+	var blocks []Block
+
+	for _, block := range f.Raw().Body().Blocks() {
+		b := parseBlock(block)
+		blocks = append(blocks, b)
+	}
+
+	return blocks
+}
+
+// FindBlocksByType returns all matching blocks from the body that have the
+// given blockType and schemaType or returns an empty list if not found.
+// If the given blockType or schemaType are a non-empty string,
+// filter the results.
+func (f *File) FindBlocksByType(blockType string, schemaType string) []Block {
+	var matched []Block
+
+	for _, b := range f.Blocks() {
+		if blockType != "" && blockType != b.Type() {
 			continue
 		}
-
-		labels := block.Labels()
-		if len(labels) == 2 && labels[0] != resourceType {
+		if schemaType != "" && schemaType != b.SchemaType() {
 			continue
 		}
-
-		resource := NewResource(block)
-		matched = append(matched, resource)
+		matched = append(matched, b)
 	}
 
 	return matched
 }
 
-// FindDataSourcesByType returns all matching data sources from the body that have the
-// given dataSourceType or returns an empty list if not found.
-func (f *File) FindDataSourcesByType(dataSourceType string) []*DataSource {
-	var matched []*DataSource
-
-	for _, block := range f.raw.Body().Blocks() {
-		if block.Type() != "data" {
-			continue
-		}
-
-		labels := block.Labels()
-		if len(labels) == 2 && labels[0] != dataSourceType {
-			continue
-		}
-
-		dataSource := NewDataSource(block)
-		matched = append(matched, dataSource)
-	}
-
-	return matched
-}
-
-// FindProvidersByType returns all matching providers from the body that have the
-// given providerType or returns an empty list if not found.
-func (f *File) FindProvidersByType(providerType string) []*Provider {
-	var matched []*Provider
-
-	for _, block := range f.raw.Body().Blocks() {
-		if block.Type() != "provider" {
-			continue
-		}
-
-		labels := block.Labels()
-		if len(labels) == 1 && labels[0] != providerType {
-			continue
-		}
-
-		provider := NewProvider(block)
-		matched = append(matched, provider)
-	}
-
-	return matched
-}
-
-// AppendResource appends a given resource to the file.
-func (f *File) AppendResource(resource *Resource) {
+// AppendBlock appends a given block to the file.
+func (f *File) AppendBlock(block Block) {
 	body := f.raw.Body()
 	body.AppendNewline()
-	body.AppendBlock(resource.raw)
-}
-
-// AppendDataSource appends a given data source to the file.
-func (f *File) AppendDataSource(dataSource *DataSource) {
-	body := f.raw.Body()
-	body.AppendNewline()
-	body.AppendBlock(dataSource.raw)
-}
-
-// AppendProvider appends a given provider to the file.
-func (f *File) AppendProvider(provider *Provider) {
-	body := f.raw.Body()
-	body.AppendNewline()
-	body.AppendBlock(provider.raw)
+	body.AppendBlock(block.Raw())
 }

@@ -1,27 +1,18 @@
 package awsv4upgrade
 
 import (
-	"github.com/minamijoyo/tfedit/tfeditor"
 	"github.com/minamijoyo/tfedit/tfwrite"
 	"github.com/zclconf/go-cty/cty"
 )
 
-// AWSS3BucketObjectLockConfigurationFilter is a filter implementation for
-// upgrading the object_lock_configuration argument of aws_s3_bucket.
+// AWSS3BucketObjectLockConfigurationResourceFilter is a filter implementation
+// for upgrading the object_lock_configuration argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#object_lock_configuration-rule-argument
-type AWSS3BucketObjectLockConfigurationFilter struct{}
+func AWSS3BucketObjectLockConfigurationResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+	if resource.SchemaType() != "aws_s3_bucket" {
+		return inFile, nil
+	}
 
-var _ tfeditor.ResourceFilter = (*AWSS3BucketObjectLockConfigurationFilter)(nil)
-
-// NewAWSS3BucketObjectLockConfigurationFilter creates a new instance of
-// AWSS3BucketObjectLockConfigurationFilter.
-func NewAWSS3BucketObjectLockConfigurationFilter() tfeditor.ResourceFilter {
-	return &AWSS3BucketObjectLockConfigurationFilter{}
-}
-
-// ResourceFilter upgrades the object_lock_configuration argument of
-// aws_s3_bucket.
-func (f *AWSS3BucketObjectLockConfigurationFilter) ResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
 	oldNestedBlock := "object_lock_configuration"
 	newResourceType := "aws_s3_bucket_object_lock_configuration"
 
@@ -32,7 +23,7 @@ func (f *AWSS3BucketObjectLockConfigurationFilter) ResourceFilter(inFile *tfwrit
 
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
-	inFile.AppendResource(newResource)
+	inFile.AppendBlock(newResource)
 	setParentBucket(newResource, resource)
 
 	objectLockBlock := nestedBlocks[0]

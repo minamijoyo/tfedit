@@ -44,36 +44,3 @@ func findTestBlocks(t *testing.T, f *File) []*block {
 	}
 	return blocks
 }
-
-// findFirstTestResource is a test helper for find the first resource.
-func findFirstTestResource(t *testing.T, f *File) *Resource {
-	t.Helper()
-	for _, block := range f.raw.Body().Blocks() {
-		if block.Type() == "resource" {
-			return NewResource(block)
-		}
-	}
-	return nil
-}
-
-// findFirstTestDataSource is a test helper for find the first data source.
-func findFirstTestDataSource(t *testing.T, f *File) *DataSource {
-	t.Helper()
-	for _, block := range f.raw.Body().Blocks() {
-		if block.Type() == "data" {
-			return NewDataSource(block)
-		}
-	}
-	return nil
-}
-
-// findFirstTestProvider is a test helper for find the first provider.
-func findFirstTestProvider(t *testing.T, f *File) *Provider {
-	t.Helper()
-	for _, block := range f.raw.Body().Blocks() {
-		if block.Type() == "provider" {
-			return NewProvider(block)
-		}
-	}
-	return nil
-}

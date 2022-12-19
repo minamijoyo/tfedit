@@ -1,24 +1,17 @@
 package awsv4upgrade
 
 import (
-	"github.com/minamijoyo/tfedit/tfeditor"
 	"github.com/minamijoyo/tfedit/tfwrite"
 )
 
-// AWSS3BucketPolicyFilter is a filter implementation for upgrading the policy
-// argument of aws_s3_bucket.
+// AWSS3BucketPolicyResourceFilter is a filter implementation for upgrading the
+// policy argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#policy-argument
-type AWSS3BucketPolicyFilter struct{}
+func AWSS3BucketPolicyResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+	if resource.SchemaType() != "aws_s3_bucket" {
+		return inFile, nil
+	}
 
-var _ tfeditor.ResourceFilter = (*AWSS3BucketPolicyFilter)(nil)
-
-// NewAWSS3BucketPolicyFilter creates a new instance of AWSS3BucketPolicyFilter.
-func NewAWSS3BucketPolicyFilter() tfeditor.ResourceFilter {
-	return &AWSS3BucketPolicyFilter{}
-}
-
-// ResourceFilter upgrades the policy argument of aws_s3_bucket.
-func (f *AWSS3BucketPolicyFilter) ResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
 	oldAttribute := "policy"
 	newResourceType := "aws_s3_bucket_policy"
 
@@ -29,7 +22,7 @@ func (f *AWSS3BucketPolicyFilter) ResourceFilter(inFile *tfwrite.File, resource 
 
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
-	inFile.AppendResource(newResource)
+	inFile.AppendBlock(newResource)
 	setParentBucket(newResource, resource)
 	newResource.AppendAttribute(attr)
 	resource.RemoveAttribute(oldAttribute)

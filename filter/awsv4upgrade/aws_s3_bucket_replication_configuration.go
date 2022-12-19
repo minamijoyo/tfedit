@@ -1,26 +1,17 @@
 package awsv4upgrade
 
 import (
-	"github.com/minamijoyo/tfedit/tfeditor"
 	"github.com/minamijoyo/tfedit/tfwrite"
 )
 
-// AWSS3BucketReplicationConfigurationFilter is a filter implementation for
-// upgrading the replication_configuration argument of aws_s3_bucket.
+// AWSS3BucketReplicationConfigurationResourceFilter is a filter implementation
+// for upgrading the replication_configuration argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#replication_configuration-argument
-type AWSS3BucketReplicationConfigurationFilter struct{}
+func AWSS3BucketReplicationConfigurationResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+	if resource.SchemaType() != "aws_s3_bucket" {
+		return inFile, nil
+	}
 
-var _ tfeditor.ResourceFilter = (*AWSS3BucketReplicationConfigurationFilter)(nil)
-
-// NewAWSS3BucketReplicationConfigurationFilter creates a new instance of
-// AWSS3BucketReplicationConfigurationFilter.
-func NewAWSS3BucketReplicationConfigurationFilter() tfeditor.ResourceFilter {
-	return &AWSS3BucketReplicationConfigurationFilter{}
-}
-
-// ResourceFilter upgrades the replication_configuration argument of
-// aws_s3_bucket.
-func (f *AWSS3BucketReplicationConfigurationFilter) ResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
 	oldNestedBlock := "replication_configuration"
 	newResourceType := "aws_s3_bucket_replication_configuration"
 
@@ -31,7 +22,7 @@ func (f *AWSS3BucketReplicationConfigurationFilter) ResourceFilter(inFile *tfwri
 
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
-	inFile.AppendResource(newResource)
+	inFile.AppendBlock(newResource)
 	setParentBucket(newResource, resource)
 
 	for _, nestedBlock := range nestedBlocks {

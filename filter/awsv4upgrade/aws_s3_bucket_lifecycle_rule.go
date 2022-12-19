@@ -5,25 +5,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minamijoyo/tfedit/tfeditor"
 	"github.com/minamijoyo/tfedit/tfwrite"
 	"github.com/zclconf/go-cty/cty"
 )
 
-// AWSS3BucketLifecycleRuleFilter is a filter implementation for upgrading the
-// lifecycle_rule argument of aws_s3_bucket.
+// AWSS3BucketLifecycleRuleResourceFilter is a filter implementation for
+// upgrading the lifecycle_rule argument of aws_s3_bucket.
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#lifecycle_rule-argument
-type AWSS3BucketLifecycleRuleFilter struct{}
+func AWSS3BucketLifecycleRuleResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
+	if resource.SchemaType() != "aws_s3_bucket" {
+		return inFile, nil
+	}
 
-var _ tfeditor.ResourceFilter = (*AWSS3BucketLifecycleRuleFilter)(nil)
-
-// NewAWSS3BucketLifecycleRuleFilter creates a new instance of AWSS3Bucketlifecycle_ruleFilter.
-func NewAWSS3BucketLifecycleRuleFilter() tfeditor.ResourceFilter {
-	return &AWSS3BucketLifecycleRuleFilter{}
-}
-
-// ResourceFilter upgrades the lifecycle_rule argument of aws_s3_bucket.
-func (f *AWSS3BucketLifecycleRuleFilter) ResourceFilter(inFile *tfwrite.File, resource *tfwrite.Resource) (*tfwrite.File, error) {
 	oldNestedBlock := "lifecycle_rule"
 	newResourceType := "aws_s3_bucket_lifecycle_configuration"
 	newNestedBlock := "rule"
@@ -35,7 +28,7 @@ func (f *AWSS3BucketLifecycleRuleFilter) ResourceFilter(inFile *tfwrite.File, re
 
 	resourceName := resource.Name()
 	newResource := tfwrite.NewEmptyResource(newResourceType, resourceName)
-	inFile.AppendResource(newResource)
+	inFile.AppendBlock(newResource)
 	setParentBucket(newResource, resource)
 
 	for _, nestedBlock := range nestedBlocks {

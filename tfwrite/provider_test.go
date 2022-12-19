@@ -24,9 +24,9 @@ provider "foo" {}
 	for _, tc := range cases {
 		t.Run(tc.desc, func(t *testing.T) {
 			f := parseTestFile(t, tc.src)
-			p := findFirstTestProvider(t, f)
+			b := NewProvider(findFirstTestBlock(t, f).Raw())
 
-			got := p.Type()
+			got := b.Type()
 			if got != tc.want {
 				t.Errorf("got = %s, but want = %s", got, tc.want)
 			}
@@ -54,8 +54,8 @@ provider "foo" {}
 	for _, tc := range cases {
 		t.Run(tc.desc, func(t *testing.T) {
 			f := parseTestFile(t, tc.src)
-			p := findFirstTestProvider(t, f)
-			got := p.SchemaType()
+			b := NewProvider(findFirstTestBlock(t, f).Raw())
+			got := b.SchemaType()
 			if got != tc.want {
 				t.Errorf("got = %s, but want = %s", got, tc.want)
 			}

@@ -5,7 +5,19 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/minamijoyo/hcledit/editor"
+	"github.com/minamijoyo/tfedit/tfeditor"
 )
+
+// buildTestProviderFilter is a helper function which builds an editor filter for testing.
+func buildTestProviderFilter(f tfeditor.ProviderFilterFunc) editor.Filter {
+	return tfeditor.NewFileFilter(
+		&ProviderAWSFilter{
+			filters: []tfeditor.BlockFilter{
+				tfeditor.ProviderFilterFunc(f),
+			},
+		},
+	)
+}
 
 func TestProviderAWSFilter(t *testing.T) {
 	cases := []struct {
@@ -118,7 +130,7 @@ provider "google" {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			filter := NewProviderAWSFilter()
+			filter := tfeditor.NewFileFilter(NewProviderAWSFilter())
 			o := editor.NewEditOperator(filter)
 			output, err := o.Apply([]byte(tc.src), "test")
 			if tc.ok && err != nil {
