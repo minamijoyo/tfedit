@@ -1,5 +1,11 @@
 ## master (Unreleased)
 
+ENHANCEMENTS:
+
+* Update Go to v1.19 ([#55](https://github.com/minamijoyo/tfedit/pull/55))
+* Update Terraform to v1.3.6 ([#56](https://github.com/minamijoyo/tfedit/pull/56))
+* Update localstack to v1.3.1 ([#58](https://github.com/minamijoyo/tfedit/pull/58))
+
 ## 0.2.0 (2022/12/19)
 
 BREAKING CHANGES:
