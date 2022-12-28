@@ -32,6 +32,18 @@ func parseBlock(block *hclwrite.Block) Block {
 		return NewDataSource(block)
 	case "provider":
 		return NewProvider(block)
+	case "variable":
+		return NewVariable(block)
+	case "output":
+		return NewOutput(block)
+	case "locals":
+		return NewLocals(block)
+	case "module":
+		return NewModule(block)
+	case "terraform":
+		return NewTerraform(block)
+	case "moved":
+		return NewMoved(block)
 	default:
 		return newBlock(block) // unknown
 	}
