@@ -29,7 +29,7 @@ func NewAWSS3BucketFilter() tfeditor.BlockFilter {
 		tfeditor.ResourceFilterFunc(AWSS3BucketRequestPayerResourceFilter),
 		tfeditor.ResourceFilterFunc(AWSS3BucketServerSideEncryptionConfigurationResourceFilter),
 		tfeditor.ResourceFilterFunc(AWSS3BucketVersioningResourceFilter),
-		tfeditor.ResourceFilterFunc(AWSS3BucketWebsiteResourceFilter),
+		tfeditor.BlockFilterFunc(AWSS3BucketWebsiteBlockFilter),
 
 		// Remove redundant TokenNewLine tokens in the resource block after removing nested blocks.
 		// Since VerticalFormat clears tokens internally, we should call it at the end.

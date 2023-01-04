@@ -19,6 +19,17 @@ func buildTestResourceFilter(f tfeditor.ResourceFilterFunc) editor.Filter {
 	)
 }
 
+// buildTestBlockFilter is a helper function which builds an editor filter for testing.
+func buildTestBlockFilter(f tfeditor.BlockFilterFunc) editor.Filter {
+	return tfeditor.NewFileFilter(
+		&AWSS3BucketFilter{
+			filters: []tfeditor.BlockFilter{
+				tfeditor.BlockFilterFunc(f),
+			},
+		},
+	)
+}
+
 func TestAWSS3BucketFilter(t *testing.T) {
 	cases := []struct {
 		name string
@@ -169,6 +180,26 @@ resource "aws_s3_bucket_foo" "example" {
 		{
 			name: "full arguments except for grant",
 			src: `
+resource "aws_route53_zone" "test" {
+  name = "example.com"
+}
+
+resource "aws_route53_record" "alias" {
+  zone_id = aws_route53_zone.test.zone_id
+  name    = "www"
+  type    = "A"
+
+  alias {
+    zone_id                = aws_s3_bucket.example.hosted_zone_id
+    name                   = aws_s3_bucket.example.website_domain
+    evaluate_target_health = true
+  }
+}
+
+output "test_endpoint" {
+  value = aws_s3_bucket.example.website_endpoint
+}
+
 resource "aws_s3_bucket" "log" {
   bucket = "tfedit-log"
 
@@ -296,6 +327,26 @@ EOF
 `,
 			ok: true,
 			want: `
+resource "aws_route53_zone" "test" {
+  name = "example.com"
+}
+
+resource "aws_route53_record" "alias" {
+  zone_id = aws_route53_zone.test.zone_id
+  name    = "www"
+  type    = "A"
+
+  alias {
+    zone_id                = aws_s3_bucket.example.hosted_zone_id
+    name                   = aws_s3_bucket_website_configuration.example.website_domain
+    evaluate_target_health = true
+  }
+}
+
+output "test_endpoint" {
+  value = aws_s3_bucket_website_configuration.example.website_endpoint
+}
+
 resource "aws_s3_bucket" "log" {
   bucket = "tfedit-log"
 }

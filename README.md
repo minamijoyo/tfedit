@@ -107,7 +107,7 @@ For upgrading AWS provider v4, some rules have not been implemented yet. The cur
   - [x] count
   - [x] for_each
   - [ ] dynamic
-- [ ] Rename references in an expression to new resource type
+- [x] Rename references in an expression to new resource type
 - [x] Generate import commands for new split resources
 
 [New Provider Arguments](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade#new-provider-arguments)
