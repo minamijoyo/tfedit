@@ -1,5 +1,7 @@
 ## master (Unreleased)
 
+## 0.2.1 (2023/01/13)
+
 NEW FEATURES:
 
 * Complete all primitive top-level block types ([#59](https://github.com/minamijoyo/tfedit/pull/59))
