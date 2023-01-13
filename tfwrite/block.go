@@ -1,6 +1,9 @@
 package tfwrite
 
 import (
+	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
+
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/minamijoyo/hcledit/editor"
 	"github.com/zclconf/go-cty/cty"
@@ -24,6 +27,10 @@ type Block interface {
 	// SetType updates the type name of the block to a given name.
 	SetType(typeName string)
 
+	// Attributes returns all attributes.
+	// Note that this does not return attributes in nested blocks.
+	Attributes() []*Attribute
+
 	// GetAttribute returns an attribute for a given name.
 	GetAttribute(name string) *Attribute
 
@@ -42,6 +49,9 @@ type Block interface {
 	// CopyAttribute is a helper method which copies an attribute from a given block.
 	// Do nothing if the given block doesn't have the attribute.
 	CopyAttribute(from Block, name string)
+
+	// NestedBlocks returns all nested blocks.
+	NestedBlocks() []*NestedBlock
 
 	// AppendNestedBlock appends a given nested block to the parent block.
 	AppendNestedBlock(nestedBlock Block)
@@ -63,6 +73,16 @@ type Block interface {
 	// time RemoveNestedBlock is called, the subsequent RemoveNestedBlock will not
 	// work properly, so call VerticalFormat only once for each block.
 	VerticalFormat()
+
+	// References returns all variable references for all attributes.
+	// It returns a unique and sorted list.
+	References() []string
+
+	// RenameReference renames all variable references for all attributes.
+	// The `from` and `to` arguments are specified as dot-delimited resource addresses.
+	// The `from` argument can be a partial prefix match, but must match the length
+	// of the `to` argument.
+	RenameReference(from string, to string)
 }
 
 // block implements the Block interface.
@@ -114,6 +134,17 @@ func (b *block) SetType(typeName string) {
 	b.raw.SetType(typeName)
 }
 
+// Attributes returns all attributes.
+// Note that this does not return attributes in nested blocks.
+func (b *block) Attributes() []*Attribute {
+	var ret []*Attribute
+	attrs := b.raw.Body().Attributes()
+	for _, attr := range attrs {
+		ret = append(ret, NewAttribute(attr))
+	}
+	return ret
+}
+
 // GetAttribute returns an attribute for a given name.
 func (b *block) GetAttribute(name string) *Attribute {
 	attr := b.raw.Body().GetAttribute(name)
@@ -150,6 +181,16 @@ func (b *block) CopyAttribute(from Block, name string) {
 	if attr := from.GetAttribute(name); attr != nil {
 		b.AppendAttribute(attr)
 	}
+}
+
+// NestedBlocks returns all nested blocks.
+func (b *block) NestedBlocks() []*NestedBlock {
+	var ret []*NestedBlock
+	blocks := b.raw.Body().Blocks()
+	for _, block := range blocks {
+		ret = append(ret, NewNestedBlock(block))
+	}
+	return ret
 }
 
 // AppendNestedBlock appends a given nested block to the parent block.
@@ -205,4 +246,52 @@ func (b *block) VerticalFormat() {
 	body.Clear()
 	body.AppendNewline()
 	body.AppendUnstructuredTokens(formatted)
+}
+
+// References returns all variable references for all attributes.
+// It returns a unique and sorted list.
+func (b *block) References() []string {
+	refs := map[string]struct{}{}
+	for _, key := range b.rawReferences() {
+		// To remove duplicates, append keys to a map.
+		refs[key] = struct{}{}
+	}
+
+	keys := maps.Keys(refs)
+	slices.Sort(keys)
+	return keys
+}
+
+// rawReferences returns a list of raw variable references.
+// The result may be unsorted and duplicated,
+// but it is efficient to merge the result later.
+func (b *block) rawReferences() []string {
+	refs := []string{}
+	for _, attr := range b.Attributes() {
+		ks := attr.rawReferences()
+		refs = append(refs, ks...)
+	}
+
+	for _, block := range b.NestedBlocks() {
+		// recursive call
+		ks := block.rawReferences()
+		refs = append(refs, ks...)
+	}
+
+	return refs
+}
+
+// RenameReference renames all variable references for all attributes.
+// The `from` and `to` arguments are specified as dot-delimited resource addresses.
+// The `from` argument can be a partial prefix match, but must match the length
+// of the `to` argument.
+func (b *block) RenameReference(from string, to string) {
+	for _, attr := range b.Attributes() {
+		attr.RenameReference(from, to)
+	}
+
+	for _, block := range b.NestedBlocks() {
+		// recursive call
+		block.RenameReference(from, to)
+	}
 }
