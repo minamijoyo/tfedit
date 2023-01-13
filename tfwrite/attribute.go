@@ -3,6 +3,9 @@ package tfwrite
 import (
 	"strings"
 
+	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
+
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/minamijoyo/hcledit/editor"
 )
@@ -25,6 +28,24 @@ func (a *Attribute) ValueAsString() (string, error) {
 // ValueAsTokens returns a value of Attribute as raw tokens.
 func (a *Attribute) ValueAsTokens() hclwrite.Tokens {
 	return a.raw.Expr().BuildTokens(nil)
+}
+
+// References returns all variable references contained in the value.
+// It returns a unique and sorted list.
+func (a *Attribute) References() []string {
+	refs := map[string]struct{}{}
+	for _, v := range a.raw.Expr().Variables() {
+		// Covert *hclwrite.Traversal to string.
+		// This is a bit dirty, but it’s the only way to do at the time of writing.
+		key := strings.TrimSpace(string(v.BuildTokens(nil).Bytes()))
+
+		// To remove duplicates, append keys to a map.
+		refs[key] = struct{}{}
+	}
+
+	keys := maps.Keys(refs)
+	slices.Sort(keys)
+	return keys
 }
 
 // RenameReference renames all variable references contained in the value.

@@ -688,6 +688,95 @@ foo {
 	}
 }
 
+func TestBlockReferences(t *testing.T) {
+	cases := []struct {
+		desc string
+		src  string
+		want []string
+		ok   bool
+	}{
+		{
+			desc: "simple",
+			src: `
+foo {
+  bar = aaa.bbb.ccc
+}
+`,
+			want: []string{"aaa.bbb.ccc"},
+			ok:   true,
+		},
+		{
+			desc: "not found",
+			src: `
+foo {
+  bar = "aaa.bbb.ccc"
+}
+`,
+			want: []string{},
+			ok:   true,
+		},
+		{
+			desc: "multiple attributes",
+			src: `
+foo {
+  bar1 = xxx.yyy.zzz
+  bar2 = aaa.bbb.ccc
+  bar3 = xxx.yyy.zzz
+}
+`,
+			want: []string{"aaa.bbb.ccc", "xxx.yyy.zzz"},
+			ok:   true,
+		},
+		{
+			desc: "multiple nested blocks",
+			src: `
+foo {
+  nested {
+    bar1 = xxx.yyy.zzz
+  }
+  nested {
+    bar2 = aaa.bbb.ccc
+  }
+  nested {
+    bar3 = xxx.yyy.zzz
+  }
+}
+`,
+			want: []string{"aaa.bbb.ccc", "xxx.yyy.zzz"},
+			ok:   true,
+		},
+		{
+			desc: "multiple level nested blocks",
+			src: `
+foo {
+  nested {
+    bar1 = xxx.yyy.zzz
+    nested {
+      bar2 = aaa.bbb.ccc
+      nested {
+        bar3 = xxx.yyy.zzz
+      }
+    }
+  }
+}
+`,
+			want: []string{"aaa.bbb.ccc", "xxx.yyy.zzz"},
+			ok:   true,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.desc, func(t *testing.T) {
+			f := parseTestFile(t, tc.src)
+			b := findFirstTestBlock(t, f)
+			got := b.References()
+
+			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Fatalf("got:\n%s\nwant:\n%s\ndiff:\n%s", got, tc.want, diff)
+			}
+		})
+	}
+}
 func TestBlockRenameReference(t *testing.T) {
 	cases := []struct {
 		desc string

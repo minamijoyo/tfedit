@@ -1,6 +1,9 @@
 package tfwrite
 
 import (
+	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
+
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/minamijoyo/hcledit/editor"
 	"github.com/zclconf/go-cty/cty"
@@ -70,6 +73,10 @@ type Block interface {
 	// time RemoveNestedBlock is called, the subsequent RemoveNestedBlock will not
 	// work properly, so call VerticalFormat only once for each block.
 	VerticalFormat()
+
+	// References returns all variable references for all attributes.
+	// It returns a unique and sorted list.
+	References() []string
 
 	// RenameReference renames all variable references for all attributes.
 	// The `from` and `to` arguments are specified as dot-delimited resource addresses.
@@ -239,6 +246,34 @@ func (b *block) VerticalFormat() {
 	body.Clear()
 	body.AppendNewline()
 	body.AppendUnstructuredTokens(formatted)
+}
+
+// References returns all variable references for all attributes.
+// It returns a unique and sorted list.
+func (b *block) References() []string {
+	refs := map[string]struct{}{}
+	for _, attr := range b.Attributes() {
+		ks := attr.References()
+
+		for _, v := range ks {
+			// To remove duplicates, append keys to a map.
+			refs[v] = struct{}{}
+		}
+	}
+
+	for _, block := range b.NestedBlocks() {
+		// recursive call
+		ks := block.References()
+
+		for _, v := range ks {
+			// To remove duplicates, append keys to a map.
+			refs[v] = struct{}{}
+		}
+	}
+
+	keys := maps.Keys(refs)
+	slices.Sort(keys)
+	return keys
 }
 
 // RenameReference renames all variable references for all attributes.
