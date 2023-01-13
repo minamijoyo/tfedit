@@ -34,11 +34,7 @@ func (a *Attribute) ValueAsTokens() hclwrite.Tokens {
 // It returns a unique and sorted list.
 func (a *Attribute) References() []string {
 	refs := map[string]struct{}{}
-	for _, v := range a.raw.Expr().Variables() {
-		// Covert *hclwrite.Traversal to string.
-		// This is a bit dirty, but it’s the only way to do at the time of writing.
-		key := strings.TrimSpace(string(v.BuildTokens(nil).Bytes()))
-
+	for _, key := range a.rawReferences() {
 		// To remove duplicates, append keys to a map.
 		refs[key] = struct{}{}
 	}
@@ -46,6 +42,22 @@ func (a *Attribute) References() []string {
 	keys := maps.Keys(refs)
 	slices.Sort(keys)
 	return keys
+}
+
+// rawReferences returns a list of raw variable references.
+// The result may be unsorted and duplicated,
+// but it is efficient to merge the result later.
+func (a *Attribute) rawReferences() []string {
+	refs := []string{}
+	for _, v := range a.raw.Expr().Variables() {
+		// Covert *hclwrite.Traversal to string.
+		// This is a bit dirty, but it’s the only way to do at the time of writing.
+		key := strings.TrimSpace(string(v.BuildTokens(nil).Bytes()))
+
+		refs = append(refs, key)
+	}
+
+	return refs
 }
 
 // RenameReference renames all variable references contained in the value.

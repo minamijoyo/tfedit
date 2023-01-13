@@ -252,28 +252,33 @@ func (b *block) VerticalFormat() {
 // It returns a unique and sorted list.
 func (b *block) References() []string {
 	refs := map[string]struct{}{}
-	for _, attr := range b.Attributes() {
-		ks := attr.References()
-
-		for _, v := range ks {
-			// To remove duplicates, append keys to a map.
-			refs[v] = struct{}{}
-		}
-	}
-
-	for _, block := range b.NestedBlocks() {
-		// recursive call
-		ks := block.References()
-
-		for _, v := range ks {
-			// To remove duplicates, append keys to a map.
-			refs[v] = struct{}{}
-		}
+	for _, key := range b.rawReferences() {
+		// To remove duplicates, append keys to a map.
+		refs[key] = struct{}{}
 	}
 
 	keys := maps.Keys(refs)
 	slices.Sort(keys)
 	return keys
+}
+
+// rawReferences returns a list of raw variable references.
+// The result may be unsorted and duplicated,
+// but it is efficient to merge the result later.
+func (b *block) rawReferences() []string {
+	refs := []string{}
+	for _, attr := range b.Attributes() {
+		ks := attr.rawReferences()
+		refs = append(refs, ks...)
+	}
+
+	for _, block := range b.NestedBlocks() {
+		// recursive call
+		ks := block.rawReferences()
+		refs = append(refs, ks...)
+	}
+
+	return refs
 }
 
 // RenameReference renames all variable references for all attributes.
