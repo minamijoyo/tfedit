@@ -1,5 +1,10 @@
 ## master (Unreleased)
 
+NEW FEATURES:
+
+* Complete all primitive top-level block types ([#59](https://github.com/minamijoyo/tfedit/pull/59))
+* Rename references for website_domain and website_endpoint ([#60](https://github.com/minamijoyo/tfedit/pull/60))
+
 ENHANCEMENTS:
 
 * Update Go to v1.19 ([#55](https://github.com/minamijoyo/tfedit/pull/55))
