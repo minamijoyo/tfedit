@@ -22,11 +22,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, macOS-latest]
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-go@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-go@v5
       with:
         go-version-file: '.go-version'
-        cache: true
     - name: test
       run: make test
   testacc:
@@ -40,7 +39,7 @@ jobs:
     env:
       TERRAFORM_VERSION: ${{ matrix.terraform }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: docker build
       run: docker-compose build
     - name: start localstack
