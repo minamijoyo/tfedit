@@ -1,7 +1,7 @@
 ARG TERRAFORM_VERSION=latest
 FROM hashicorp/terraform:$TERRAFORM_VERSION AS terraform
 
-FROM golang:1.19-alpine3.17
+FROM golang:1.22-alpine3.19
 RUN apk --no-cache add make git bash curl jq
 
 # A workaround for a permission issue of git.
