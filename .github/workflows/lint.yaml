@@ -21,6 +21,6 @@ jobs:
         go-version-file: '.go-version'
         cache: true
     - name: golangci-lint
-      uses: golangci/golangci-lint-action@v3
+      uses: golangci/golangci-lint-action@v6
       with:
-        version: v1.50.1
+        version: v1.59.1

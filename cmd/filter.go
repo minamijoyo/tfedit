@@ -23,7 +23,7 @@ func newFilterCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "filter",
 		Short: "Apply a built-in filter",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			return cmd.Help()
 		},
 	}
