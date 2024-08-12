@@ -42,13 +42,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: docker build
-      run: docker-compose build
+      run: docker compose build
     - name: start localstack
       run: |
-        docker-compose up -d localstack
-        docker-compose run --rm dockerize -wait tcp://localstack:4566 -timeout 60s
-        docker-compose exec -T localstack /docker-entrypoint-initaws.d/wait_s3_bucket_exists.sh
+        docker compose up -d localstack
+        docker compose run --rm dockerize -wait tcp://localstack:4566 -timeout 60s
+        docker compose exec -T localstack /docker-entrypoint-initaws.d/wait_s3_bucket_exists.sh
     - name: terraform --version
-      run: docker-compose run --rm tfedit terraform --version
+      run: docker compose run --rm tfedit terraform --version
     - name: testacc
-      run: docker-compose run --rm tfedit make testacc
+      run: docker compose run --rm tfedit make testacc

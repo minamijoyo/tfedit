@@ -147,13 +147,13 @@ For upgrading AWS provider v4, some rules have not been implemented yet. The cur
 
 We recommend you to play an example in a sandbox environment first, which is safe to run `terraform` and `tfmigrate` command without any credentials. The sandbox environment mocks the AWS API with [localstack](https://github.com/localstack/localstack) and doesn't actually create any resources. So you can safely and easily understand how it works.
 
-Build a sandbox environment with docker-compose and run bash:
+Build a sandbox environment with docker compose and run bash:
 
 ```
 $ git clone https://github.com/minamijoyo/tfedit
 $ cd tfedit/
-$ docker-compose build
-$ docker-compose run --rm tfedit /bin/bash
+$ docker compose build
+$ docker compose run --rm tfedit /bin/bash
 ```
 
 In the sandbox environment, create and initialize a working directory from test fixtures:
@@ -305,7 +305,7 @@ To clean up the sandbox environment:
 # cd ../../
 # rm -rf tmp/dir1
 # exit
-$ docker-compose down
+$ docker compose down
 ```
 
 Tips: If you see something was wrong, you can run the `awslocal` command, which is configured to call AWS APIs to the localstack endpoint:
