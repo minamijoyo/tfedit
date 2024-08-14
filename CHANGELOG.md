@@ -1,5 +1,16 @@
 ## master (Unreleased)
 
+ENHANCEMENTS:
+
+* Use docker compose command instead of docker-compose ([#63](https://github.com/minamijoyo/tfedit/pull/63))
+* Update golangci lint to v1.59.1 ([#64](https://github.com/minamijoyo/tfedit/pull/64))
+* Update setup-go to v5 ([#65](https://github.com/minamijoyo/tfedit/pull/65))
+* Update actions/checkout to v4 ([#66](https://github.com/minamijoyo/tfedit/pull/66))
+* Update Go to v1.22 ([#67](https://github.com/minamijoyo/tfedit/pull/67))
+* Add support for Terraform 1.9 ([#68](https://github.com/minamijoyo/tfedit/pull/68))
+* Update goreleaser to v2 ([#69](https://github.com/minamijoyo/tfedit/pull/69))
+* Switch to the official action for creating GitHub App token ([#70](https://github.com/minamijoyo/tfedit/pull/70))
+
 ## 0.2.1 (2023/01/13)
 
 NEW FEATURES:
