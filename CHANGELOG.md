@@ -1,5 +1,7 @@
 ## master (Unreleased)
 
+## 0.2.2 (2024/08/14)
+
 ENHANCEMENTS:
 
 * Use docker compose command instead of docker-compose ([#63](https://github.com/minamijoyo/tfedit/pull/63))
