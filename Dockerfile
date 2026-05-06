@@ -19,7 +19,7 @@ RUN curl -fsSL https://github.com/minamijoyo/tfupdate/releases/download/v${TFUPD
   | tar -xzC /usr/local/bin && chmod +x /usr/local/bin/tfupdate
 
 # Install tfmigrate
-ENV TFMIGRATE_VERSION 0.3.9
+ENV TFMIGRATE_VERSION 0.4.5
 RUN curl -fsSL https://github.com/minamijoyo/tfmigrate/releases/download/v${TFMIGRATE_VERSION}/tfmigrate_${TFMIGRATE_VERSION}_linux_amd64.tar.gz \
   | tar -xzC /usr/local/bin && chmod +x /usr/local/bin/tfmigrate
 
