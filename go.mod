@@ -1,6 +1,6 @@
 module github.com/minamijoyo/tfedit
 
-go 1.22
+go 1.25
 
 require (
 	github.com/davecgh/go-spew v1.1.1
