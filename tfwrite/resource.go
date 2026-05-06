@@ -28,7 +28,7 @@ func NewEmptyResource(resourceType string, resourceName string) *Resource {
 // Name returns a name of resource.
 // It returns the second label of block.
 func (r *Resource) Name() string {
-	labels := r.block.raw.Labels()
+	labels := r.raw.Labels()
 	return labels[1]
 }
 
