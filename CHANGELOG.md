@@ -1,5 +1,16 @@
 ## master (Unreleased)
 
+ENHANCEMENTS:
+
+* Pin all GitHub Actions ([#71](https://github.com/minamijoyo/tfedit/pull/71))
+* Add support for Terraform v1.15 ([#72](https://github.com/minamijoyo/tfedit/pull/72))
+* Update Go to v1.26 ([#73](https://github.com/minamijoyo/tfedit/pull/73))
+* Update hcl to v2.24.0 ([#74](https://github.com/minamijoyo/tfedit/pull/74))
+* Update hcledit to v0.2.18 ([#75](https://github.com/minamijoyo/tfedit/pull/75))
+* Update checkout to v6 ([#76](https://github.com/minamijoyo/tfedit/pull/76))
+* Update create-github-app-token to v3 ([#77](https://github.com/minamijoyo/tfedit/pull/77))
+* Update goreleaser-action to v7 ([#78](https://github.com/minamijoyo/tfedit/pull/78))
+
 ## 0.2.2 (2024/08/14)
 
 ENHANCEMENTS:
