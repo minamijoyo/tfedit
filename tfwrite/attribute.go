@@ -22,7 +22,7 @@ func NewAttribute(attr *hclwrite.Attribute) *Attribute {
 
 // ValueAsString returns a value of Attribute as string.
 func (a *Attribute) ValueAsString() (string, error) {
-	return editor.GetAttributeValueAsString(a.raw)
+	return editor.GetAttributeValueAsString(a.raw, false)
 }
 
 // ValueAsTokens returns a value of Attribute as raw tokens.
