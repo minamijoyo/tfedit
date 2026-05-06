@@ -1,5 +1,7 @@
 ## master (Unreleased)
 
+## 0.2.3 (2026/05/06)
+
 ENHANCEMENTS:
 
 * Pin all GitHub Actions ([#71](https://github.com/minamijoyo/tfedit/pull/71))
