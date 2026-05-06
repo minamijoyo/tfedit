@@ -14,7 +14,7 @@ RUN git config --global --add safe.directory /work
 COPY --from=terraform /bin/terraform /usr/local/bin/
 
 # Install tfupdate
-ENV TFUPDATE_VERSION 0.6.7
+ENV TFUPDATE_VERSION 0.9.4
 RUN curl -fsSL https://github.com/minamijoyo/tfupdate/releases/download/v${TFUPDATE_VERSION}/tfupdate_${TFUPDATE_VERSION}_linux_amd64.tar.gz \
   | tar -xzC /usr/local/bin && chmod +x /usr/local/bin/tfupdate
 
