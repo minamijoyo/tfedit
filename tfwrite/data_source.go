@@ -27,7 +27,7 @@ func NewEmptyDataSource(dataSourceType string, dataSourceName string) *DataSourc
 // Name returns a name of data source.
 // It returns the second label of block.
 func (r *DataSource) Name() string {
-	labels := r.block.raw.Labels()
+	labels := r.raw.Labels()
 	return labels[1]
 }
 
